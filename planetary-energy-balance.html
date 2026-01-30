@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planetary Energy Balance Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --burgundy: #5d2137;
+            --terracotta: #ba684e;
+            --peach: #fee9e2;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --gray-light: #f5f5f5;
+            --solar-yellow: #fff9c4;
+            --solar-stroke: #b3a76e;
+            --ir-scarlet: #e69595;
+            --ir-stroke: #8f5a5a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--black);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 310px;
+            gap: 12px;
+            padding: 12px;
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100vh;
+            max-height: 100vh;
+        }
+
+        @media (max-width: 1400px) {
+            .container {
+                grid-template-columns: 250px 1fr 280px;
+            }
+        }
+
+        .panel {
+            background: var(--gray-light);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--peach);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-label {
+            font-weight: 600;
+            color: var(--burgundy);
+            font-size: 0.8rem;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--peach);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--burgundy);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="number"] {
+            width: 65px;
+            padding: 3px 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            background: var(--peach);
+            border-radius: 6px;
+            border: 1px solid var(--terracotta);
+            cursor: pointer;
+        }
+
+        .toggle-label { flex: 1; font-size: 0.8rem; font-weight: 600; color: var(--burgundy); }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 22px;
+            background: #ccc;
+            border-radius: 11px;
+            transition: background 0.3s;
+        }
+        .toggle-switch.active { background: var(--burgundy); }
+        .toggle-slider {
+            position: absolute;
+            top: 2px; left: 2px;
+            width: 18px; height: 18px;
+            background: white; border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.active .toggle-slider { transform: translateX(22px); }
+
+        .equation-box {
+            background: var(--white);
+            border-radius: 6px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .equation-box.accent {
+            background: var(--peach);
+            border-color: var(--terracotta);
+        }
+        .equation-title { font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; color: var(--burgundy); }
+        
+        .fraction-equation { font-family: 'Fira Mono', monospace; font-size: 0.62rem; text-align: center; margin-bottom: 6px; }
+        .equation-fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; }
+        .equation-line { width: 100%; height: 1px; background: var(--black); margin: 2px 0; }
+        .calculation-text { font-family: 'Fira Mono', monospace; font-size: 0.75rem; text-align: center; color: var(--burgundy); border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 5px; }
+
+        /* Compact Columnar Word Equation */
+        .column-eq-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            margin-top: 8px;
+            flex-wrap: nowrap; /* Force one line */
+        }
+        .eq-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-size: 0.52rem; /* Even smaller to fit */
+            font-weight: 700;
+            line-height: 1;
+            min-width: 40px;
+        }
+        .eq-op { font-size: 0.8rem; font-weight: 700; color: var(--burgundy); padding: 0 1px; }
+        .eq-bracket { font-size: 1.2rem; font-weight: 300; color: var(--burgundy); }
+        .eq-val { 
+            font-family: 'Fira Mono', monospace; 
+            font-size: 0.6rem;
+            color: var(--terracotta); 
+            margin-top: 2px;
+            padding-top: 1px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        .balance-note { font-size: 0.65rem; font-style: italic; margin-top: 10px; color: #666; line-height: 1.2; }
+
+        .results-box {
+            background: var(--burgundy);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--white);
+        }
+        .result-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 3px 0; font-size: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            white-space: nowrap; /* Ensure units fit on one line */
+        }
+        .result-row:last-child { border-bottom: none; }
+        .result-value { font-family: 'Fira Mono', monospace; color: var(--peach); font-weight: 600; padding-left: 10px;}
+
+        .simulation-area {
+            background: var(--white);
+            border: 2px solid var(--burgundy);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .diagram-svg {
+            width: 100%;
+            height: 100%;
+            max-height: 600px;
+        }
+
+        .label-text {
+            font-family: 'Source Sans Pro', sans-serif;
+            fill: #333;
+            font-weight: 700;
+            pointer-events: none;
+            text-shadow: 0 0 4px #fff, 0 0 4px #fff;
+            font-size: 11px;
+        }
+        
+        .surface-label-text {
+            font-family: 'Source Sans Pro', sans-serif;
+            fill: var(--peach); 
+            font-weight: 600;
+            pointer-events: none;
+            letter-spacing: 0.5px;
+            font-size: 11px;
+        }
+
+        .value-label {
+            font-family: 'Fira Mono', monospace;
+            font-weight: 700;
+            fill: #000;
+            font-size: 14px;
+            text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 5px #fff; 
+        }
+        
+        .value-label-surface {
+            font-family: 'Fira Mono', monospace;
+            font-weight: 700;
+            fill: var(--peach);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .info-box {
+            background: rgba(93, 33, 55, 0.05);
+            border-left: 3px solid var(--burgundy);
+            padding: 6px 8px;
+            font-size: 0.7rem;
+            color: var(--burgundy);
+            line-height: 1.3;
+            border-radius: 0 4px 4px 0;
+            margin-top: 8px;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: var(--black);
+            color: var(--white);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            max-width: 250px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            line-height: 1.4;
+        }
+        .tooltip.visible { opacity: 1; }
+
+        path {
+            transition: d 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s, fill 0.3s;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LEFT PANEL -->
+        <div class="panel">
+            <div class="panel-title">Primary Input</div>
+            
+            <div class="toggle-container" id="atmosphereToggle">
+                <span class="toggle-label">Include Atmosphere Reflection</span>
+                <div class="toggle-switch" id="atmosphereSwitch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Incoming Intensity</label>
+                <div class="slider-row">
+                    <input type="range" id="incomingSlider" min="50" max="500" value="200" step="1">
+                    <input type="number" id="incomingInput" min="50" max="500" value="200">
+                    <span class="unit" style="font-size: 0.75rem; white-space: nowrap;">W m⁻²</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Planet Surface Albedo</label>
+                <div class="slider-row">
+                    <input type="range" id="surfaceAlbedoSlider" min="0" max="0.9" value="0.30" step="0.01">
+                    <input type="number" id="surfaceAlbedoInput" min="0" max="0.9" value="0.30" step="0.01">
+                </div>
+            </div>
+
+            <div class="equation-box">
+                <div class="equation-title">Surface Albedo</div>
+                <div class="fraction-equation">
+                    Albedo = 
+                    <span class="equation-fraction">
+                        <span>Reflected from surface</span>
+                        <span class="equation-line"></span>
+                        <span>Incident on surface</span>
+                    </span>
+                </div>
+                <div class="calculation-text">
+                    <span id="calcRef">0</span> / <span id="calcInc">140</span> = <span id="calcRes">0.30</span>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>Color Key:</strong><br>
+                <span style="color: #c9bc7b; font-weight: 700;">Yellow:</span> Short-wave Solar Radiation<br>
+                <span style="color: #e69595; font-weight: 700;">Red:</span> Long-wave Infrared Radiation
+            </div>
+        </div>
+
+        <!-- CENTER: SIMULATION -->
+        <div class="simulation-area" id="simArea">
+            <svg id="mainSvg" class="diagram-svg" viewBox="0 0 700 500" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <pattern id="surfaceFill" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                        <line x1="0" y1="0" x2="0" y2="10" stroke="#7a3a50" stroke-width="6" />
+                    </pattern>
+                </defs>
+
+                <!-- Surface -->
+                <rect x="0" y="420" width="700" height="80" fill="#5d2137" />
+                <rect x="0" y="420" width="700" height="5" fill="#3a1321" />
+                <text x="350" y="465" text-anchor="middle" fill="#fee9e2" font-size="14" font-weight="600" letter-spacing="1px">PLANET SURFACE</text>
+
+                <!-- Atmosphere -->
+                <g id="atmosphere">
+                    <path d="M -20,180 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 q 40,-25 80,0 v 60 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 q -40,25 -80,0 z" fill="rgba(186, 104, 78, 0.15)" stroke="#ba684e" stroke-width="1" stroke-dasharray="4 2"/>
+                    <text x="680" y="170" text-anchor="end" fill="#ba684e" font-size="12" font-style="italic">Atmosphere</text>
+                </g>
+
+                <path id="arrowA" fill="var(--solar-yellow)" stroke="var(--black)" stroke-width="1.5" />
+                <path id="arrowB" fill="var(--solar-yellow)" stroke="var(--black)" stroke-width="1.5" />
+                <path id="arrowC" fill="var(--solar-yellow)" stroke="var(--black)" stroke-width="1.5" style="cursor:help;" />
+                <path id="arrowD" fill="var(--ir-scarlet)" stroke="var(--black)" stroke-width="1.5" />
+                <path id="arrowE" fill="var(--ir-scarlet)" stroke="var(--black)" stroke-width="1.5" />
+
+                <text id="labelA" class="label-text" text-anchor="middle">Incoming</text>
+                <text id="valA" class="value-label" text-anchor="middle">200</text>
+
+                <text id="labelB" class="label-text" text-anchor="middle">Reflected from atmosphere</text>
+                <text id="valB" class="value-label" text-anchor="middle">60</text>
+
+                <text id="labelC" class="label-text" text-anchor="middle">Reflected from surface</text>
+                <text id="valC" class="value-label" text-anchor="middle">42</text>
+
+                <text id="labelD" class="label-text" text-anchor="middle">Escaping</text>
+                <text id="valD" class="value-label" text-anchor="middle">140</text>
+
+                <text id="labelE" class="label-text" text-anchor="middle">Greenhouse return</text>
+                <text id="valE" class="value-label" text-anchor="middle">84</text>
+
+                <text id="labelSurfRad" class="surface-label-text" text-anchor="middle">radiated by surface</text>
+                <text id="valSurfRad" class="value-label-surface" text-anchor="middle">224</text>
+            </svg>
+            <div id="tooltip" class="tooltip"></div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="panel">
+            <div class="panel-title">Intensity Values</div>
+            
+            <div class="results-box">
+                <div class="result-row">
+                    <span>Incoming</span>
+                    <span class="result-value" id="resIncoming">200 W m⁻²</span>
+                </div>
+                <div class="result-row" id="resAtmReflectedRow">
+                    <span>Reflected from atmosphere</span>
+                    <span class="result-value" id="resAtmReflected">60 W m⁻²</span>
+                </div>
+                <div class="result-row">
+                    <span>Reaching surface</span>
+                    <span class="result-value" id="resReachingSurface">140 W m⁻²</span>
+                </div>
+                <div class="result-row">
+                    <span>Reflected from surface</span>
+                    <span class="result-value" id="resSurfaceReflected">42 W m⁻²</span>
+                </div>
+                <div class="result-row">
+                    <span>Greenhouse return</span>
+                    <span class="result-value" id="resGreenhouse">84 W m⁻²</span>
+                </div>
+                <div class="result-row" style="border-top: 1px solid rgba(255,255,255,0.3); margin-top:4px; padding-top:4px;">
+                    <strong>radiated by surface</strong>
+                    <span class="result-value" id="resSurfaceRadTotal">224 W m⁻²</span>
+                </div>
+            </div>
+
+            <div class="equation-box accent">
+                <div class="equation-title">Intensity Balance (Surface)</div>
+                <div id="columnEquation" class="column-eq-container">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="balance-note">
+                    Note: These equations are not included in your formula booklet, but you can figure them out by looking at the direction of the arrows.
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Greenhouse Effect:</strong> In this simulation the atmosphere absorbs 60% of surface radiation and re-emits it down.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ATM_ALBEDO = 0.30;
+        const GREENHOUSE_PERCENTAGE = 0.60;
+        const MIN_HEAD_SIZE = 14; 
+        
+        const els = {
+            incomingSlider: document.getElementById('incomingSlider'),
+            incomingInput: document.getElementById('incomingInput'),
+            surfaceAlbedoSlider: document.getElementById('surfaceAlbedoSlider'),
+            surfaceAlbedoInput: document.getElementById('surfaceAlbedoInput'),
+            atmosphereToggle: document.getElementById('atmosphereToggle'),
+            atmosphereSwitch: document.getElementById('atmosphereSwitch'),
+            calcRef: document.getElementById('calcRef'),
+            calcInc: document.getElementById('calcInc'),
+            calcRes: document.getElementById('calcRes'),
+            columnEquation: document.getElementById('columnEquation'),
+            resIncoming: document.getElementById('resIncoming'),
+            resAtmReflected: document.getElementById('resAtmReflected'),
+            resAtmReflectedRow: document.getElementById('resAtmReflectedRow'),
+            resReachingSurface: document.getElementById('resReachingSurface'),
+            resSurfaceReflected: document.getElementById('resSurfaceReflected'),
+            resGreenhouse: document.getElementById('resGreenhouse'),
+            resSurfaceRadTotal: document.getElementById('resSurfaceRadTotal'),
+            arrowA: document.getElementById('arrowA'),
+            arrowB: document.getElementById('arrowB'),
+            arrowC: document.getElementById('arrowC'),
+            arrowD: document.getElementById('arrowD'),
+            arrowE: document.getElementById('arrowE'),
+            tooltip: document.getElementById('tooltip'),
+            simArea: document.getElementById('simArea')
+        };
+        
+        let state = {
+            atmosphereEnabled: false,
+            incoming: 200, // Default 200
+            surfaceAlbedo: 0.30 
+        };
+
+        els.arrowC.addEventListener('mousemove', (e) => {
+            if (state.surfaceAlbedo > 0) {
+                els.tooltip.innerHTML = "<strong>Short-wave Solar Radiation</strong><br>Reflected directly from the surface.";
+                els.tooltip.classList.add('visible');
+                const rect = els.simArea.getBoundingClientRect();
+                els.tooltip.style.left = `${e.clientX - rect.left + 15}px`;
+                els.tooltip.style.top = `${e.clientY - rect.top + 15}px`;
+            }
+        });
+        els.arrowC.addEventListener('mouseleave', () => els.tooltip.classList.remove('visible'));
+
+        function syncInputs(slider, input, key) {
+            slider.addEventListener('input', () => {
+                input.value = slider.value;
+                state[key] = parseFloat(slider.value);
+                updateSimulation();
+            });
+            input.addEventListener('change', () => {
+                let val = parseFloat(input.value);
+                val = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), val));
+                input.value = val;
+                slider.value = val;
+                state[key] = val;
+                updateSimulation();
+            });
+        }
+
+        syncInputs(els.incomingSlider, els.incomingInput, 'incoming');
+        syncInputs(els.surfaceAlbedoSlider, els.surfaceAlbedoInput, 'surfaceAlbedo');
+
+        els.atmosphereToggle.addEventListener('click', () => {
+            state.atmosphereEnabled = !state.atmosphereEnabled;
+            els.atmosphereSwitch.classList.toggle('active');
+            updateSimulation();
+        });
+
+        function getHeadSize(width) {
+            return Math.max(MIN_HEAD_SIZE, width * 1.5);
+        }
+
+        function pathIncomingTransmitted(xCenter, yTop, yBottom, wTrans) {
+            const headSize = getHeadSize(wTrans);
+            const headHeight = headSize * 0.7;
+            const shaftBotY = yBottom - headHeight;
+            return `M ${xCenter},${yTop} L ${xCenter + wTrans},${yTop} L ${xCenter + wTrans},${shaftBotY} L ${xCenter + wTrans/2 + headSize/2},${shaftBotY} L ${xCenter + wTrans/2},${yBottom} L ${xCenter + wTrans/2 - headSize/2},${shaftBotY} L ${xCenter},${shaftBotY} Z`;
+        }
+
+        function pathIncomingReflected(xCenter, yTop, yBounceLevel, wRef) {
+            if (wRef < 1) return "";
+            const headSize = getHeadSize(wRef);
+            const headHeight = headSize * 0.7;
+            const rInner = 60;
+            const rOuter = rInner + wRef;
+            const cy = yBounceLevel - rOuter;
+            const cx = xCenter - wRef - rInner;
+            const endAngle = 135 * (Math.PI / 180);
+            const endOuterX = cx + rOuter * Math.cos(endAngle);
+            const endOuterY = cy + rOuter * Math.sin(endAngle);
+            const endInnerX = cx + rInner * Math.cos(endAngle);
+            const endInnerY = cy + rInner * Math.sin(endAngle);
+            const midX = (endOuterX + endInnerX) / 2;
+            const midY = (endOuterY + endInnerY) / 2;
+            const uX = -Math.sin(endAngle); const uY = Math.cos(endAngle);
+            const pX = -uY; const pY = uX;
+            return `M ${xCenter},${yTop} L ${xCenter},${cy} A ${rOuter} ${rOuter} 0 0 1 ${endOuterX} ${endOuterY} L ${midX + pX * headSize/2},${midY + pY * headSize/2} L ${midX + uX * headHeight},${midY + uY * headHeight} L ${midX - pX * headSize/2},${midY - pY * headSize/2} L ${endInnerX},${endInnerY} A ${rInner} ${rInner} 0 0 0 ${xCenter-wRef} ${cy} L ${xCenter-wRef},${yTop} Z`;
+        }
+
+        function pathSurfaceEscaping(xSurfCenter, ySurf, wTotal, wEsc, wGreen) {
+            if (wEsc < 1) return "";
+            const headSize = getHeadSize(wEsc);
+            const headHeight = headSize * 0.7;
+            const left = xSurfCenter - (wTotal/2) + wGreen;
+            const tipY = 40;
+            const center = left + wEsc/2;
+            return `M ${left},${ySurf} L ${left+wEsc},${ySurf} L ${left+wEsc},${tipY+headHeight} L ${center + headSize/2},${tipY+headHeight} L ${center},${tipY} L ${center - headSize/2},${tipY+headHeight} L ${left},${tipY+headHeight} Z`;
+        }
+
+        function pathGreenhouse(xSurfCenter, ySurf, yPivot, wTotal, wEsc, wGreen) {
+            if (wGreen < 1) return "";
+            const headSize = getHeadSize(wGreen);
+            const headHeight = headSize * 0.7;
+            const riseLeft = xSurfCenter - (wTotal/2);
+            const riseRight = riseLeft + wGreen;
+            const fallCenter = xSurfCenter - 140; 
+            const rOuter = (riseRight - (fallCenter - wGreen/2)) / 2;
+            const rInner = (riseLeft - (fallCenter + wGreen/2)) / 2;
+            return `M ${riseRight},${ySurf} L ${riseRight},${yPivot} A ${rOuter} ${rOuter} 0 0 0 ${fallCenter - wGreen/2} ${yPivot} L ${fallCenter - wGreen/2},${ySurf-headHeight} L ${fallCenter - headSize/2},${ySurf-headHeight} L ${fallCenter},${ySurf} L ${fallCenter + headSize/2},${ySurf-headHeight} L ${fallCenter + wGreen/2},${ySurf-headHeight} L ${fallCenter + wGreen/2},${yPivot} A ${rInner} ${rInner} 0 0 1 ${riseLeft} ${yPivot} L ${riseLeft},${ySurf} Z`;
+        }
+
+        function createCol(words, value) {
+            return `
+                <div class="eq-col">
+                    ${words.join('<br>')}
+                    <div class="eq-val">${value}</div>
+                </div>
+            `;
+        }
+
+        function updateSimulation() {
+            const { incoming, surfaceAlbedo, atmosphereEnabled } = state;
+            
+            let atmReflected = atmosphereEnabled ? incoming * ATM_ALBEDO : 0;
+            let reachingSurface = incoming - atmReflected;
+            let surfaceReflected = reachingSurface * surfaceAlbedo;
+            let absorbedBySurface = reachingSurface - surfaceReflected;
+            let surfaceRadiation = absorbedBySurface / (1 - GREENHOUSE_PERCENTAGE);
+            let greenhouse = surfaceRadiation * GREENHOUSE_PERCENTAGE;
+            let escaping = surfaceRadiation - greenhouse;
+
+            const SCALE = 0.2016;
+            const wInRef = atmReflected * SCALE;
+            const wInTrans = reachingSurface * SCALE;
+            const wSurfTotal = surfaceRadiation * SCALE;
+            const wSurfGreen = greenhouse * SCALE;
+            const wSurfEsc = escaping * SCALE;
+            const wSurfRef = surfaceReflected * SCALE;
+
+            const xIn = 280; 
+            const xSurf = 520;
+            const yTop = 40;
+            const ySurf = 420;
+            const yAtmBounce = 170; 
+            const yGHPivot = 310;
+
+            els.arrowA.setAttribute('d', pathIncomingTransmitted(xIn, yTop, ySurf, wInTrans));
+            els.arrowB.setAttribute('d', pathIncomingReflected(xIn, yTop, yAtmBounce, wInRef));
+            els.arrowB.style.opacity = atmosphereEnabled ? 0.7 : 0;
+            els.arrowD.setAttribute('d', pathSurfaceEscaping(xSurf, ySurf, wSurfTotal, wSurfEsc, wSurfGreen));
+            els.arrowE.setAttribute('d', pathGreenhouse(xSurf, ySurf, yGHPivot, wSurfTotal, wSurfEsc, wSurfGreen));
+
+            if (wSurfRef > 0.5) {
+                const bounceCenter = xIn + (wInTrans / 2);
+                const tip = { x: 50, y: 250 };
+                const vX = tip.x - bounceCenter; const vY = tip.y - ySurf;
+                const len = Math.sqrt(vX*vX + vY*vY);
+                const uX = vX/len; const uY = vY/len;
+                const nX = -uY; const nY = uX;
+                const bh = getHeadSize(wSurfRef); const hl = bh * 0.7;
+                const hbX = tip.x - uX * hl; const hbY = tip.y - uY * hl;
+                els.arrowC.setAttribute('d', `M ${bounceCenter + wSurfRef/2},${ySurf} L ${bounceCenter - wSurfRef/2},${ySurf} L ${hbX - nX * wSurfRef/2},${hbY - nY * wSurfRef/2} L ${hbX - nX * bh/2},${hbY - nY * bh/2} L ${tip.x},${tip.y} L ${hbX + nX * bh/2},${hbY + nY * bh/2} L ${hbX + nX * wSurfRef/2},${hbY + nY * wSurfRef/2} Z`);
+                els.arrowC.style.display = 'block';
+                document.getElementById('valC').textContent = Math.round(surfaceReflected);
+                document.getElementById('valC').setAttribute('x', 100); document.getElementById('valC').setAttribute('y', 330);
+                document.getElementById('labelC').setAttribute('x', 100); document.getElementById('labelC').setAttribute('y', 345);
+                document.getElementById('labelC').style.display = 'block';
+                document.getElementById('valC').style.display = 'block';
+            } else {
+                els.arrowC.style.display = 'none';
+                document.getElementById('labelC').style.display = 'none';
+                document.getElementById('valC').style.display = 'none';
+            }
+
+            const setPos = (id, x, y) => { 
+                const el = document.getElementById(id); 
+                if(el) { el.setAttribute('x', x); el.setAttribute('y', y); }
+            };
+
+            setPos('valA', xIn + wInTrans/2, yTop - 15);
+            setPos('labelA', xIn + wInTrans/2, yTop - 30);
+            document.getElementById('valA').textContent = Math.round(incoming);
+
+            if(atmosphereEnabled) {
+                setPos('valB', xIn - 130, 120);
+                setPos('labelB', xIn - 130, 135);
+                document.getElementById('valB').textContent = Math.round(atmReflected);
+                document.getElementById('labelB').style.display = 'block';
+                document.getElementById('valB').style.display = 'block';
+            } else {
+                document.getElementById('labelB').style.display = 'none';
+                document.getElementById('valB').style.display = 'none';
+            }
+
+            const escX = xSurf - (wSurfTotal/2) + wSurfGreen + (wSurfEsc/2);
+            setPos('valD', escX, 30);
+            setPos('labelD', escX, 15);
+            document.getElementById('valD').textContent = Math.round(escaping);
+
+            const grX = xSurf - 140; 
+            setPos('valE', grX, ySurf - 30);
+            setPos('labelE', grX, ySurf - 15);
+            document.getElementById('valE').textContent = Math.round(greenhouse);
+
+            setPos('valSurfRad', xSurf, ySurf - 10);
+            setPos('labelSurfRad', xSurf, ySurf + 30);
+            document.getElementById('valSurfRad').textContent = Math.round(surfaceRadiation);
+
+            els.calcRef.textContent = Math.round(surfaceReflected);
+            els.calcInc.textContent = Math.round(reachingSurface);
+            els.calcRes.textContent = surfaceAlbedo.toFixed(2);
+
+            const rad = Math.round(surfaceRadiation);
+            const inc = Math.round(incoming);
+            const r_atm = Math.round(atmReflected);
+            const r_surf = Math.round(surfaceReflected);
+            const gr = Math.round(greenhouse);
+
+            let eqHtml = createCol(['radiated', 'by surface'], rad);
+            eqHtml += '<div class="eq-op">=</div>';
+
+            if (atmosphereEnabled) {
+                eqHtml += '<div class="eq-bracket">((</div>';
+                eqHtml += createCol(['incoming'], inc);
+                eqHtml += '<div class="eq-op">-</div>';
+                eqHtml += createCol(['Reflected', 'from', 'atmosphere'], r_atm);
+                eqHtml += '<div class="eq-bracket">)</div>';
+                eqHtml += '<div class="eq-op">-</div>';
+                eqHtml += createCol(['Reflected', 'from', 'surface'], r_surf);
+                eqHtml += '<div class="eq-bracket">)</div>';
+            } else {
+                eqHtml += '<div class="eq-bracket">(</div>';
+                eqHtml += createCol(['incoming'], inc);
+                eqHtml += '<div class="eq-op">-</div>';
+                eqHtml += createCol(['Reflected', 'from', 'surface'], r_surf);
+                eqHtml += '<div class="eq-bracket">)</div>';
+            }
+            eqHtml += '<div class="eq-op">+</div>';
+            eqHtml += createCol(['Greenhouse', 'return'], gr);
+
+            els.columnEquation.innerHTML = eqHtml;
+
+            els.resIncoming.textContent = `${inc} W m⁻²`;
+            els.resAtmReflected.textContent = `${r_atm} W m⁻²`;
+            els.resAtmReflectedRow.style.display = atmosphereEnabled ? 'flex' : 'none';
+            els.resReachingSurface.textContent = `${Math.round(reachingSurface)} W m⁻²`;
+            els.resSurfaceReflected.textContent = `${r_surf} W m⁻²`;
+            els.resGreenhouse.textContent = `${gr} W m⁻²`;
+            els.resSurfaceRadTotal.textContent = `${rad} W m⁻²`;
+        }
+
+        window.onload = () => {
+            updateSimulation();
+        };
+    </script>
+</body>
+</html>
