@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newton's Second Law - F=ma Activity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --burgundy: #5d2137;
+            --terracotta: #ba684e;
+            --peach: #fee9e2;
+            --black: #1a1a1a;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--peach);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Activity Page */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            color: var(--burgundy);
+            margin-bottom: 0.3rem;
+        }
+
+        .header p {
+            color: var(--terracotta);
+            font-size: 1rem;
+        }
+
+        .main-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            max-width: 900px;
+        }
+
+        .equation {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(5rem, 12vw, 9rem);
+            font-weight: 900;
+            color: var(--burgundy);
+            letter-spacing: -0.02em;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .variable-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            min-width: 50px;
+        }
+
+        .equals {
+            font-size: 1.3rem;
+            color: var(--terracotta);
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .answer-input {
+            padding: 0.6rem 0.8rem;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            border: 3px solid var(--burgundy);
+            border-radius: 10px;
+            background: var(--white);
+            color: var(--black);
+            width: 140px;
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--terracotta);
+            box-shadow: 0 0 0 3px rgba(186, 104, 78, 0.2);
+        }
+
+        .answer-input.correct {
+            border-color: #2ecc71;
+            background: #e8f8f0;
+        }
+
+        .answer-input.incorrect {
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .check-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            background: var(--burgundy);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .check-btn:hover {
+            background: var(--terracotta);
+            transform: translateY(-2px);
+        }
+
+        .check-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback-icon {
+            font-size: 1.3rem;
+            min-width: 25px;
+        }
+
+        /* Overlays */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        .wrong-overlay {
+            background: var(--burgundy);
+        }
+
+        .no-container, .yes-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .no-text, .yes-text {
+            position: absolute;
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            color: var(--peach);
+            opacity: 0;
+        }
+
+        .facepalm {
+            font-size: 12rem;
+            opacity: 0;
+            position: absolute;
+            z-index: 10;
+        }
+
+        .correct-overlay {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--terracotta) 100%);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .celebration-message {
+            position: absolute;
+            z-index: 20;
+            opacity: 0;
+            text-align: center;
+            max-width: 600px;
+            background: var(--peach);
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        }
+
+        .celebration-message h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+            color: var(--burgundy);
+            margin-bottom: 1rem;
+        }
+
+        .celebration-message p {
+            font-size: clamp(0.95rem, 2vw, 1.2rem);
+            color: var(--black);
+            line-height: 1.5;
+        }
+
+        .celebration-emoji {
+            font-size: 2.5rem;
+            margin-top: 1rem;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        /* Combined Questions Page */
+        .questions-page {
+            background: var(--peach);
+            z-index: 1002;
+            justify-content: flex-start;
+            padding-top: 1rem;
+            overflow-y: auto;
+        }
+
+        .questions-page.active {
+            display: block;
+            padding: 1rem;
+        }
+
+        /* Explanation Section */
+        .explanation-section {
+            background: var(--burgundy);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            margin: 0 auto 1.5rem;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .explanation-section h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            margin-bottom: 0.8rem;
+        }
+
+        .explanation-section .highlight {
+            color: var(--terracotta);
+        }
+
+        .explanation-section p {
+            font-size: 1rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        .explanation-section .resultant-def {
+            background: rgba(254, 233, 226, 0.15);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .explanation-section .resultant-def strong {
+            color: var(--peach);
+        }
+
+        .questions-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .questions-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            color: var(--burgundy);
+            margin-bottom: 0.3rem;
+        }
+
+        .questions-header p {
+            font-size: 0.9rem;
+            color: var(--terracotta);
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 2rem;
+        }
+
+        .question-card {
+            background: var(--white);
+            border: 2px solid var(--burgundy);
+            border-radius: 10px;
+            padding: 0.6rem;
+            position: relative;
+        }
+
+        .question-card.completed {
+            border-color: #2ecc71;
+            background: #f8fdf8;
+        }
+
+        .question-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .question-title h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            color: var(--burgundy);
+        }
+
+        .difficulty-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .difficulty-badge.hard {
+            background: var(--terracotta);
+            color: var(--white);
+        }
+
+        .difficulty-badge.super-hard {
+            background: var(--burgundy);
+            color: var(--white);
+        }
+
+        .diagram-container {
+            background: var(--peach);
+            border-radius: 8px;
+            padding: 0.2rem;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .diagram-svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .question-inputs {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.4rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .question-label {
+            font-size: 0.75rem;
+            color: var(--burgundy);
+            font-weight: 700;
+        }
+
+        .question-input {
+            padding: 0.3rem 0.4rem;
+            font-size: 0.85rem;
+            font-family: 'Space Grotesk', sans-serif;
+            border: 2px solid var(--burgundy);
+            border-radius: 5px;
+            background: var(--white);
+            color: var(--black);
+            width: 55px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .question-input:focus {
+            outline: none;
+            border-color: var(--terracotta);
+            box-shadow: 0 0 0 2px rgba(186, 104, 78, 0.2);
+        }
+
+        .question-input.correct {
+            border-color: #2ecc71;
+            background: #e8f8f0;
+        }
+
+        .question-input.incorrect {
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .unit {
+            font-size: 0.75rem;
+            color: var(--black);
+        }
+
+        .q-feedback {
+            font-size: 0.9rem;
+            min-width: 14px;
+        }
+
+        .separator {
+            color: var(--terracotta);
+            margin: 0 0.2rem;
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .check-btn-small {
+            padding: 0.3rem 0.7rem;
+            font-size: 0.7rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            background: var(--burgundy);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .check-btn-small:hover {
+            background: var(--terracotta);
+        }
+
+        .check-btn-small:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .checks-left {
+            font-size: 0.7rem;
+            color: var(--terracotta);
+            font-weight: 700;
+        }
+
+        .hint-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.65rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            background: var(--peach);
+            color: var(--burgundy);
+            border: 2px solid var(--burgundy);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hint-btn:hover {
+            background: var(--burgundy);
+            color: var(--white);
+        }
+
+        .hint-box {
+            display: none;
+            background: #fff9e6;
+            border: 2px solid #f4d03f;
+            border-radius: 6px;
+            padding: 0.6rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--black);
+        }
+
+        .hint-box.show {
+            display: block;
+        }
+
+        .hint-box strong {
+            color: var(--burgundy);
+        }
+
+        .completion-banner {
+            display: none;
+            background: var(--burgundy);
+            color: var(--white);
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 600px;
+            margin: 1.5rem auto;
+        }
+
+        .completion-banner.show {
+            display: block;
+        }
+
+        .completion-banner h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .completion-banner p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .completion-banner .key-point {
+            color: rgba(254, 233, 226, 0.6);
+            margin-top: 0.6rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .equation {
+                font-size: 4rem;
+            }
+
+            .questions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .question-label {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .question-row {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Main Activity -->
+    <div class="page active" id="activityPage">
+        <div class="header">
+            <h1>Newton's Second Law</h1>
+            <p>What do the variables stand for?</p>
+        </div>
+
+        <div class="main-content">
+            <div class="equation">F=ma</div>
+
+            <div class="input-section">
+                <div class="input-row">
+                    <span class="variable-label">m</span>
+                    <span class="equals">=</span>
+                    <div class="input-wrapper">
+                        <input type="text" class="answer-input" id="massInput" placeholder="Type here...">
+                        <button class="check-btn" id="massCheckBtn">Check</button>
+                        <span class="feedback-icon" id="massFeedback"></span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <span class="variable-label">a</span>
+                    <span class="equals">=</span>
+                    <div class="input-wrapper">
+                        <input type="text" class="answer-input" id="accelInput" placeholder="Type here...">
+                        <button class="check-btn" id="accelCheckBtn">Check</button>
+                        <span class="feedback-icon" id="accelFeedback"></span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <span class="variable-label">F</span>
+                    <span class="equals">=</span>
+                    <div class="input-wrapper">
+                        <input type="text" class="answer-input" id="forceInput" placeholder="Type here...">
+                        <button class="check-btn" id="forceCheckBtn">Check</button>
+                        <span class="feedback-icon" id="forceFeedback"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wrong Answer Overlay -->
+    <div class="overlay wrong-overlay" id="wrongOverlay">
+        <div class="no-container" id="noContainer">
+            <span class="facepalm" id="facepalm">🤦</span>
+        </div>
+    </div>
+
+    <!-- Correct Answer Overlay -->
+    <div class="overlay correct-overlay" id="correctOverlay">
+        <div class="yes-container" id="yesContainer">
+            <div class="celebration-message" id="celebrationMessage">
+                <h1>🎉 I CAN'T BELIEVE IT! 🎉</h1>
+                <p>You actually got it right! Students get this wrong SO often — they always say "force" instead of "resultant force".</p>
+                <p style="margin-top: 0.8rem;"><strong>You've made my day!</strong></p>
+                <div class="celebration-emoji">🙏 THANK YOU 🙏</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Explanation + Questions Combined -->
+    <div class="page questions-page" id="questionsPage">
+        <!-- Explanation at top -->
+        <div class="explanation-section">
+            <h1>F does <span class="highlight">NOT</span> stand for "force" — it's <span class="highlight">RESULTANT FORCE</span>!</h1>
+            <p>This is the most common misconception in physics. F=ma only works when F is the <em>total, overall, resultant</em> force.</p>
+            <div class="resultant-def">
+                <strong>Resultant Force</strong> = The sum of all forces acting on an object (considering direction)
+            </div>
+        </div>
+
+        <div class="questions-header">
+            <h2>Practice: Calculate the Resultant Force & Acceleration</h2>
+            <p>Direction matters! → positive, ← negative</p>
+        </div>
+
+        <div class="questions-grid" id="questionsGrid">
+            <!-- Questions generated dynamically -->
+        </div>
+
+        <div class="completion-banner" id="completionBanner">
+            <h2>🎉 Excellent Work! 🎉</h2>
+            <p>You've mastered resultant force calculations!</p>
+            <p class="key-point">Always find the resultant force first before using F=ma to calculate acceleration!</p>
+        </div>
+    </div>
+
+    <script>
+        // ============ ACTIVITY PAGE LOGIC ============
+        const massInput = document.getElementById('massInput');
+        const accelInput = document.getElementById('accelInput');
+        const forceInput = document.getElementById('forceInput');
+        const massFeedback = document.getElementById('massFeedback');
+        const accelFeedback = document.getElementById('accelFeedback');
+        const forceFeedback = document.getElementById('forceFeedback');
+        const massCheckBtn = document.getElementById('massCheckBtn');
+        const accelCheckBtn = document.getElementById('accelCheckBtn');
+        const forceCheckBtn = document.getElementById('forceCheckBtn');
+
+        const correctAnswers = {
+            mass: ['mass', 'the mass', 'mass of the object', 'mass of object'],
+            acceleration: ['acceleration', 'the acceleration', 'acceleration of the object', 'accel'],
+            force: ['resultant force', 'the resultant force', 'net force', 'the net force', 'total force', 'the total force', 'sum of forces', 'overall force', 'sum of all forces', 'unbalanced force']
+        };
+
+        function checkAnswer(input, correctList) {
+            const answer = input.toLowerCase().trim();
+            return correctList.some(correct => answer === correct || answer.includes(correct));
+        }
+
+        function isJustForce(input) {
+            const answer = input.toLowerCase().trim();
+            if (answer === '') return false;
+            const wrongAnswers = ['force', 'the force', 'f', 'applied force', 'pushing force', 'pull force'];
+            return wrongAnswers.includes(answer) || (answer.includes('force') && !answer.includes('resultant') && !answer.includes('net') && !answer.includes('total') && !answer.includes('sum') && !answer.includes('unbalanced'));
+        }
+
+        function showFeedback(element, isCorrect, inputEl, btnEl) {
+            element.textContent = isCorrect ? '✓' : '✗';
+            element.style.color = isCorrect ? '#2ecc71' : '#e74c3c';
+            inputEl.classList.remove('correct', 'incorrect');
+            inputEl.classList.add(isCorrect ? 'correct' : 'incorrect');
+            if (isCorrect) {
+                inputEl.disabled = true;
+                btnEl.disabled = true;
+            }
+        }
+
+        massCheckBtn.addEventListener('click', () => {
+            const correct = checkAnswer(massInput.value, correctAnswers.mass);
+            showFeedback(massFeedback, correct, massInput, massCheckBtn);
+        });
+
+        accelCheckBtn.addEventListener('click', () => {
+            const correct = checkAnswer(accelInput.value, correctAnswers.acceleration);
+            showFeedback(accelFeedback, correct, accelInput, accelCheckBtn);
+        });
+
+        forceCheckBtn.addEventListener('click', () => {
+            const forceCorrect = checkAnswer(forceInput.value, correctAnswers.force);
+            const forceIsJustForce = isJustForce(forceInput.value);
+
+            if (forceCorrect) {
+                showFeedback(forceFeedback, true, forceInput, forceCheckBtn);
+                setTimeout(() => showCorrectAnimation(), 500);
+            } else if (forceIsJustForce || forceInput.value.trim() !== '') {
+                showFeedback(forceFeedback, false, forceInput, forceCheckBtn);
+                forceInput.classList.remove('incorrect');
+                forceInput.disabled = false;
+                forceCheckBtn.disabled = false;
+                setTimeout(() => showWrongAnimation(), 500);
+            }
+        });
+
+        [massInput, accelInput, forceInput].forEach((input, idx) => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    [massCheckBtn, accelCheckBtn, forceCheckBtn][idx].click();
+                }
+            });
+        });
+
+        // ============ ANIMATION LOGIC ============
+        const wrongOverlay = document.getElementById('wrongOverlay');
+        const noContainer = document.getElementById('noContainer');
+        const facepalm = document.getElementById('facepalm');
+        const correctOverlay = document.getElementById('correctOverlay');
+        const yesContainer = document.getElementById('yesContainer');
+        const celebrationMessage = document.getElementById('celebrationMessage');
+
+        function createNoTexts() {
+            noContainer.querySelectorAll('.no-text').forEach(el => el.remove());
+            const positions = [
+                { x: 10, y: 20, size: 3, delay: 0 },
+                { x: 70, y: 15, size: 4, delay: 0.15 },
+                { x: 30, y: 60, size: 5, delay: 0.3 },
+                { x: 80, y: 70, size: 3.5, delay: 0.45 },
+                { x: 15, y: 80, size: 4.5, delay: 0.6 },
+                { x: 60, y: 40, size: 6, delay: 0.75 },
+                { x: 40, y: 25, size: 3, delay: 0.9 },
+                { x: 85, y: 45, size: 4, delay: 1.05 },
+                { x: 25, y: 45, size: 5, delay: 1.2 },
+                { x: 55, y: 75, size: 3.5, delay: 1.35 }
+            ];
+            const nos = [];
+            positions.forEach((pos) => {
+                const no = document.createElement('span');
+                no.className = 'no-text';
+                no.textContent = 'NO!';
+                no.style.left = pos.x + '%';
+                no.style.top = pos.y + '%';
+                no.style.fontSize = pos.size + 'rem';
+                no.dataset.delay = pos.delay;
+                noContainer.appendChild(no);
+                nos.push(no);
+            });
+            return nos;
+        }
+
+        function animateNos(nos) {
+            nos.forEach((no) => {
+                const delay = parseFloat(no.dataset.delay) * 1000;
+                setTimeout(() => {
+                    no.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    no.style.opacity = '1';
+                    no.style.transform = 'scale(1)';
+                }, delay);
+            });
+        }
+
+        function showWrongAnimation() {
+            wrongOverlay.classList.add('active');
+            facepalm.style.opacity = '0';
+            facepalm.style.transform = 'scale(0.5)';
+            const nos = createNoTexts();
+            animateNos(nos);
+            setTimeout(() => {
+                facepalm.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                facepalm.style.opacity = '1';
+                facepalm.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    wrongOverlay.classList.remove('active');
+                    document.getElementById('activityPage').classList.remove('active');
+                    document.getElementById('questionsPage').classList.add('active');
+                    initQuestions();
+                }, 1500);
+            }, 1800);
+        }
+
+        function createYesTexts() {
+            yesContainer.querySelectorAll('.yes-text').forEach(el => el.remove());
+            yesContainer.querySelectorAll('.confetti').forEach(el => el.remove());
+            const positions = [
+                { x: 10, y: 20, size: 3, delay: 0 },
+                { x: 75, y: 15, size: 4, delay: 0.1 },
+                { x: 25, y: 65, size: 5, delay: 0.2 },
+                { x: 80, y: 70, size: 3.5, delay: 0.3 },
+                { x: 15, y: 85, size: 4.5, delay: 0.4 },
+                { x: 65, y: 35, size: 4, delay: 0.5 },
+                { x: 40, y: 20, size: 3, delay: 0.6 },
+                { x: 88, y: 50, size: 3.5, delay: 0.7 }
+            ];
+            const yeses = [];
+            positions.forEach((pos) => {
+                const yes = document.createElement('span');
+                yes.className = 'yes-text';
+                yes.textContent = 'YES!';
+                yes.style.left = pos.x + '%';
+                yes.style.top = pos.y + '%';
+                yes.style.fontSize = pos.size + 'rem';
+                yes.dataset.delay = pos.delay;
+                yesContainer.appendChild(yes);
+                yeses.push(yes);
+            });
+            return yeses;
+        }
+
+        function animateYeses(yeses) {
+            yeses.forEach((yes) => {
+                const delay = parseFloat(yes.dataset.delay) * 1000;
+                setTimeout(() => {
+                    yes.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    yes.style.opacity = '1';
+                    yes.style.transform = 'scale(1) rotate(0deg)';
+                }, delay);
+            });
+        }
+
+        function createConfetti() {
+            const colors = ['#5d2137', '#ba684e', '#fee9e2', '#ffffff', '#ffd700'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                yesContainer.appendChild(confetti);
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                setTimeout(() => {
+                    confetti.style.transition = `all ${duration}s ease-out`;
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `translateY(${window.innerHeight + 50}px) rotate(${Math.random() * 720}deg)`;
+                }, delay * 1000);
+            }
+        }
+
+        function showCorrectAnimation() {
+            correctOverlay.classList.add('active');
+            celebrationMessage.style.opacity = '0';
+            celebrationMessage.style.transform = 'scale(0.8)';
+            const yeses = createYesTexts();
+            animateYeses(yeses);
+            createConfetti();
+            setTimeout(() => {
+                celebrationMessage.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                celebrationMessage.style.opacity = '1';
+                celebrationMessage.style.transform = 'scale(1)';
+                setTimeout(() => {
+                    correctOverlay.classList.remove('active');
+                    document.getElementById('activityPage').classList.remove('active');
+                    document.getElementById('questionsPage').classList.add('active');
+                    initQuestions();
+                }, 4500);
+            }, 1200);
+        }
+
+        // ============ QUESTIONS PAGE LOGIC ============
+        let questions = [];
+        let questionStates = [];
+
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateQuestions() {
+            questions = [];
+
+            // Q1: Two opposite horizontal forces
+            const q1f1 = randInt(15, 45);
+            const q1f2 = randInt(15, 45);
+            const q1mass = randInt(2, 8);
+            questions.push({
+                id: 1,
+                title: 'Question 1',
+                difficulty: null,
+                type: '2-horizontal',
+                forces: [
+                    { magnitude: q1f1, direction: 'right' },
+                    { magnitude: q1f2, direction: 'left' }
+                ],
+                mass: q1mass,
+                resultantForce: q1f1 - q1f2,
+                acceleration: parseFloat(((q1f1 - q1f2) / q1mass).toFixed(2)),
+                askDirection: true,
+                hints: {
+                    sign: 'Check your sign! Right → is positive (+), Left ← is negative (−).',
+                    general: 'Add forces considering direction: F = F₁ − F₂, then a = F/m'
+                }
+            });
+
+            // Q2: Three horizontal forces
+            const q2f1 = randInt(15, 35);
+            const q2f2 = randInt(15, 35);
+            const q2f3 = randInt(15, 45);
+            const q2mass = randInt(2, 8);
+            questions.push({
+                id: 2,
+                title: 'Question 2',
+                difficulty: null,
+                type: '3-horizontal',
+                forces: [
+                    { magnitude: q2f1, direction: 'right' },
+                    { magnitude: q2f2, direction: 'right' },
+                    { magnitude: q2f3, direction: 'left' }
+                ],
+                mass: q2mass,
+                resultantForce: q2f1 + q2f2 - q2f3,
+                acceleration: parseFloat(((q2f1 + q2f2 - q2f3) / q2mass).toFixed(2)),
+                askDirection: true,
+                hints: {
+                    sign: 'Two forces push right (+), one pushes left (−). Check your signs!',
+                    general: 'F = F₁ + F₂ − F₃'
+                }
+            });
+
+            // Q3: Four horizontal forces
+            const q3f1 = randInt(12, 30);
+            const q3f2 = randInt(12, 30);
+            const q3f3 = randInt(12, 30);
+            const q3f4 = randInt(12, 30);
+            const q3mass = randInt(2, 8);
+            questions.push({
+                id: 3,
+                title: 'Question 3',
+                difficulty: null,
+                type: '4-horizontal',
+                forces: [
+                    { magnitude: q3f1, direction: 'right' },
+                    { magnitude: q3f2, direction: 'right' },
+                    { magnitude: q3f3, direction: 'left' },
+                    { magnitude: q3f4, direction: 'left' }
+                ],
+                mass: q3mass,
+                resultantForce: q3f1 + q3f2 - q3f3 - q3f4,
+                acceleration: parseFloat(((q3f1 + q3f2 - q3f3 - q3f4) / q3mass).toFixed(2)),
+                askDirection: true,
+                hints: {
+                    sign: 'With 4 forces, double-check each sign! Right = +, Left = −',
+                    general: 'F = (F₁ + F₂) − (F₃ + F₄)'
+                }
+            });
+
+            // Q4: Two perpendicular forces (HARD)
+            const q4f1 = randInt(20, 40);
+            const q4f2 = randInt(20, 40);
+            const q4mass = randInt(2, 8);
+            const q4resultant = parseFloat(Math.sqrt(q4f1*q4f1 + q4f2*q4f2).toFixed(1));
+            questions.push({
+                id: 4,
+                title: 'Question 4',
+                difficulty: 'hard',
+                type: '2-perpendicular',
+                forces: [
+                    { magnitude: q4f1, direction: 'right' },
+                    { magnitude: q4f2, direction: 'up' }
+                ],
+                mass: q4mass,
+                resultantForce: q4resultant,
+                acceleration: parseFloat((q4resultant / q4mass).toFixed(2)),
+                askDirection: false,
+                hints: {
+                    pythagoras: 'Perpendicular forces! Use Pythagoras: F = √(F₁² + F₂²)',
+                    general: 'For perpendicular forces: Resultant = √(horizontal² + vertical²)'
+                }
+            });
+
+            // Q5: Two perpendicular forces (HARD)
+            const q5f1 = randInt(25, 45);
+            const q5f2 = randInt(25, 45);
+            const q5mass = randInt(2, 8);
+            const q5resultant = parseFloat(Math.sqrt(q5f1*q5f1 + q5f2*q5f2).toFixed(1));
+            questions.push({
+                id: 5,
+                title: 'Question 5',
+                difficulty: 'hard',
+                type: '2-perpendicular',
+                forces: [
+                    { magnitude: q5f1, direction: 'right' },
+                    { magnitude: q5f2, direction: 'up' }
+                ],
+                mass: q5mass,
+                resultantForce: q5resultant,
+                acceleration: parseFloat((q5resultant / q5mass).toFixed(2)),
+                askDirection: false,
+                hints: {
+                    pythagoras: 'Use Pythagoras! F = √(F₁² + F₂²)',
+                    general: 'Resultant = √(horizontal² + vertical²)'
+                }
+            });
+
+            // Q6: Horizontal + angled force (SUPER HARD)
+            const q6f1 = randInt(20, 35);
+            const q6f2 = randInt(20, 35);
+            const q6angle = randInt(20, 70);
+            const q6mass = randInt(2, 8);
+            const q6f2x = q6f2 * Math.cos(q6angle * Math.PI / 180);
+            const q6f2y = q6f2 * Math.sin(q6angle * Math.PI / 180);
+            const q6totalX = q6f1 + q6f2x;
+            const q6totalY = q6f2y;
+            const q6resultant = parseFloat(Math.sqrt(q6totalX*q6totalX + q6totalY*q6totalY).toFixed(1));
+            questions.push({
+                id: 6,
+                title: 'Question 6',
+                difficulty: 'super-hard',
+                type: 'angled',
+                forces: [
+                    { magnitude: q6f1, direction: 'right' },
+                    { magnitude: q6f2, direction: 'angle', angle: q6angle }
+                ],
+                mass: q6mass,
+                resultantForce: q6resultant,
+                acceleration: parseFloat((q6resultant / q6mass).toFixed(2)),
+                askDirection: false,
+                hints: {
+                    components: 'Break angled force into components: Fx = F×cos(θ), Fy = F×sin(θ)',
+                    general: '1) Find components 2) Add horizontal components 3) Use Pythagoras'
+                }
+            });
+
+            questionStates = questions.map(() => ({
+                checksRemaining: 10,
+                completed: false,
+                resultantCorrect: false,
+                accelCorrect: false
+            }));
+        }
+
+        function drawDiagram(question, svgId) {
+            const svg = document.getElementById(svgId);
+            svg.innerHTML = '';
+
+            const width = 340;
+            const height = 120;
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            const centerX = width / 2;
+            const centerY = height / 2 + 5;
+            const blockWidth = 50;
+            const blockHeight = 36;
+            const scale = 1.8;
+
+            // Direction labels
+            const plusLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            plusLabel.setAttribute('x', width - 15);
+            plusLabel.setAttribute('y', 14);
+            plusLabel.setAttribute('text-anchor', 'middle');
+            plusLabel.setAttribute('fill', '#2ecc71');
+            plusLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
+            plusLabel.setAttribute('font-size', '11');
+            plusLabel.setAttribute('font-weight', 'bold');
+            plusLabel.textContent = '+→';
+            svg.appendChild(plusLabel);
+
+            const minusLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            minusLabel.setAttribute('x', 15);
+            minusLabel.setAttribute('y', 14);
+            minusLabel.setAttribute('text-anchor', 'middle');
+            minusLabel.setAttribute('fill', '#e74c3c');
+            minusLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
+            minusLabel.setAttribute('font-size', '11');
+            minusLabel.setAttribute('font-weight', 'bold');
+            minusLabel.textContent = '←−';
+            svg.appendChild(minusLabel);
+
+            if (question.type === '2-perpendicular' || question.type === 'angled') {
+                const upLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                upLabel.setAttribute('x', width - 15);
+                upLabel.setAttribute('y', height - 5);
+                upLabel.setAttribute('text-anchor', 'middle');
+                upLabel.setAttribute('fill', '#2ecc71');
+                upLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
+                upLabel.setAttribute('font-size', '10');
+                upLabel.setAttribute('font-weight', 'bold');
+                upLabel.textContent = '+↑';
+                svg.appendChild(upLabel);
+            }
+
+            // Block
+            const block = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            block.setAttribute('x', centerX - blockWidth/2);
+            block.setAttribute('y', centerY - blockHeight/2);
+            block.setAttribute('width', blockWidth);
+            block.setAttribute('height', blockHeight);
+            block.setAttribute('fill', '#5d2137');
+            block.setAttribute('rx', '5');
+            svg.appendChild(block);
+
+            // Mass label
+            const massLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            massLabel.setAttribute('x', centerX);
+            massLabel.setAttribute('y', centerY + 4);
+            massLabel.setAttribute('text-anchor', 'middle');
+            massLabel.setAttribute('fill', '#fee9e2');
+            massLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
+            massLabel.setAttribute('font-size', '11');
+            massLabel.setAttribute('font-weight', 'bold');
+            massLabel.textContent = question.mass + ' kg';
+            svg.appendChild(massLabel);
+
+            let rightY = centerY - 10;
+            let leftY = centerY - 10;
+
+            question.forces.forEach((force) => {
+                const arrowLength = Math.max(force.magnitude * scale, 20);
+                let startX, startY, endX, endY;
+                let labelX, labelY, labelAnchor = 'middle';
+
+                if (force.direction === 'right') {
+                    startX = centerX + blockWidth/2;
+                    startY = rightY;
+                    endX = startX + arrowLength;
+                    endY = startY;
+                    labelX = (startX + endX) / 2;
+                    labelY = startY - 6;
+                    rightY += 14;
+                } else if (force.direction === 'left') {
+                    startX = centerX - blockWidth/2;
+                    startY = leftY;
+                    endX = startX - arrowLength;
+                    endY = startY;
+                    labelX = (startX + endX) / 2;
+                    labelY = startY - 6;
+                    leftY += 14;
+                } else if (force.direction === 'up') {
+                    startX = centerX + 12;
+                    startY = centerY - blockHeight/2;
+                    endX = startX;
+                    endY = startY - arrowLength;
+                    labelX = startX + 16;
+                    labelY = (startY + endY) / 2 + 3;
+                } else if (force.direction === 'angle') {
+                    const angleRad = force.angle * Math.PI / 180;
+                    startX = centerX + blockWidth/2;
+                    startY = centerY - blockHeight/2 + 4;
+                    endX = startX + arrowLength * Math.cos(angleRad);
+                    endY = startY - arrowLength * Math.sin(angleRad);
+                    labelX = endX + 6;
+                    labelY = endY - 2;
+                    labelAnchor = 'start';
+                }
+
+                // Arrow line
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', startX);
+                line.setAttribute('y1', startY);
+                line.setAttribute('x2', endX);
+                line.setAttribute('y2', endY);
+                line.setAttribute('stroke', '#ba684e');
+                line.setAttribute('stroke-width', '2.5');
+                svg.appendChild(line);
+
+                // Arrowhead
+                const headSize = 8;
+                let points;
+
+                if (force.direction === 'right') {
+                    points = `${endX},${endY} ${endX-headSize},${endY-headSize/2} ${endX-headSize},${endY+headSize/2}`;
+                } else if (force.direction === 'left') {
+                    points = `${endX},${endY} ${endX+headSize},${endY-headSize/2} ${endX+headSize},${endY+headSize/2}`;
+                } else if (force.direction === 'up') {
+                    points = `${endX},${endY} ${endX-headSize/2},${endY+headSize} ${endX+headSize/2},${endY+headSize}`;
+                } else if (force.direction === 'angle') {
+                    const angleRad = force.angle * Math.PI / 180;
+                    const backX = -Math.cos(angleRad) * headSize;
+                    const backY = Math.sin(angleRad) * headSize;
+                    const perpX = Math.sin(angleRad) * headSize/2;
+                    const perpY = Math.cos(angleRad) * headSize/2;
+                    points = `${endX},${endY} ${endX+backX+perpX},${endY+backY+perpY} ${endX+backX-perpX},${endY+backY-perpY}`;
+                }
+
+                const arrowhead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                arrowhead.setAttribute('points', points);
+                arrowhead.setAttribute('fill', '#ba684e');
+                svg.appendChild(arrowhead);
+
+                // Force label
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', labelX);
+                label.setAttribute('y', labelY);
+                label.setAttribute('text-anchor', labelAnchor);
+                label.setAttribute('fill', '#1a1a1a');
+                label.setAttribute('font-family', 'Space Grotesk, sans-serif');
+                label.setAttribute('font-size', '10');
+                label.setAttribute('font-weight', 'bold');
+                label.textContent = force.magnitude + ' N';
+                svg.appendChild(label);
+
+                // Angle arc
+                if (force.direction === 'angle') {
+                    const arcRadius = 22;
+                    const arcEndAngle = force.angle * Math.PI / 180;
+                    
+                    const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const arcEndX = startX + arcRadius;
+                    const arcMidX = startX + arcRadius * Math.cos(arcEndAngle);
+                    const arcMidY = startY - arcRadius * Math.sin(arcEndAngle);
+                    
+                    arc.setAttribute('d', `M ${arcEndX} ${startY} A ${arcRadius} ${arcRadius} 0 0 0 ${arcMidX} ${arcMidY}`);
+                    arc.setAttribute('stroke', '#5d2137');
+                    arc.setAttribute('stroke-width', '1');
+                    arc.setAttribute('fill', 'none');
+                    svg.appendChild(arc);
+
+                    const angleLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    const angleLabelAngle = (force.angle / 2) * Math.PI / 180;
+                    angleLabel.setAttribute('x', startX + (arcRadius + 10) * Math.cos(angleLabelAngle));
+                    angleLabel.setAttribute('y', startY - (arcRadius + 10) * Math.sin(angleLabelAngle) + 3);
+                    angleLabel.setAttribute('text-anchor', 'middle');
+                    angleLabel.setAttribute('fill', '#5d2137');
+                    angleLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
+                    angleLabel.setAttribute('font-size', '9');
+                    angleLabel.textContent = force.angle + '°';
+                    svg.appendChild(angleLabel);
+
+                    const refLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    refLine.setAttribute('x1', startX);
+                    refLine.setAttribute('y1', startY);
+                    refLine.setAttribute('x2', startX + 35);
+                    refLine.setAttribute('y2', startY);
+                    refLine.setAttribute('stroke', '#5d2137');
+                    refLine.setAttribute('stroke-width', '1');
+                    refLine.setAttribute('stroke-dasharray', '3,2');
+                    svg.appendChild(refLine);
+                }
+            });
+        }
+
+        function renderQuestions() {
+            const grid = document.getElementById('questionsGrid');
+            grid.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `card-${q.id}`;
+
+                let diffBadge = '';
+                if (q.difficulty === 'hard') {
+                    diffBadge = '<span class="difficulty-badge hard">Hard</span>';
+                } else if (q.difficulty === 'super-hard') {
+                    diffBadge = '<span class="difficulty-badge super-hard">Super Hard</span>';
+                }
+
+                const forceLabel = q.askDirection ? 'F =' : '|F| =';
+                const accelLabel = q.askDirection ? 'a =' : '|a| =';
+
+                card.innerHTML = `
+                    <div class="question-title">
+                        <h3>${q.title}</h3>
+                        ${diffBadge}
+                    </div>
+                    <div class="diagram-container">
+                        <svg class="diagram-svg" id="svg-${q.id}"></svg>
+                    </div>
+                    <div class="question-inputs">
+                        <div class="input-group">
+                            <span class="question-label">${forceLabel}</span>
+                            <input type="number" step="any" class="question-input" id="resultant-${q.id}" placeholder="...">
+                            <span class="unit">N</span>
+                            <span class="q-feedback" id="rf-${q.id}"></span>
+                        </div>
+                        <span class="separator">|</span>
+                        <div class="input-group">
+                            <span class="question-label">${accelLabel}</span>
+                            <input type="number" step="any" class="question-input" id="accel-${q.id}" placeholder="...">
+                            <span class="unit">m/s²</span>
+                            <span class="q-feedback" id="af-${q.id}"></span>
+                        </div>
+                    </div>
+                    <div class="check-row">
+                        <button class="check-btn-small" id="checkbtn-${q.id}">Check</button>
+                        <button class="hint-btn" id="hintbtn-${q.id}">💡 Hint</button>
+                        <span class="checks-left" id="checks-${q.id}"></span>
+                    </div>
+                    <div class="hint-box" id="hint-${q.id}"></div>
+                `;
+
+                grid.appendChild(card);
+                drawDiagram(q, `svg-${q.id}`);
+
+                document.getElementById(`checkbtn-${q.id}`).addEventListener('click', () => checkQuestion(idx));
+                document.getElementById(`hintbtn-${q.id}`).addEventListener('click', () => showHint(idx, 'general'));
+
+                document.getElementById(`resultant-${q.id}`).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') checkQuestion(idx);
+                });
+                document.getElementById(`accel-${q.id}`).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') checkQuestion(idx);
+                });
+            });
+        }
+
+        function showHint(idx, type) {
+            const q = questions[idx];
+            const hintBox = document.getElementById(`hint-${q.id}`);
+            let hintText = '';
+
+            if (type === 'sign' && q.hints.sign) {
+                hintText = `<strong>💡 Sign Check:</strong> ${q.hints.sign}`;
+            } else if (type === 'pythagoras' && q.hints.pythagoras) {
+                hintText = `<strong>💡 Method:</strong> ${q.hints.pythagoras}`;
+            } else if (type === 'components' && q.hints.components) {
+                hintText = `<strong>💡 Components:</strong> ${q.hints.components}`;
+            } else {
+                hintText = `<strong>💡 Hint:</strong> ${q.hints.general}`;
+            }
+
+            hintBox.innerHTML = hintText;
+            hintBox.classList.add('show');
+        }
+
+        function checkQuestion(idx) {
+            const q = questions[idx];
+            const state = questionStates[idx];
+
+            if (state.checksRemaining <= 0 || state.completed) return;
+
+            state.checksRemaining--;
+            updateChecksDisplay(idx);
+
+            const resultantInput = document.getElementById(`resultant-${q.id}`);
+            const accelInput = document.getElementById(`accel-${q.id}`);
+            const rfFeedback = document.getElementById(`rf-${q.id}`);
+            const afFeedback = document.getElementById(`af-${q.id}`);
+
+            const userResultant = parseFloat(resultantInput.value);
+            const userAccel = parseFloat(accelInput.value);
+
+            const forceTolerance = q.askDirection ? 0.5 : 1.5;
+            const accelTolerance = 0.15;
+
+            const resultantCorrect = !isNaN(userResultant) && Math.abs(userResultant - q.resultantForce) < forceTolerance;
+            const accelCorrect = !isNaN(userAccel) && Math.abs(userAccel - q.acceleration) < accelTolerance;
+
+            if (!isNaN(userResultant)) {
+                rfFeedback.textContent = resultantCorrect ? '✓' : '✗';
+                rfFeedback.style.color = resultantCorrect ? '#2ecc71' : '#e74c3c';
+                resultantInput.classList.remove('correct', 'incorrect');
+                resultantInput.classList.add(resultantCorrect ? 'correct' : 'incorrect');
+                state.resultantCorrect = resultantCorrect;
+            }
+
+            if (!isNaN(userAccel)) {
+                afFeedback.textContent = accelCorrect ? '✓' : '✗';
+                afFeedback.style.color = accelCorrect ? '#2ecc71' : '#e74c3c';
+                accelInput.classList.remove('correct', 'incorrect');
+                accelInput.classList.add(accelCorrect ? 'correct' : 'incorrect');
+                state.accelCorrect = accelCorrect;
+            }
+
+            // Smart hints
+            if (!resultantCorrect && !isNaN(userResultant)) {
+                if (q.askDirection && Math.abs(Math.abs(userResultant) - Math.abs(q.resultantForce)) < 0.5 && userResultant * q.resultantForce < 0) {
+                    showHint(idx, 'sign');
+                } else if ((q.type === '2-perpendicular' || q.type === 'angled')) {
+                    const simpleSum = q.forces.reduce((sum, f) => sum + f.magnitude, 0);
+                    if (Math.abs(userResultant - simpleSum) < 1) {
+                        showHint(idx, 'pythagoras');
+                    }
+                } else if (q.type === 'angled') {
+                    showHint(idx, 'components');
+                }
+            }
+
+            if (resultantCorrect && accelCorrect) {
+                state.completed = true;
+                document.getElementById(`card-${q.id}`).classList.add('completed');
+                document.getElementById(`checkbtn-${q.id}`).disabled = true;
+                resultantInput.disabled = true;
+                accelInput.disabled = true;
+                checkAllComplete();
+            }
+        }
+
+        function updateChecksDisplay(idx) {
+            const q = questions[idx];
+            const state = questionStates[idx];
+            const display = document.getElementById(`checks-${q.id}`);
+            
+            if (state.checksRemaining <= 5) {
+                display.textContent = `${state.checksRemaining} left`;
+                display.style.color = state.checksRemaining <= 2 ? '#e74c3c' : 'var(--terracotta)';
+            } else {
+                display.textContent = '';
+            }
+        }
+
+        function checkAllComplete() {
+            const allDone = questionStates.every(s => s.completed);
+            if (allDone) {
+                document.getElementById('completionBanner').classList.add('show');
+            }
+        }
+
+        function initQuestions() {
+            generateQuestions();
+            renderQuestions();
+        }
+    </script>
+</body>
+</html>
