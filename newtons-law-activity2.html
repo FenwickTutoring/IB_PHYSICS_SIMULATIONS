@@ -330,8 +330,8 @@
 
         .questions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
             max-width: 1200px;
             margin: 0 auto;
             padding-bottom: 2rem;
@@ -341,8 +341,10 @@
             background: var(--white);
             border: 2px solid var(--burgundy);
             border-radius: 10px;
-            padding: 0.6rem;
+            padding: 0.8rem;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .question-card.completed {
@@ -354,12 +356,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
         }
 
         .question-title h3 {
             font-family: 'Playfair Display', serif;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             color: var(--burgundy);
         }
 
@@ -385,8 +387,8 @@
         .diagram-container {
             background: var(--peach);
             border-radius: 8px;
-            padding: 0.2rem;
-            margin-bottom: 0.4rem;
+            padding: 0.4rem;
+            margin-bottom: 0.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -397,35 +399,38 @@
             height: auto;
         }
 
-        .question-inputs {
+        /* Redesigned Input and Action Row */
+        .controls-row {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            justify-content: flex-start;
+            gap: 0.5rem;
             flex-wrap: wrap;
-            margin-bottom: 0.4rem;
+            margin-top: auto;
         }
 
         .input-group {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.3rem;
         }
 
         .question-label {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             color: var(--burgundy);
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .question-input {
-            padding: 0.3rem 0.4rem;
-            font-size: 0.85rem;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.9rem;
             font-family: 'Space Grotesk', sans-serif;
             border: 2px solid var(--burgundy);
-            border-radius: 5px;
+            border-radius: 6px;
             background: var(--white);
             color: var(--black);
-            width: 55px;
+            width: 65px;
             text-align: center;
             transition: all 0.3s ease;
         }
@@ -447,36 +452,37 @@
         }
 
         .unit {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--black);
+            margin-right: 0.2rem;
         }
 
         .q-feedback {
-            font-size: 0.9rem;
-            min-width: 14px;
+            font-size: 1rem;
+            min-width: 16px;
         }
 
         .separator {
             color: var(--terracotta);
-            margin: 0 0.2rem;
+            margin: 0 0.4rem;
+            font-weight: bold;
         }
 
-        .check-row {
+        .action-btns {
             display: flex;
-            align-items: center;
             gap: 0.4rem;
-            flex-wrap: wrap;
+            margin-left: auto;
         }
 
         .check-btn-small {
-            padding: 0.3rem 0.7rem;
-            font-size: 0.7rem;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.75rem;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
             background: var(--burgundy);
             color: var(--white);
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
@@ -491,21 +497,15 @@
             cursor: not-allowed;
         }
 
-        .checks-left {
-            font-size: 0.7rem;
-            color: var(--terracotta);
-            font-weight: 700;
-        }
-
         .hint-btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.65rem;
+            padding: 0.45rem 0.8rem;
+            font-size: 0.75rem;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
             background: var(--peach);
             color: var(--burgundy);
             border: 2px solid var(--burgundy);
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -515,14 +515,24 @@
             color: var(--white);
         }
 
+        .checks-left {
+            display: block;
+            width: 100%;
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--terracotta);
+            font-weight: 700;
+            margin-top: 0.3rem;
+        }
+
         .hint-box {
             display: none;
             background: #fff9e6;
             border: 2px solid #f4d03f;
             border-radius: 6px;
-            padding: 0.6rem;
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
+            padding: 0.8rem;
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
             color: var(--black);
         }
 
@@ -538,11 +548,12 @@
             display: none;
             background: var(--burgundy);
             color: var(--white);
-            padding: 1.2rem 1.5rem;
+            padding: 1.5rem 2rem;
             border-radius: 12px;
             text-align: center;
-            max-width: 600px;
-            margin: 1.5rem auto;
+            max-width: 650px;
+            margin: 2rem auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .completion-banner.show {
@@ -551,19 +562,23 @@
 
         .completion-banner h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
         }
 
         .completion-banner p {
-            font-size: 0.95rem;
+            font-size: 1rem;
             opacity: 0.9;
+            margin-bottom: 0.5rem;
         }
 
-        .completion-banner .key-point {
-            color: rgba(254, 233, 226, 0.6);
-            margin-top: 0.6rem;
-            font-style: italic;
+        .completion-banner .teacher-msg {
+            background: rgba(254, 233, 226, 0.15);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: #fee9e2;
         }
 
         @media (max-width: 768px) {
@@ -580,13 +595,15 @@
                 grid-template-columns: 1fr;
             }
 
-            .question-label {
-                min-width: auto;
-                width: 100%;
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
             }
 
-            .question-row {
-                flex-wrap: wrap;
+            .action-btns {
+                margin-left: 0;
+                justify-content: space-between;
+                margin-top: 0.5rem;
             }
         }
     </style>
@@ -636,28 +653,24 @@
         </div>
     </div>
 
-    <!-- Wrong Answer Overlay -->
+    <!-- Overlays -->
     <div class="overlay wrong-overlay" id="wrongOverlay">
         <div class="no-container" id="noContainer">
             <span class="facepalm" id="facepalm">🤦</span>
         </div>
     </div>
 
-    <!-- Correct Answer Overlay -->
     <div class="overlay correct-overlay" id="correctOverlay">
         <div class="yes-container" id="yesContainer">
             <div class="celebration-message" id="celebrationMessage">
-                <h1>🎉 I CAN'T BELIEVE IT! 🎉</h1>
-                <p>You actually got it right! Students get this wrong SO often — they always say "force" instead of "resultant force".</p>
-                <p style="margin-top: 0.8rem;"><strong>You've made my day!</strong></p>
-                <div class="celebration-emoji">🙏 THANK YOU 🙏</div>
+                <h1 id="celebrationTitle">🎉 I CAN'T BELIEVE IT! 🎉</h1>
+                <p id="celebrationText">You actually got it right! Students get this wrong SO often — they always say "force" instead of "resultant force".</p>
+                <div class="celebration-emoji" id="celebrationEmoji">🙏 THANK YOU 🙏</div>
             </div>
         </div>
     </div>
 
-    <!-- Page 2: Explanation + Questions Combined -->
     <div class="page questions-page" id="questionsPage">
-        <!-- Explanation at top -->
         <div class="explanation-section">
             <h1>F does <span class="highlight">NOT</span> stand for "force" — it's <span class="highlight">RESULTANT FORCE</span>!</h1>
             <p>This is the most common misconception in physics. F=ma only works when F is the <em>total, overall, resultant</em> force.</p>
@@ -668,17 +681,17 @@
 
         <div class="questions-header">
             <h2>Practice: Calculate the Resultant Force & Acceleration</h2>
-            <p>Direction matters! → positive, ← negative</p>
+            <p>Direction matters! → positive (+), ← negative (-)</p>
         </div>
 
-        <div class="questions-grid" id="questionsGrid">
-            <!-- Questions generated dynamically -->
-        </div>
+        <div class="questions-grid" id="questionsGrid"></div>
 
         <div class="completion-banner" id="completionBanner">
-            <h2>🎉 Excellent Work! 🎉</h2>
-            <p>You've mastered resultant force calculations!</p>
-            <p class="key-point">Always find the resultant force first before using F=ma to calculate acceleration!</p>
+            <h2>🎉 Challenge Complete! 🎉</h2>
+            <p>You've mastered the tricky concept of resultant force calculations!</p>
+            <div class="teacher-msg">
+                Go tell your teacher that you've completed the activity now. You're probably too smart for this class!
+            </div>
         </div>
     </div>
 
@@ -739,7 +752,7 @@
 
             if (forceCorrect) {
                 showFeedback(forceFeedback, true, forceInput, forceCheckBtn);
-                setTimeout(() => showCorrectAnimation(), 500);
+                setTimeout(() => showCorrectAnimation(false), 500);
             } else if (forceIsJustForce || forceInput.value.trim() !== '') {
                 showFeedback(forceFeedback, false, forceInput, forceCheckBtn);
                 forceInput.classList.remove('incorrect');
@@ -747,14 +760,6 @@
                 forceCheckBtn.disabled = false;
                 setTimeout(() => showWrongAnimation(), 500);
             }
-        });
-
-        [massInput, accelInput, forceInput].forEach((input, idx) => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    [massCheckBtn, accelCheckBtn, forceCheckBtn][idx].click();
-                }
-            });
         });
 
         // ============ ANIMATION LOGIC ============
@@ -773,11 +778,7 @@
                 { x: 30, y: 60, size: 5, delay: 0.3 },
                 { x: 80, y: 70, size: 3.5, delay: 0.45 },
                 { x: 15, y: 80, size: 4.5, delay: 0.6 },
-                { x: 60, y: 40, size: 6, delay: 0.75 },
-                { x: 40, y: 25, size: 3, delay: 0.9 },
-                { x: 85, y: 45, size: 4, delay: 1.05 },
-                { x: 25, y: 45, size: 5, delay: 1.2 },
-                { x: 55, y: 75, size: 3.5, delay: 1.35 }
+                { x: 60, y: 40, size: 6, delay: 0.75 }
             ];
             const nos = [];
             positions.forEach((pos) => {
@@ -833,9 +834,7 @@
                 { x: 25, y: 65, size: 5, delay: 0.2 },
                 { x: 80, y: 70, size: 3.5, delay: 0.3 },
                 { x: 15, y: 85, size: 4.5, delay: 0.4 },
-                { x: 65, y: 35, size: 4, delay: 0.5 },
-                { x: 40, y: 20, size: 3, delay: 0.6 },
-                { x: 88, y: 50, size: 3.5, delay: 0.7 }
+                { x: 65, y: 35, size: 4, delay: 0.5 }
             ];
             const yeses = [];
             positions.forEach((pos) => {
@@ -885,10 +884,17 @@
             }
         }
 
-        function showCorrectAnimation() {
+        function showCorrectAnimation(isFinal = false) {
             correctOverlay.classList.add('active');
             celebrationMessage.style.opacity = '0';
             celebrationMessage.style.transform = 'scale(0.8)';
+            
+            if (isFinal) {
+                document.getElementById('celebrationTitle').textContent = "🏆 ABSOLUTE GENIUS! 🏆";
+                document.getElementById('celebrationText').textContent = "You've crushed every challenge. You're officially too smart for this class!";
+                document.getElementById('celebrationEmoji').textContent = "🎓 MASTERY ACHIEVED 🎓";
+            }
+
             const yeses = createYesTexts();
             animateYeses(yeses);
             createConfetti();
@@ -898,10 +904,12 @@
                 celebrationMessage.style.transform = 'scale(1)';
                 setTimeout(() => {
                     correctOverlay.classList.remove('active');
-                    document.getElementById('activityPage').classList.remove('active');
-                    document.getElementById('questionsPage').classList.add('active');
-                    initQuestions();
-                }, 4500);
+                    if (!isFinal) {
+                        document.getElementById('activityPage').classList.remove('active');
+                        document.getElementById('questionsPage').classList.add('active');
+                        initQuestions();
+                    }
+                }, isFinal ? 4000 : 3500);
             }, 1200);
         }
 
@@ -916,139 +924,70 @@
         function generateQuestions() {
             questions = [];
 
-            // Q1: Two opposite horizontal forces
-            const q1f1 = randInt(15, 45);
-            const q1f2 = randInt(15, 45);
-            const q1mass = randInt(2, 8);
-            questions.push({
-                id: 1,
-                title: 'Question 1',
-                difficulty: null,
-                type: '2-horizontal',
-                forces: [
-                    { magnitude: q1f1, direction: 'right' },
-                    { magnitude: q1f2, direction: 'left' }
-                ],
-                mass: q1mass,
-                resultantForce: q1f1 - q1f2,
-                acceleration: parseFloat(((q1f1 - q1f2) / q1mass).toFixed(2)),
-                askDirection: true,
-                hints: {
-                    sign: 'Check your sign! Right → is positive (+), Left ← is negative (−).',
-                    general: 'Add forces considering direction: F = F₁ − F₂, then a = F/m'
+            // Q1-3: Horizontal with specific hint requests
+            const sharedHint = "Forces going to the left are negative (−) and forces going to the right are positive (+). Remember that when you add the forces together!";
+
+            [1, 2, 3].forEach(id => {
+                const mass = randInt(2, 8);
+                let fList = [];
+                if (id === 1) {
+                    fList = [{ m: randInt(15, 45), d: 'right' }, { m: randInt(15, 45), d: 'left' }];
+                } else if (id === 2) {
+                    fList = [{ m: randInt(15, 30), d: 'right' }, { m: randInt(15, 30), d: 'right' }, { m: randInt(15, 40), d: 'left' }];
+                } else {
+                    fList = [{ m: randInt(10, 25), d: 'right' }, { m: randInt(10, 25), d: 'right' }, { m: randInt(10, 25), d: 'left' }, { m: randInt(10, 25), d: 'left' }];
                 }
+
+                const resF = fList.reduce((acc, f) => acc + (f.d === 'right' ? f.m : -f.m), 0);
+
+                questions.push({
+                    id: id,
+                    title: `Question ${id}`,
+                    difficulty: null,
+                    type: `${id + 1}-horizontal`,
+                    forces: fList.map(f => ({ magnitude: f.m, direction: f.d })),
+                    mass: mass,
+                    resultantForce: resF,
+                    acceleration: parseFloat((resF / mass).toFixed(2)),
+                    askDirection: true,
+                    hints: { general: sharedHint }
+                });
             });
 
-            // Q2: Three horizontal forces
-            const q2f1 = randInt(15, 35);
-            const q2f2 = randInt(15, 35);
-            const q2f3 = randInt(15, 45);
-            const q2mass = randInt(2, 8);
-            questions.push({
-                id: 2,
-                title: 'Question 2',
-                difficulty: null,
-                type: '3-horizontal',
-                forces: [
-                    { magnitude: q2f1, direction: 'right' },
-                    { magnitude: q2f2, direction: 'right' },
-                    { magnitude: q2f3, direction: 'left' }
-                ],
-                mass: q2mass,
-                resultantForce: q2f1 + q2f2 - q2f3,
-                acceleration: parseFloat(((q2f1 + q2f2 - q2f3) / q2mass).toFixed(2)),
-                askDirection: true,
-                hints: {
-                    sign: 'Two forces push right (+), one pushes left (−). Check your signs!',
-                    general: 'F = F₁ + F₂ − F₃'
-                }
+            // Q4 & Q5: Perpendicular with Pythagoras hint
+            const pythHint = "Perpendicular forces! Use Pythagoras' theorem to find the resultant: F = √(horizontal² + vertical²). Then find acceleration using a = F/m.";
+
+            [4, 5].forEach(id => {
+                const f1 = randInt(20, 45);
+                const f2 = randInt(20, 45);
+                const mass = randInt(2, 8);
+                const resF = parseFloat(Math.sqrt(f1*f1 + f2*f2).toFixed(1));
+
+                questions.push({
+                    id: id,
+                    title: `Question ${id}`,
+                    difficulty: 'hard',
+                    type: '2-perpendicular',
+                    forces: [{ magnitude: f1, direction: 'right' }, { magnitude: f2, direction: 'up' }],
+                    mass: mass,
+                    resultantForce: resF,
+                    acceleration: parseFloat((resF / mass).toFixed(2)),
+                    askDirection: false,
+                    hints: { general: pythHint }
+                });
             });
 
-            // Q3: Four horizontal forces
-            const q3f1 = randInt(12, 30);
-            const q3f2 = randInt(12, 30);
-            const q3f3 = randInt(12, 30);
-            const q3f4 = randInt(12, 30);
-            const q3mass = randInt(2, 8);
-            questions.push({
-                id: 3,
-                title: 'Question 3',
-                difficulty: null,
-                type: '4-horizontal',
-                forces: [
-                    { magnitude: q3f1, direction: 'right' },
-                    { magnitude: q3f2, direction: 'right' },
-                    { magnitude: q3f3, direction: 'left' },
-                    { magnitude: q3f4, direction: 'left' }
-                ],
-                mass: q3mass,
-                resultantForce: q3f1 + q3f2 - q3f3 - q3f4,
-                acceleration: parseFloat(((q3f1 + q3f2 - q3f3 - q3f4) / q3mass).toFixed(2)),
-                askDirection: true,
-                hints: {
-                    sign: 'With 4 forces, double-check each sign! Right = +, Left = −',
-                    general: 'F = (F₁ + F₂) − (F₃ + F₄)'
-                }
-            });
-
-            // Q4: Two perpendicular forces (HARD)
-            const q4f1 = randInt(20, 40);
-            const q4f2 = randInt(20, 40);
-            const q4mass = randInt(2, 8);
-            const q4resultant = parseFloat(Math.sqrt(q4f1*q4f1 + q4f2*q4f2).toFixed(1));
-            questions.push({
-                id: 4,
-                title: 'Question 4',
-                difficulty: 'hard',
-                type: '2-perpendicular',
-                forces: [
-                    { magnitude: q4f1, direction: 'right' },
-                    { magnitude: q4f2, direction: 'up' }
-                ],
-                mass: q4mass,
-                resultantForce: q4resultant,
-                acceleration: parseFloat((q4resultant / q4mass).toFixed(2)),
-                askDirection: false,
-                hints: {
-                    pythagoras: 'Perpendicular forces! Use Pythagoras: F = √(F₁² + F₂²)',
-                    general: 'For perpendicular forces: Resultant = √(horizontal² + vertical²)'
-                }
-            });
-
-            // Q5: Two perpendicular forces (HARD)
-            const q5f1 = randInt(25, 45);
-            const q5f2 = randInt(25, 45);
-            const q5mass = randInt(2, 8);
-            const q5resultant = parseFloat(Math.sqrt(q5f1*q5f1 + q5f2*q5f2).toFixed(1));
-            questions.push({
-                id: 5,
-                title: 'Question 5',
-                difficulty: 'hard',
-                type: '2-perpendicular',
-                forces: [
-                    { magnitude: q5f1, direction: 'right' },
-                    { magnitude: q5f2, direction: 'up' }
-                ],
-                mass: q5mass,
-                resultantForce: q5resultant,
-                acceleration: parseFloat((q5resultant / q5mass).toFixed(2)),
-                askDirection: false,
-                hints: {
-                    pythagoras: 'Use Pythagoras! F = √(F₁² + F₂²)',
-                    general: 'Resultant = √(horizontal² + vertical²)'
-                }
-            });
-
-            // Q6: Horizontal + angled force (SUPER HARD)
+            // Q6: Angled
             const q6f1 = randInt(20, 35);
             const q6f2 = randInt(20, 35);
-            const q6angle = randInt(20, 70);
+            const q6angle = randInt(25, 65);
             const q6mass = randInt(2, 8);
             const q6f2x = q6f2 * Math.cos(q6angle * Math.PI / 180);
             const q6f2y = q6f2 * Math.sin(q6angle * Math.PI / 180);
             const q6totalX = q6f1 + q6f2x;
             const q6totalY = q6f2y;
             const q6resultant = parseFloat(Math.sqrt(q6totalX*q6totalX + q6totalY*q6totalY).toFixed(1));
+            
             questions.push({
                 id: 6,
                 title: 'Question 6',
@@ -1062,217 +1001,105 @@
                 resultantForce: q6resultant,
                 acceleration: parseFloat((q6resultant / q6mass).toFixed(2)),
                 askDirection: false,
-                hints: {
-                    components: 'Break angled force into components: Fx = F×cos(θ), Fy = F×sin(θ)',
-                    general: '1) Find components 2) Add horizontal components 3) Use Pythagoras'
-                }
+                hints: { general: '1) Break the angled force into horizontal (cos) and vertical (sin) components. 2) Add the horizontal components. 3) Use Pythagoras with total horizontal and total vertical force.' }
             });
 
-            questionStates = questions.map(() => ({
-                checksRemaining: 10,
-                completed: false,
-                resultantCorrect: false,
-                accelCorrect: false
-            }));
+            questionStates = questions.map(() => ({ checksRemaining: 10, completed: false }));
         }
 
         function drawDiagram(question, svgId) {
             const svg = document.getElementById(svgId);
             svg.innerHTML = '';
-
-            const width = 340;
-            const height = 120;
+            const width = 380, height = 150;
             svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-
-            const centerX = width / 2;
-            const centerY = height / 2 + 5;
-            const blockWidth = 50;
-            const blockHeight = 36;
-            const scale = 1.8;
-
-            // Direction labels
-            const plusLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            plusLabel.setAttribute('x', width - 15);
-            plusLabel.setAttribute('y', 14);
-            plusLabel.setAttribute('text-anchor', 'middle');
-            plusLabel.setAttribute('fill', '#2ecc71');
-            plusLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
-            plusLabel.setAttribute('font-size', '11');
-            plusLabel.setAttribute('font-weight', 'bold');
-            plusLabel.textContent = '+→';
-            svg.appendChild(plusLabel);
-
-            const minusLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            minusLabel.setAttribute('x', 15);
-            minusLabel.setAttribute('y', 14);
-            minusLabel.setAttribute('text-anchor', 'middle');
-            minusLabel.setAttribute('fill', '#e74c3c');
-            minusLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
-            minusLabel.setAttribute('font-size', '11');
-            minusLabel.setAttribute('font-weight', 'bold');
-            minusLabel.textContent = '←−';
-            svg.appendChild(minusLabel);
-
-            if (question.type === '2-perpendicular' || question.type === 'angled') {
-                const upLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                upLabel.setAttribute('x', width - 15);
-                upLabel.setAttribute('y', height - 5);
-                upLabel.setAttribute('text-anchor', 'middle');
-                upLabel.setAttribute('fill', '#2ecc71');
-                upLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
-                upLabel.setAttribute('font-size', '10');
-                upLabel.setAttribute('font-weight', 'bold');
-                upLabel.textContent = '+↑';
-                svg.appendChild(upLabel);
-            }
+            const centerX = width / 2, centerY = height / 2 + 10;
+            const blockW = 60, blockH = 40, scale = 1.8;
 
             // Block
-            const block = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            block.setAttribute('x', centerX - blockWidth/2);
-            block.setAttribute('y', centerY - blockHeight/2);
-            block.setAttribute('width', blockWidth);
-            block.setAttribute('height', blockHeight);
-            block.setAttribute('fill', '#5d2137');
-            block.setAttribute('rx', '5');
-            svg.appendChild(block);
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', centerX - blockW/2); rect.setAttribute('y', centerY - blockH/2);
+            rect.setAttribute('width', blockW); rect.setAttribute('height', blockH);
+            rect.setAttribute('fill', '#5d2137'); rect.setAttribute('rx', '6');
+            svg.appendChild(rect);
 
-            // Mass label
-            const massLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            massLabel.setAttribute('x', centerX);
-            massLabel.setAttribute('y', centerY + 4);
-            massLabel.setAttribute('text-anchor', 'middle');
-            massLabel.setAttribute('fill', '#fee9e2');
-            massLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
-            massLabel.setAttribute('font-size', '11');
-            massLabel.setAttribute('font-weight', 'bold');
-            massLabel.textContent = question.mass + ' kg';
-            svg.appendChild(massLabel);
+            const mass = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            mass.setAttribute('x', centerX); mass.setAttribute('y', centerY + 5);
+            mass.setAttribute('text-anchor', 'middle'); mass.setAttribute('fill', '#fee9e2');
+            mass.setAttribute('font-family', 'Space Grotesk'); mass.setAttribute('font-size', '13');
+            mass.setAttribute('font-weight', 'bold'); mass.textContent = question.mass + ' kg';
+            svg.appendChild(mass);
 
-            let rightY = centerY - 10;
-            let leftY = centerY - 10;
+            let rY = centerY - 12, lY = centerY - 12;
 
-            question.forces.forEach((force) => {
-                const arrowLength = Math.max(force.magnitude * scale, 20);
-                let startX, startY, endX, endY;
-                let labelX, labelY, labelAnchor = 'middle';
+            question.forces.forEach(f => {
+                const len = Math.max(f.magnitude * scale, 30);
+                let sx, sy, ex, ey, lx, ly, anchor = 'middle';
+                const headSize = 9;
 
-                if (force.direction === 'right') {
-                    startX = centerX + blockWidth/2;
-                    startY = rightY;
-                    endX = startX + arrowLength;
-                    endY = startY;
-                    labelX = (startX + endX) / 2;
-                    labelY = startY - 6;
-                    rightY += 14;
-                } else if (force.direction === 'left') {
-                    startX = centerX - blockWidth/2;
-                    startY = leftY;
-                    endX = startX - arrowLength;
-                    endY = startY;
-                    labelX = (startX + endX) / 2;
-                    labelY = startY - 6;
-                    leftY += 14;
-                } else if (force.direction === 'up') {
-                    startX = centerX + 12;
-                    startY = centerY - blockHeight/2;
-                    endX = startX;
-                    endY = startY - arrowLength;
-                    labelX = startX + 16;
-                    labelY = (startY + endY) / 2 + 3;
-                } else if (force.direction === 'angle') {
-                    const angleRad = force.angle * Math.PI / 180;
-                    startX = centerX + blockWidth/2;
-                    startY = centerY - blockHeight/2 + 4;
-                    endX = startX + arrowLength * Math.cos(angleRad);
-                    endY = startY - arrowLength * Math.sin(angleRad);
-                    labelX = endX + 6;
-                    labelY = endY - 2;
-                    labelAnchor = 'start';
+                if (f.direction === 'right') {
+                    sx = centerX + blockW/2; sy = rY; ex = sx + len; ey = sy;
+                    lx = (sx + ex) / 2; 
+                    // Special case for angled horizontal force label to be below
+                    if (question.type === 'angled') {
+                        ly = sy + 18;
+                    } else {
+                        ly = sy - 8;
+                    }
+                    rY += 18;
+                } else if (f.direction === 'left') {
+                    sx = centerX - blockW/2; sy = lY; ex = sx - len; ey = sy;
+                    lx = (sx + ex) / 2; ly = sy - 8; lY += 18;
+                } else if (f.direction === 'up') {
+                    sx = centerX + 15; sy = centerY - blockH/2; ex = sx; ey = sy - len;
+                    lx = sx + 18; ly = (sy + ey) / 2 + 4; anchor = 'start';
+                } else if (f.direction === 'angle') {
+                    const rad = f.angle * Math.PI / 180;
+                    sx = centerX + blockW/2; sy = centerY - blockH/2 + 5;
+                    ex = sx + len * Math.cos(rad); ey = sy - len * Math.sin(rad);
+                    lx = ex + 5; ly = ey - 5; anchor = 'start';
+                    
+                    // Arc and Angle Labels Fixed and Centered
+                    const arcR = 30;
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${sx+arcR} ${sy} A ${arcR} ${arcR} 0 0 0 ${sx+arcR*Math.cos(rad)} ${sy-arcR*Math.sin(rad)}`);
+                    path.setAttribute('stroke', '#5d2137'); path.setAttribute('fill', 'none'); svg.appendChild(path);
+                    
+                    const aLab = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    // Position angle label centered between lines
+                    const midRad = rad / 2;
+                    aLab.setAttribute('x', sx + (arcR + 15) * Math.cos(midRad)); 
+                    aLab.setAttribute('y', sy - (arcR + 15) * Math.sin(midRad) + 3);
+                    aLab.setAttribute('font-size', '11'); aLab.setAttribute('fill', '#5d2137'); 
+                    aLab.setAttribute('font-weight', 'bold');
+                    aLab.textContent = f.angle + '°';
+                    svg.appendChild(aLab);
+
+                    const dotted = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    dotted.setAttribute('x1', sx); dotted.setAttribute('y1', sy); dotted.setAttribute('x2', sx + 60); dotted.setAttribute('y2', sy);
+                    dotted.setAttribute('stroke', '#5d2137'); dotted.setAttribute('stroke-dasharray', '3,2'); svg.appendChild(dotted);
                 }
 
-                // Arrow line
+                // Line
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', startX);
-                line.setAttribute('y1', startY);
-                line.setAttribute('x2', endX);
-                line.setAttribute('y2', endY);
-                line.setAttribute('stroke', '#ba684e');
-                line.setAttribute('stroke-width', '2.5');
-                svg.appendChild(line);
+                line.setAttribute('x1', sx); line.setAttribute('y1', sy); line.setAttribute('x2', ex); line.setAttribute('y2', ey);
+                line.setAttribute('stroke', '#ba684e'); line.setAttribute('stroke-width', '2.5'); svg.appendChild(line);
 
                 // Arrowhead
-                const headSize = 8;
-                let points;
+                const angle = Math.atan2(ey - sy, ex - sx);
+                const x1 = ex - headSize * Math.cos(angle - Math.PI/7);
+                const y1 = ey - headSize * Math.sin(angle - Math.PI/7);
+                const x2 = ex - headSize * Math.cos(angle + Math.PI/7);
+                const y2 = ey - headSize * Math.sin(angle + Math.PI/7);
+                const points = `${ex},${ey} ${x1},${y1} ${x2},${y2}`;
 
-                if (force.direction === 'right') {
-                    points = `${endX},${endY} ${endX-headSize},${endY-headSize/2} ${endX-headSize},${endY+headSize/2}`;
-                } else if (force.direction === 'left') {
-                    points = `${endX},${endY} ${endX+headSize},${endY-headSize/2} ${endX+headSize},${endY+headSize/2}`;
-                } else if (force.direction === 'up') {
-                    points = `${endX},${endY} ${endX-headSize/2},${endY+headSize} ${endX+headSize/2},${endY+headSize}`;
-                } else if (force.direction === 'angle') {
-                    const angleRad = force.angle * Math.PI / 180;
-                    const backX = -Math.cos(angleRad) * headSize;
-                    const backY = Math.sin(angleRad) * headSize;
-                    const perpX = Math.sin(angleRad) * headSize/2;
-                    const perpY = Math.cos(angleRad) * headSize/2;
-                    points = `${endX},${endY} ${endX+backX+perpX},${endY+backY+perpY} ${endX+backX-perpX},${endY+backY-perpY}`;
-                }
+                const head = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                head.setAttribute('points', points); head.setAttribute('fill', '#ba684e'); svg.appendChild(head);
 
-                const arrowhead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                arrowhead.setAttribute('points', points);
-                arrowhead.setAttribute('fill', '#ba684e');
-                svg.appendChild(arrowhead);
-
-                // Force label
-                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                label.setAttribute('x', labelX);
-                label.setAttribute('y', labelY);
-                label.setAttribute('text-anchor', labelAnchor);
-                label.setAttribute('fill', '#1a1a1a');
-                label.setAttribute('font-family', 'Space Grotesk, sans-serif');
-                label.setAttribute('font-size', '10');
-                label.setAttribute('font-weight', 'bold');
-                label.textContent = force.magnitude + ' N';
-                svg.appendChild(label);
-
-                // Angle arc
-                if (force.direction === 'angle') {
-                    const arcRadius = 22;
-                    const arcEndAngle = force.angle * Math.PI / 180;
-                    
-                    const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    const arcEndX = startX + arcRadius;
-                    const arcMidX = startX + arcRadius * Math.cos(arcEndAngle);
-                    const arcMidY = startY - arcRadius * Math.sin(arcEndAngle);
-                    
-                    arc.setAttribute('d', `M ${arcEndX} ${startY} A ${arcRadius} ${arcRadius} 0 0 0 ${arcMidX} ${arcMidY}`);
-                    arc.setAttribute('stroke', '#5d2137');
-                    arc.setAttribute('stroke-width', '1');
-                    arc.setAttribute('fill', 'none');
-                    svg.appendChild(arc);
-
-                    const angleLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    const angleLabelAngle = (force.angle / 2) * Math.PI / 180;
-                    angleLabel.setAttribute('x', startX + (arcRadius + 10) * Math.cos(angleLabelAngle));
-                    angleLabel.setAttribute('y', startY - (arcRadius + 10) * Math.sin(angleLabelAngle) + 3);
-                    angleLabel.setAttribute('text-anchor', 'middle');
-                    angleLabel.setAttribute('fill', '#5d2137');
-                    angleLabel.setAttribute('font-family', 'Space Grotesk, sans-serif');
-                    angleLabel.setAttribute('font-size', '9');
-                    angleLabel.textContent = force.angle + '°';
-                    svg.appendChild(angleLabel);
-
-                    const refLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    refLine.setAttribute('x1', startX);
-                    refLine.setAttribute('y1', startY);
-                    refLine.setAttribute('x2', startX + 35);
-                    refLine.setAttribute('y2', startY);
-                    refLine.setAttribute('stroke', '#5d2137');
-                    refLine.setAttribute('stroke-width', '1');
-                    refLine.setAttribute('stroke-dasharray', '3,2');
-                    svg.appendChild(refLine);
-                }
+                const lab = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                lab.setAttribute('x', lx); lab.setAttribute('y', ly); lab.setAttribute('text-anchor', anchor);
+                lab.setAttribute('font-family', 'Space Grotesk'); lab.setAttribute('font-weight', 'bold');
+                lab.setAttribute('font-size', '11'); lab.textContent = f.magnitude + ' N';
+                svg.appendChild(lab);
             });
         }
 
@@ -1284,169 +1111,89 @@
                 const card = document.createElement('div');
                 card.className = 'question-card';
                 card.id = `card-${q.id}`;
-
-                let diffBadge = '';
-                if (q.difficulty === 'hard') {
-                    diffBadge = '<span class="difficulty-badge hard">Hard</span>';
-                } else if (q.difficulty === 'super-hard') {
-                    diffBadge = '<span class="difficulty-badge super-hard">Super Hard</span>';
+                const diff = q.difficulty ? `<span class="difficulty-badge ${q.difficulty}">${q.difficulty.replace('-', ' ')}</span>` : '';
+                
+                // Specific label request for 5 and 6
+                let fLabel = q.askDirection ? 'F =' : '|F| =';
+                let aLabel = q.askDirection ? 'a =' : '|a| =';
+                
+                if (q.id === 5 || q.id === 6) {
+                    fLabel = 'size of force =';
+                    aLabel = 'size of acceleration =';
                 }
 
-                const forceLabel = q.askDirection ? 'F =' : '|F| =';
-                const accelLabel = q.askDirection ? 'a =' : '|a| =';
-
                 card.innerHTML = `
-                    <div class="question-title">
-                        <h3>${q.title}</h3>
-                        ${diffBadge}
-                    </div>
-                    <div class="diagram-container">
-                        <svg class="diagram-svg" id="svg-${q.id}"></svg>
-                    </div>
-                    <div class="question-inputs">
+                    <div class="question-title"><h3>${q.title}</h3>${diff}</div>
+                    <div class="diagram-container"><svg class="diagram-svg" id="svg-${q.id}"></svg></div>
+                    <div class="controls-row">
                         <div class="input-group">
-                            <span class="question-label">${forceLabel}</span>
+                            <span class="question-label">${fLabel}</span>
                             <input type="number" step="any" class="question-input" id="resultant-${q.id}" placeholder="...">
                             <span class="unit">N</span>
                             <span class="q-feedback" id="rf-${q.id}"></span>
                         </div>
                         <span class="separator">|</span>
                         <div class="input-group">
-                            <span class="question-label">${accelLabel}</span>
+                            <span class="question-label">${aLabel}</span>
                             <input type="number" step="any" class="question-input" id="accel-${q.id}" placeholder="...">
                             <span class="unit">m/s²</span>
                             <span class="q-feedback" id="af-${q.id}"></span>
                         </div>
+                        <div class="action-btns">
+                            <button class="check-btn-small" id="checkbtn-${q.id}">Check</button>
+                            <button class="hint-btn" id="hintbtn-${q.id}">💡 Hint</button>
+                        </div>
                     </div>
-                    <div class="check-row">
-                        <button class="check-btn-small" id="checkbtn-${q.id}">Check</button>
-                        <button class="hint-btn" id="hintbtn-${q.id}">💡 Hint</button>
-                        <span class="checks-left" id="checks-${q.id}"></span>
-                    </div>
+                    <span class="checks-left" id="checks-${q.id}"></span>
                     <div class="hint-box" id="hint-${q.id}"></div>
                 `;
-
                 grid.appendChild(card);
                 drawDiagram(q, `svg-${q.id}`);
-
                 document.getElementById(`checkbtn-${q.id}`).addEventListener('click', () => checkQuestion(idx));
-                document.getElementById(`hintbtn-${q.id}`).addEventListener('click', () => showHint(idx, 'general'));
-
-                document.getElementById(`resultant-${q.id}`).addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') checkQuestion(idx);
-                });
-                document.getElementById(`accel-${q.id}`).addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') checkQuestion(idx);
-                });
+                document.getElementById(`hintbtn-${q.id}`).addEventListener('click', () => showHint(idx));
             });
         }
 
-        function showHint(idx, type) {
-            const q = questions[idx];
-            const hintBox = document.getElementById(`hint-${q.id}`);
-            let hintText = '';
-
-            if (type === 'sign' && q.hints.sign) {
-                hintText = `<strong>💡 Sign Check:</strong> ${q.hints.sign}`;
-            } else if (type === 'pythagoras' && q.hints.pythagoras) {
-                hintText = `<strong>💡 Method:</strong> ${q.hints.pythagoras}`;
-            } else if (type === 'components' && q.hints.components) {
-                hintText = `<strong>💡 Components:</strong> ${q.hints.components}`;
-            } else {
-                hintText = `<strong>💡 Hint:</strong> ${q.hints.general}`;
-            }
-
-            hintBox.innerHTML = hintText;
-            hintBox.classList.add('show');
+        function showHint(idx) {
+            const q = questions[idx], box = document.getElementById(`hint-${q.id}`);
+            box.innerHTML = `<strong>💡 Hint:</strong> ${q.hints.general}`;
+            box.classList.toggle('show');
         }
 
         function checkQuestion(idx) {
-            const q = questions[idx];
-            const state = questionStates[idx];
-
-            if (state.checksRemaining <= 0 || state.completed) return;
-
+            const q = questions[idx], state = questionStates[idx];
+            if (state.completed) return;
             state.checksRemaining--;
-            updateChecksDisplay(idx);
+            const resIn = document.getElementById(`resultant-${q.id}`), accIn = document.getElementById(`accel-${q.id}`);
+            const rfF = document.getElementById(`rf-${q.id}`), afF = document.getElementById(`af-${q.id}`);
+            const valR = parseFloat(resIn.value), valA = parseFloat(accIn.value);
+            
+            const rCorrect = !isNaN(valR) && Math.abs(valR - q.resultantForce) < (q.askDirection ? 0.5 : 1.5);
+            const aCorrect = !isNaN(valA) && Math.abs(valA - q.acceleration) < 0.2;
 
-            const resultantInput = document.getElementById(`resultant-${q.id}`);
-            const accelInput = document.getElementById(`accel-${q.id}`);
-            const rfFeedback = document.getElementById(`rf-${q.id}`);
-            const afFeedback = document.getElementById(`af-${q.id}`);
+            rfF.textContent = rCorrect ? '✓' : '✗'; rfF.style.color = rCorrect ? '#2ecc71' : '#e74c3c';
+            afF.textContent = aCorrect ? '✓' : '✗'; afF.style.color = aCorrect ? '#2ecc71' : '#e74c3c';
+            resIn.className = `question-input ${rCorrect ? 'correct' : 'incorrect'}`;
+            accIn.className = `question-input ${aCorrect ? 'correct' : 'incorrect'}`;
 
-            const userResultant = parseFloat(resultantInput.value);
-            const userAccel = parseFloat(accelInput.value);
-
-            const forceTolerance = q.askDirection ? 0.5 : 1.5;
-            const accelTolerance = 0.15;
-
-            const resultantCorrect = !isNaN(userResultant) && Math.abs(userResultant - q.resultantForce) < forceTolerance;
-            const accelCorrect = !isNaN(userAccel) && Math.abs(userAccel - q.acceleration) < accelTolerance;
-
-            if (!isNaN(userResultant)) {
-                rfFeedback.textContent = resultantCorrect ? '✓' : '✗';
-                rfFeedback.style.color = resultantCorrect ? '#2ecc71' : '#e74c3c';
-                resultantInput.classList.remove('correct', 'incorrect');
-                resultantInput.classList.add(resultantCorrect ? 'correct' : 'incorrect');
-                state.resultantCorrect = resultantCorrect;
-            }
-
-            if (!isNaN(userAccel)) {
-                afFeedback.textContent = accelCorrect ? '✓' : '✗';
-                afFeedback.style.color = accelCorrect ? '#2ecc71' : '#e74c3c';
-                accelInput.classList.remove('correct', 'incorrect');
-                accelInput.classList.add(accelCorrect ? 'correct' : 'incorrect');
-                state.accelCorrect = accelCorrect;
-            }
-
-            // Smart hints
-            if (!resultantCorrect && !isNaN(userResultant)) {
-                if (q.askDirection && Math.abs(Math.abs(userResultant) - Math.abs(q.resultantForce)) < 0.5 && userResultant * q.resultantForce < 0) {
-                    showHint(idx, 'sign');
-                } else if ((q.type === '2-perpendicular' || q.type === 'angled')) {
-                    const simpleSum = q.forces.reduce((sum, f) => sum + f.magnitude, 0);
-                    if (Math.abs(userResultant - simpleSum) < 1) {
-                        showHint(idx, 'pythagoras');
-                    }
-                } else if (q.type === 'angled') {
-                    showHint(idx, 'components');
-                }
-            }
-
-            if (resultantCorrect && accelCorrect) {
+            if (rCorrect && aCorrect) {
                 state.completed = true;
                 document.getElementById(`card-${q.id}`).classList.add('completed');
                 document.getElementById(`checkbtn-${q.id}`).disabled = true;
-                resultantInput.disabled = true;
-                accelInput.disabled = true;
                 checkAllComplete();
             }
-        }
-
-        function updateChecksDisplay(idx) {
-            const q = questions[idx];
-            const state = questionStates[idx];
             const display = document.getElementById(`checks-${q.id}`);
-            
-            if (state.checksRemaining <= 5) {
-                display.textContent = `${state.checksRemaining} left`;
-                display.style.color = state.checksRemaining <= 2 ? '#e74c3c' : 'var(--terracotta)';
-            } else {
-                display.textContent = '';
-            }
+            display.textContent = state.checksRemaining <= 5 ? `${state.checksRemaining} checks left` : '';
         }
 
         function checkAllComplete() {
-            const allDone = questionStates.every(s => s.completed);
-            if (allDone) {
+            if (questionStates.every(s => s.completed)) {
                 document.getElementById('completionBanner').classList.add('show');
+                setTimeout(() => showCorrectAnimation(true), 800);
             }
         }
 
-        function initQuestions() {
-            generateQuestions();
-            renderQuestions();
-        }
+        function initQuestions() { generateQuestions(); renderQuestions(); }
     </script>
 </body>
 </html>
