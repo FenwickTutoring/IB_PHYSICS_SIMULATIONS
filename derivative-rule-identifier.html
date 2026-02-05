@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derivative Rule Identifier | Fenwick Tutoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <style>
+        :root {
+            --burgundy: #5d2137;
+            --terracotta: #ba684e;
+            --peach: #fee9e2;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --burgundy-light: #7a3a50;
+            --terracotta-light: #d4856b;
+            --shadow: rgba(93, 33, 55, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, var(--peach) 0%, var(--white) 50%, var(--peach) 100%);
+            min-height: 100vh;
+            color: var(--black);
+            overflow-x: hidden;
+        }
+
+        /* Decorative background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(186, 104, 78, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(93, 33, 55, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--terracotta);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: var(--burgundy);
+            line-height: 1.1;
+        }
+
+        /* Course Toggle */
+        .course-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .course-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--burgundy);
+            transition: all 0.3s ease;
+        }
+
+        .course-label.inactive {
+            color: var(--terracotta);
+            opacity: 0.6;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 70px;
+            height: 34px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--burgundy);
+            border-radius: 34px;
+            transition: all 0.4s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background: var(--white);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--terracotta);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(36px);
+        }
+
+        .toggle-switch:hover .toggle-slider::before {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Level selector */
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .level-btn {
+            padding: 0.875rem 2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 2px solid var(--burgundy);
+            background: transparent;
+            color: var(--burgundy);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--burgundy);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .level-btn:hover::before,
+        .level-btn.active::before {
+            left: 0;
+        }
+
+        .level-btn:hover,
+        .level-btn.active {
+            color: var(--white);
+        }
+
+        /* Stats panel */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: var(--white);
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid rgba(93, 33, 55, 0.1);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--terracotta);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--burgundy);
+        }
+
+        .stat-value.correct {
+            color: #2d8a4e;
+        }
+
+        .stat-value.incorrect {
+            color: var(--terracotta);
+        }
+
+        /* Game area */
+        .game-area {
+            background: var(--white);
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(93, 33, 55, 0.1);
+            box-shadow: 0 8px 40px var(--shadow);
+            position: relative;
+        }
+
+        .game-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--burgundy), var(--terracotta), var(--burgundy));
+        }
+
+        .level-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--peach);
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--burgundy);
+        }
+
+        .course-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--burgundy);
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--white);
+            transition: background 0.3s ease;
+        }
+
+        .course-badge.hl {
+            background: var(--terracotta);
+        }
+
+        .instruction {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--terracotta);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .function-display {
+            text-align: center;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--peach) 0%, var(--white) 100%);
+            border: 1px solid rgba(93, 33, 55, 0.08);
+        }
+
+        .function-display .katex {
+            font-size: 2.5rem;
+        }
+
+        /* Selection display for Level 2 */
+        .selection-display {
+            display: none;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .selection-display.active {
+            display: flex;
+        }
+
+        .selection-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .selection-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--terracotta);
+            font-weight: 600;
+        }
+
+        .selection-value {
+            padding: 0.75rem 1.5rem;
+            background: var(--peach);
+            border: 2px dashed var(--burgundy);
+            min-width: 140px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--burgundy);
+            transition: all 0.3s ease;
+        }
+
+        .selection-value.filled {
+            background: var(--burgundy);
+            color: var(--white);
+            border-style: solid;
+        }
+
+        /* Rule buttons */
+        .rules-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-btn {
+            padding: 1rem 1.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--burgundy);
+            background: var(--white);
+            color: var(--burgundy);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+
+        .rule-btn:hover {
+            background: var(--burgundy);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .rule-btn:active {
+            transform: translateY(0);
+        }
+
+        .rule-btn.selected {
+            background: var(--terracotta);
+            border-color: var(--terracotta);
+            color: var(--white);
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-btn {
+            padding: 0.875rem 2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn {
+            background: var(--burgundy);
+            color: var(--white);
+        }
+
+        .submit-btn:hover {
+            background: var(--burgundy-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: 2px solid var(--terracotta);
+            color: var(--terracotta);
+        }
+
+        .clear-btn:hover {
+            background: var(--terracotta);
+            color: var(--white);
+        }
+
+        /* Feedback */
+        .feedback {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.correct {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 1px solid #2d8a4e;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border: 1px solid var(--terracotta);
+            display: block;
+        }
+
+        .feedback-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback.correct .feedback-title {
+            color: #2d8a4e;
+        }
+
+        .feedback.incorrect .feedback-title {
+            color: var(--terracotta);
+        }
+
+        .feedback-text {
+            font-size: 0.95rem;
+            color: var(--black);
+        }
+
+        .next-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: var(--burgundy);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn:hover {
+            background: var(--burgundy-light);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--terracotta);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--burgundy);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .function-display .katex {
+                font-size: 1.75rem;
+            }
+
+            .rule-btn {
+                min-width: 120px;
+                padding: 0.875rem 1rem;
+            }
+
+            .selection-display {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .game-area {
+                padding: 2rem 1rem;
+            }
+
+            .level-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .level-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .rules-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .rule-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .course-badge {
+                position: static;
+                display: inline-block;
+                margin-bottom: 1rem;
+            }
+
+            .level-indicator {
+                position: static;
+                display: inline-block;
+                margin-bottom: 1rem;
+                margin-left: 0.5rem;
+            }
+
+            .game-area > .course-badge,
+            .game-area > .level-indicator {
+                position: static;
+            }
+
+            .badges-row {
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--peach);
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--burgundy), var(--terracotta));
+            transition: width 0.5s ease;
+        }
+
+        /* Badges row for mobile */
+        .badges-row {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .badges-row {
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .game-area .course-badge:not(.badges-row .course-badge),
+            .game-area .level-indicator:not(.badges-row .level-indicator) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Fenwick Tutoring</div>
+            <h1>Derivative Rule Identifier</h1>
+            <div class="course-toggle-container">
+                <span class="course-label" id="sl-label">IB Mathematics AA SL</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="course-toggle" onchange="toggleCourse()">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="course-label inactive" id="hl-label">IB Mathematics AA HL</span>
+            </div>
+        </header>
+
+        <div class="level-selector">
+            <button class="level-btn active" onclick="setLevel(1)">Level 1: Single Rule</button>
+            <button class="level-btn" onclick="setLevel(2)">Level 2: Combined Rules</button>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-box">
+                <div class="stat-label">Questions</div>
+                <div class="stat-value" id="questions">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Correct</div>
+                <div class="stat-value correct" id="correct">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Incorrect</div>
+                <div class="stat-value incorrect" id="incorrect">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Accuracy</div>
+                <div class="stat-value" id="accuracy">0%</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="course-badge" id="course-badge">SL</div>
+            <div class="level-indicator" id="level-indicator">Level 1</div>
+            
+            <p class="instruction" id="instruction">Which differentiation rule should you use?</p>
+            
+            <div class="function-display" id="function-display">
+                <!-- Function will be rendered here -->
+            </div>
+
+            <div class="selection-display" id="selection-display">
+                <div class="selection-slot">
+                    <span class="selection-label">First Rule</span>
+                    <div class="selection-value" id="first-rule">Click a rule</div>
+                </div>
+                <div class="selection-slot">
+                    <span class="selection-label">Second Rule</span>
+                    <div class="selection-value" id="second-rule">Click a rule</div>
+                </div>
+            </div>
+
+            <div class="rules-container" id="rules-container">
+                <button class="rule-btn" onclick="selectRule('chain')">Chain Rule</button>
+                <button class="rule-btn" onclick="selectRule('product')">Product Rule</button>
+                <button class="rule-btn" onclick="selectRule('quotient')">Quotient Rule</button>
+                <button class="rule-btn" onclick="selectRule('none')">None of These</button>
+            </div>
+
+            <div class="action-buttons" id="action-buttons">
+                <button class="action-btn clear-btn" onclick="clearSelection()">Clear</button>
+                <button class="action-btn submit-btn" onclick="submitAnswer()">Submit</button>
+            </div>
+
+            <div class="feedback" id="feedback">
+                <div class="feedback-title" id="feedback-title"></div>
+                <p class="feedback-text" id="feedback-text"></p>
+                <button class="next-btn" onclick="nextQuestion()">Next Question →</button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 <a href="https://fenwicktutoring.com" target="_blank">Fenwick Tutoring</a> | IB Physics & Mathematics Specialist</p>
+        </footer>
+    </div>
+
+    <script>
+        // Game state
+        let currentLevel = 1;
+        let currentCourse = 'SL'; // 'SL' or 'HL'
+        let currentQuestion = null;
+        let selectedRules = [];
+        let stats = {
+            questions: 0,
+            correct: 0,
+            incorrect: 0
+        };
+        let usedQuestions = { 
+            SL: { 1: new Set(), 2: new Set() },
+            HL: { 1: new Set(), 2: new Set() }
+        };
+
+        // Rule display names
+        const ruleNames = {
+            'chain': 'Chain Rule',
+            'product': 'Product Rule',
+            'quotient': 'Quotient Rule',
+            'none': 'None of These'
+        };
+
+        // Level 1 SL: Single rule questions (50+ functions)
+        const level1QuestionsSL = [
+            // Chain Rule - Trigonometric
+            { func: '\\sin(x^2)', rule: 'chain', explanation: 'This is sin(u) where u = x², requiring the chain rule.' },
+            { func: '\\cos(3x)', rule: 'chain', explanation: 'This is cos(u) where u = 3x, requiring the chain rule.' },
+            { func: '\\tan(2x + 1)', rule: 'chain', explanation: 'This is tan(u) where u = 2x + 1, requiring the chain rule.' },
+            { func: '\\sin^2(x)', rule: 'chain', explanation: 'This is u² where u = sin(x), requiring the chain rule.' },
+            { func: '\\cos(x^3)', rule: 'chain', explanation: 'This is cos(u) where u = x³, requiring the chain rule.' },
+            { func: '\\sin(\\sqrt{x})', rule: 'chain', explanation: 'This is sin(u) where u = √x, requiring the chain rule.' },
+            { func: '\\tan^3(x)', rule: 'chain', explanation: 'This is u³ where u = tan(x), requiring the chain rule.' },
+            { func: '\\cos(5x - 2)', rule: 'chain', explanation: 'This is cos(u) where u = 5x - 2, requiring the chain rule.' },
+            
+            // Chain Rule - Exponential
+            { func: 'e^{2x}', rule: 'chain', explanation: 'This is e^u where u = 2x, requiring the chain rule.' },
+            { func: 'e^{x^2}', rule: 'chain', explanation: 'This is e^u where u = x², requiring the chain rule.' },
+            { func: 'e^{-x}', rule: 'chain', explanation: 'This is e^u where u = -x, requiring the chain rule.' },
+            { func: 'e^{3x + 1}', rule: 'chain', explanation: 'This is e^u where u = 3x + 1, requiring the chain rule.' },
+            { func: '2^{x^2}', rule: 'chain', explanation: 'This is 2^u where u = x², requiring the chain rule.' },
+            { func: 'e^{\\sin(x)}', rule: 'chain', explanation: 'This is e^u where u = sin(x), requiring the chain rule.' },
+            
+            // Chain Rule - Logarithmic
+            { func: '\\ln(x^2)', rule: 'chain', explanation: 'This is ln(u) where u = x², requiring the chain rule.' },
+            { func: '\\ln(2x + 3)', rule: 'chain', explanation: 'This is ln(u) where u = 2x + 3, requiring the chain rule.' },
+            { func: '\\ln(\\cos(x))', rule: 'chain', explanation: 'This is ln(u) where u = cos(x), requiring the chain rule.' },
+            { func: '\\log_2(x^3)', rule: 'chain', explanation: 'This is log₂(u) where u = x³, requiring the chain rule.' },
+            { func: '\\ln(x^2 + 1)', rule: 'chain', explanation: 'This is ln(u) where u = x² + 1, requiring the chain rule.' },
+            
+            // Chain Rule - Power
+            { func: '(x^2 + 1)^3', rule: 'chain', explanation: 'This is u³ where u = x² + 1, requiring the chain rule.' },
+            { func: '(3x - 2)^4', rule: 'chain', explanation: 'This is u⁴ where u = 3x - 2, requiring the chain rule.' },
+            { func: '\\sqrt{x^2 + 4}', rule: 'chain', explanation: 'This is √u where u = x² + 4, requiring the chain rule.' },
+            { func: '(2x + 5)^{-2}', rule: 'chain', explanation: 'This is u⁻² where u = 2x + 5, requiring the chain rule.' },
+            { func: '\\sqrt[3]{x^2 - 1}', rule: 'chain', explanation: 'This is ∛u where u = x² - 1, requiring the chain rule.' },
+            { func: '(x^3 + 2x)^5', rule: 'chain', explanation: 'This is u⁵ where u = x³ + 2x, requiring the chain rule.' },
+            
+            // Product Rule
+            { func: 'x \\cdot \\sin(x)', rule: 'product', explanation: 'This is a product of x and sin(x), requiring the product rule.' },
+            { func: 'x^2 \\cdot e^x', rule: 'product', explanation: 'This is a product of x² and eˣ, requiring the product rule.' },
+            { func: 'x \\cdot \\ln(x)', rule: 'product', explanation: 'This is a product of x and ln(x), requiring the product rule.' },
+            { func: 'e^x \\cdot \\cos(x)', rule: 'product', explanation: 'This is a product of eˣ and cos(x), requiring the product rule.' },
+            { func: 'x^3 \\cdot \\tan(x)', rule: 'product', explanation: 'This is a product of x³ and tan(x), requiring the product rule.' },
+            { func: '\\sin(x) \\cdot \\cos(x)', rule: 'product', explanation: 'This is a product of sin(x) and cos(x), requiring the product rule.' },
+            { func: 'x^2 \\cdot \\ln(x)', rule: 'product', explanation: 'This is a product of x² and ln(x), requiring the product rule.' },
+            { func: '(x + 1) \\cdot e^x', rule: 'product', explanation: 'This is a product of (x + 1) and eˣ, requiring the product rule.' },
+            { func: 'x \\cdot 2^x', rule: 'product', explanation: 'This is a product of x and 2ˣ, requiring the product rule.' },
+            { func: 'e^x \\cdot \\ln(x)', rule: 'product', explanation: 'This is a product of eˣ and ln(x), requiring the product rule.' },
+            
+            // Quotient Rule
+            { func: '\\frac{x}{\\sin(x)}', rule: 'quotient', explanation: 'This is a quotient of x over sin(x), requiring the quotient rule.' },
+            { func: '\\frac{e^x}{x}', rule: 'quotient', explanation: 'This is a quotient of eˣ over x, requiring the quotient rule.' },
+            { func: '\\frac{\\sin(x)}{x}', rule: 'quotient', explanation: 'This is a quotient of sin(x) over x, requiring the quotient rule.' },
+            { func: '\\frac{x^2}{e^x}', rule: 'quotient', explanation: 'This is a quotient of x² over eˣ, requiring the quotient rule.' },
+            { func: '\\frac{\\ln(x)}{x}', rule: 'quotient', explanation: 'This is a quotient of ln(x) over x, requiring the quotient rule.' },
+            { func: '\\frac{x + 1}{x - 1}', rule: 'quotient', explanation: 'This is a quotient of (x + 1) over (x - 1), requiring the quotient rule.' },
+            { func: '\\frac{\\cos(x)}{x^2}', rule: 'quotient', explanation: 'This is a quotient of cos(x) over x², requiring the quotient rule.' },
+            { func: '\\frac{e^x}{\\cos(x)}', rule: 'quotient', explanation: 'This is a quotient of eˣ over cos(x), requiring the quotient rule.' },
+            { func: '\\frac{x^3}{x^2 + 1}', rule: 'quotient', explanation: 'This is a quotient, requiring the quotient rule.' },
+            { func: '\\frac{\\tan(x)}{x}', rule: 'quotient', explanation: 'This is a quotient of tan(x) over x, requiring the quotient rule.' },
+            
+            // None (simple derivatives)
+            { func: 'x^5', rule: 'none', explanation: 'This is a simple power function, just use the power rule: d/dx(xⁿ) = nxⁿ⁻¹.' },
+            { func: '3x^4 - 2x^2 + 7', rule: 'none', explanation: 'This is a polynomial, differentiate each term using the power rule.' },
+            { func: '\\sin(x)', rule: 'none', explanation: 'This is a basic trig function: d/dx(sin x) = cos x.' },
+            { func: '\\cos(x)', rule: 'none', explanation: 'This is a basic trig function: d/dx(cos x) = -sin x.' },
+            { func: 'e^x', rule: 'none', explanation: 'This is a basic exponential: d/dx(eˣ) = eˣ.' },
+            { func: '\\ln(x)', rule: 'none', explanation: 'This is a basic logarithm: d/dx(ln x) = 1/x.' },
+            { func: '\\tan(x)', rule: 'none', explanation: 'This is a basic trig function: d/dx(tan x) = sec²x.' },
+            { func: '\\frac{1}{x}', rule: 'none', explanation: 'This is x⁻¹, use the power rule: d/dx(x⁻¹) = -x⁻².' },
+            { func: '\\sqrt{x}', rule: 'none', explanation: 'This is x^(1/2), use the power rule.' },
+            { func: '5x^3 + 2x', rule: 'none', explanation: 'This is a polynomial, differentiate each term using the power rule.' },
+            { func: '\\frac{3}{x^2}', rule: 'none', explanation: 'This is 3x⁻², use the power rule.' },
+            { func: '4e^x + 3', rule: 'none', explanation: 'Sum of basic exponential and constant.' },
+            { func: 'x^{-3}', rule: 'none', explanation: 'This is a simple power function, use the power rule.' },
+            { func: '\\frac{5}{\\sqrt{x}}', rule: 'none', explanation: 'This is 5x^(-1/2), use the power rule.' },
+            { func: '7', rule: 'none', explanation: 'The derivative of a constant is 0.' },
+            { func: '2\\pi x', rule: 'none', explanation: 'This is a linear function, derivative is just the coefficient 2π.' },
+        ];
+
+        // Level 1 HL: Additional functions with standard derivatives (30+ functions)
+        const level1QuestionsHL = [
+            // Standard derivatives - tan, sec, cosec, cot
+            { func: '\\tan(x)', rule: 'none', explanation: 'Standard derivative: d/dx(tan x) = sec²x.' },
+            { func: '\\sec(x)', rule: 'none', explanation: 'Standard derivative: d/dx(sec x) = sec x tan x.' },
+            { func: '\\csc(x)', rule: 'none', explanation: 'Standard derivative: d/dx(csc x) = -csc x cot x.' },
+            { func: '\\cot(x)', rule: 'none', explanation: 'Standard derivative: d/dx(cot x) = -csc²x.' },
+            
+            // Standard derivatives - inverse trig
+            { func: '\\arcsin(x)', rule: 'none', explanation: 'Standard derivative: d/dx(arcsin x) = 1/√(1-x²).' },
+            { func: '\\arccos(x)', rule: 'none', explanation: 'Standard derivative: d/dx(arccos x) = -1/√(1-x²).' },
+            { func: '\\arctan(x)', rule: 'none', explanation: 'Standard derivative: d/dx(arctan x) = 1/(1+x²).' },
+            
+            // Standard derivatives - general exponential and log
+            { func: '3^x', rule: 'none', explanation: 'Standard derivative: d/dx(aˣ) = aˣ ln(a), so d/dx(3ˣ) = 3ˣ ln(3).' },
+            { func: '5^x', rule: 'none', explanation: 'Standard derivative: d/dx(aˣ) = aˣ ln(a), so d/dx(5ˣ) = 5ˣ ln(5).' },
+            { func: '10^x', rule: 'none', explanation: 'Standard derivative: d/dx(aˣ) = aˣ ln(a), so d/dx(10ˣ) = 10ˣ ln(10).' },
+            { func: '\\log_{10}(x)', rule: 'none', explanation: 'Standard derivative: d/dx(logₐ x) = 1/(x ln a).' },
+            { func: '\\log_2(x)', rule: 'none', explanation: 'Standard derivative: d/dx(logₐ x) = 1/(x ln a).' },
+            
+            // Chain rule with HL functions
+            { func: '\\sec(2x)', rule: 'chain', explanation: 'Chain rule: sec(u) where u = 2x.' },
+            { func: '\\csc(3x)', rule: 'chain', explanation: 'Chain rule: csc(u) where u = 3x.' },
+            { func: '\\cot(x^2)', rule: 'chain', explanation: 'Chain rule: cot(u) where u = x².' },
+            { func: '\\arcsin(2x)', rule: 'chain', explanation: 'Chain rule: arcsin(u) where u = 2x.' },
+            { func: '\\arccos(x^2)', rule: 'chain', explanation: 'Chain rule: arccos(u) where u = x².' },
+            { func: '\\arctan(3x)', rule: 'chain', explanation: 'Chain rule: arctan(u) where u = 3x.' },
+            { func: '3^{2x}', rule: 'chain', explanation: 'Chain rule: 3^u where u = 2x.' },
+            { func: '5^{x^2}', rule: 'chain', explanation: 'Chain rule: 5^u where u = x².' },
+            { func: '\\log_3(x^2 + 1)', rule: 'chain', explanation: 'Chain rule: log₃(u) where u = x² + 1.' },
+            { func: '\\sec^2(x)', rule: 'chain', explanation: 'Chain rule: u² where u = sec(x).' },
+            { func: '\\tan(e^x)', rule: 'chain', explanation: 'Chain rule: tan(u) where u = eˣ.' },
+            { func: '\\arctan(\\ln(x))', rule: 'chain', explanation: 'Chain rule: arctan(u) where u = ln(x).' },
+            
+            // Product rule with HL functions
+            { func: 'x \\cdot \\sec(x)', rule: 'product', explanation: 'Product rule: x · sec(x).' },
+            { func: 'x^2 \\cdot \\cot(x)', rule: 'product', explanation: 'Product rule: x² · cot(x).' },
+            { func: 'e^x \\cdot \\arctan(x)', rule: 'product', explanation: 'Product rule: eˣ · arctan(x).' },
+            { func: '\\ln(x) \\cdot \\arcsin(x)', rule: 'product', explanation: 'Product rule: ln(x) · arcsin(x).' },
+            { func: 'x \\cdot 3^x', rule: 'product', explanation: 'Product rule: x · 3ˣ.' },
+            { func: '\\sec(x) \\cdot \\tan(x)', rule: 'product', explanation: 'Product rule: sec(x) · tan(x).' },
+            
+            // Quotient rule with HL functions
+            { func: '\\frac{\\sec(x)}{x}', rule: 'quotient', explanation: 'Quotient rule: sec(x) / x.' },
+            { func: '\\frac{x}{\\cot(x)}', rule: 'quotient', explanation: 'Quotient rule: x / cot(x).' },
+            { func: '\\frac{\\arctan(x)}{x}', rule: 'quotient', explanation: 'Quotient rule: arctan(x) / x.' },
+            { func: '\\frac{3^x}{x^2}', rule: 'quotient', explanation: 'Quotient rule: 3ˣ / x².' },
+            { func: '\\frac{\\arcsin(x)}{e^x}', rule: 'quotient', explanation: 'Quotient rule: arcsin(x) / eˣ.' },
+            { func: '\\frac{x}{\\arccos(x)}', rule: 'quotient', explanation: 'Quotient rule: x / arccos(x).' },
+        ];
+
+        // Level 2 SL: Combined rules questions (50+ functions)
+        const level2QuestionsSL = [
+            // Chain + Chain
+            { func: 'e^{\\sin(x^2)}', rules: [['chain', 'chain']], explanation: 'First chain rule for e^u where u = sin(x²), then chain rule for sin(v) where v = x².' },
+            { func: '\\sin(e^{2x})', rules: [['chain', 'chain']], explanation: 'First chain rule for sin(u) where u = e^(2x), then chain rule for e^v where v = 2x.' },
+            { func: '\\ln(\\cos(x^2))', rules: [['chain', 'chain']], explanation: 'First chain rule for ln(u), then chain rule for cos(v) where v = x².' },
+            { func: '(\\sin(x))^3', rules: [['chain', 'chain']], explanation: 'First chain rule for u³, then the derivative of sin(x).' },
+            { func: 'e^{(x^2 + 1)^3}', rules: [['chain', 'chain']], explanation: 'First chain rule for e^u, then chain rule for the power function.' },
+            { func: '\\cos(\\ln(2x))', rules: [['chain', 'chain']], explanation: 'First chain rule for cos(u), then chain rule for ln(v) where v = 2x.' },
+            { func: '\\sqrt{\\sin(x)}', rules: [['chain', 'chain']], explanation: 'First chain rule for √u, then the derivative of sin(x).' },
+            { func: '(e^x + 1)^4', rules: [['chain', 'chain']], explanation: 'First chain rule for u⁴, then derivative of (eˣ + 1).' },
+            { func: '\\tan(x^3 + 1)', rules: [['chain', 'chain']], explanation: 'First chain rule for tan(u), where u = x³ + 1.' },
+            { func: 'e^{\\cos(3x)}', rules: [['chain', 'chain']], explanation: 'First chain rule for e^u, then chain rule for cos(v) where v = 3x.' },
+            
+            // Product + Chain
+            { func: 'x^2 \\cdot e^{2x}', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule for x² · e^(2x), with chain rule needed for e^(2x).' },
+            { func: 'x \\cdot \\sin(x^2)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule for x · sin(x²), with chain rule needed for sin(x²).' },
+            { func: 'e^x \\cdot \\cos(2x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule for eˣ · cos(2x), with chain rule needed for cos(2x).' },
+            { func: 'x^3 \\cdot \\ln(2x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule for x³ · ln(2x), with chain rule needed for ln(2x).' },
+            { func: '\\sin(x) \\cdot e^{x^2}', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule needed for e^(x²).' },
+            { func: 'x \\cdot (x^2 + 1)^3', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for (x² + 1)³.' },
+            { func: 'e^{3x} \\cdot \\sin(x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule needed for e^(3x).' },
+            { func: 'x^2 \\cdot \\cos(3x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule needed for cos(3x).' },
+            { func: '\\ln(x) \\cdot e^{2x}', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for e^(2x).' },
+            { func: '(x + 1) \\cdot \\sin(2x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for sin(2x).' },
+            
+            // Quotient + Chain
+            { func: '\\frac{e^{2x}}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule for e^(2x)/x, with chain rule needed for e^(2x).' },
+            { func: '\\frac{\\sin(x^2)}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for sin(x²).' },
+            { func: '\\frac{x}{e^{2x}}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for e^(2x).' },
+            { func: '\\frac{\\cos(2x)}{x^2}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for cos(2x).' },
+            { func: '\\frac{\\ln(x^2)}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for ln(x²).' },
+            { func: '\\frac{e^x}{\\sin(2x)}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for sin(2x).' },
+            { func: '\\frac{(x^2 + 1)^2}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for (x² + 1)².' },
+            { func: '\\frac{x^2}{\\cos(3x)}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for cos(3x).' },
+            { func: '\\frac{e^{-x}}{x + 1}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for e^(-x).' },
+            { func: '\\frac{\\tan(2x)}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for tan(2x).' },
+            
+            // Product + Product (for the second derivative approach)
+            { func: 'x \\cdot \\sin(x) \\cdot e^x', rules: [['product', 'product']], explanation: 'Two applications of product rule for three factors.' },
+            { func: 'x^2 \\cdot \\ln(x) \\cdot \\cos(x)', rules: [['product', 'product']], explanation: 'Two applications of product rule for three factors.' },
+            { func: '(x + 1) \\cdot x \\cdot e^x', rules: [['product', 'product']], explanation: 'Two applications of product rule for three factors.' },
+            
+            // Quotient + Product
+            { func: '\\frac{x \\cdot \\sin(x)}{e^x}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule, with product rule needed for the numerator x·sin(x).' },
+            { func: '\\frac{x^2 \\cdot e^x}{\\cos(x)}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule with product rule for numerator x²·eˣ.' },
+            { func: '\\frac{x \\cdot \\ln(x)}{x + 1}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule with product rule for numerator x·ln(x).' },
+            { func: '\\frac{\\sin(x) \\cdot \\cos(x)}{x}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule with product rule for numerator sin(x)·cos(x).' },
+            { func: '\\frac{x \\cdot e^x}{x^2 + 1}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule with product rule for numerator x·eˣ.' },
+            
+            // Chain + None (still need two selections)
+            { func: 'e^{2x} + x^3', rules: [['chain', 'none'], ['none', 'chain']], explanation: 'Chain rule for e^(2x) and power rule for x³.' },
+            { func: '\\sin(3x) + \\cos(x)', rules: [['chain', 'none'], ['none', 'chain']], explanation: 'Chain rule for sin(3x), basic derivative for cos(x).' },
+            { func: '\\ln(2x) + e^x', rules: [['chain', 'none'], ['none', 'chain']], explanation: 'Chain rule for ln(2x), basic derivative for eˣ.' },
+            { func: '(x + 1)^4 + x^2', rules: [['chain', 'none'], ['none', 'chain']], explanation: 'Chain rule for (x+1)⁴, power rule for x².' },
+            
+            // Product + None
+            { func: 'x \\cdot e^x + \\sin(x)', rules: [['product', 'none'], ['none', 'product']], explanation: 'Product rule for x·eˣ, basic derivative for sin(x).' },
+            { func: 'x^2 \\cdot \\ln(x) + x', rules: [['product', 'none'], ['none', 'product']], explanation: 'Product rule for x²·ln(x), power rule for x.' },
+            
+            // More complex combinations
+            { func: '\\frac{e^{x^2}}{\\sin(x)}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule needed for e^(x²).' },
+            { func: 'x \\cdot \\cos(x^2)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for cos(x²).' },
+            { func: '\\frac{(2x + 1)^3}{e^x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for (2x + 1)³.' },
+            { func: 'e^x \\cdot (x^2 + 1)^2', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for (x² + 1)².' },
+            { func: '\\frac{\\ln(x^2 + 1)}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for ln(x² + 1).' },
+            { func: '\\sin(x) \\cdot \\cos(2x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for cos(2x).' },
+            { func: '\\frac{e^{\\sin(x)}}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with double chain rule for e^(sin(x)).' },
+            { func: 'x^2 \\cdot \\tan(3x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for tan(3x).' },
+        ];
+
+        // Level 2 HL: Additional combined rules with HL functions (30+ functions)
+        const level2QuestionsHL = [
+            // Chain + Chain with HL functions
+            { func: '\\arctan(\\sin(x))', rules: [['chain', 'chain']], explanation: 'Chain rule for arctan(u), then u = sin(x).' },
+            { func: '\\sec(e^{2x})', rules: [['chain', 'chain']], explanation: 'Chain rule for sec(u), then chain rule for e^(2x).' },
+            { func: '3^{\\cos(x)}', rules: [['chain', 'chain']], explanation: 'Chain rule for 3^u, then derivative of cos(x).' },
+            { func: '\\arcsin(x^2)', rules: [['chain', 'chain']], explanation: 'Chain rule for arcsin(u) where u = x².' },
+            { func: '\\cot(\\ln(x))', rules: [['chain', 'chain']], explanation: 'Chain rule for cot(u) where u = ln(x).' },
+            { func: '(\\arctan(x))^2', rules: [['chain', 'chain']], explanation: 'Chain rule for u², then derivative of arctan(x).' },
+            { func: '\\csc(2x + 1)', rules: [['chain', 'chain']], explanation: 'Chain rule for csc(u) where u = 2x + 1.' },
+            { func: 'e^{\\arcsin(x)}', rules: [['chain', 'chain']], explanation: 'Chain rule for e^u where u = arcsin(x).' },
+            { func: '\\ln(\\sec(x))', rules: [['chain', 'chain']], explanation: 'Chain rule for ln(u) where u = sec(x).' },
+            { func: '5^{x^2 + 1}', rules: [['chain', 'chain']], explanation: 'Chain rule for 5^u where u = x² + 1.' },
+            
+            // Product + Chain with HL functions
+            { func: 'x \\cdot \\arctan(2x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for arctan(2x).' },
+            { func: 'e^x \\cdot \\sec(3x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for sec(3x).' },
+            { func: 'x^2 \\cdot 3^{x}', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with x² and 3ˣ.' },
+            { func: '\\arcsin(x) \\cdot e^{2x}', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for e^(2x).' },
+            { func: 'x \\cdot \\csc(x^2)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for csc(x²).' },
+            { func: '\\ln(x) \\cdot \\cot(2x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for cot(2x).' },
+            { func: '\\sec(x) \\cdot e^{x^2}', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for e^(x²).' },
+            { func: 'x \\cdot \\arccos(3x)', rules: [['product', 'chain'], ['chain', 'product']], explanation: 'Product rule with chain rule for arccos(3x).' },
+            
+            // Quotient + Chain with HL functions
+            { func: '\\frac{\\sec(2x)}{x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for sec(2x).' },
+            { func: '\\frac{\\arctan(x^2)}{e^x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for arctan(x²).' },
+            { func: '\\frac{3^x}{\\sin(2x)}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for sin(2x).' },
+            { func: '\\frac{x}{\\cot(3x)}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for cot(3x).' },
+            { func: '\\frac{\\csc(x)}{e^{2x}}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for e^(2x).' },
+            { func: '\\frac{\\arcsin(2x)}{x^2}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule with chain rule for arcsin(2x).' },
+            
+            // Product + Product with HL functions
+            { func: 'x \\cdot \\sec(x) \\cdot \\tan(x)', rules: [['product', 'product']], explanation: 'Two applications of product rule for three factors.' },
+            { func: '\\arctan(x) \\cdot x \\cdot e^x', rules: [['product', 'product']], explanation: 'Two applications of product rule for three factors.' },
+            
+            // Quotient + Product with HL functions
+            { func: '\\frac{x \\cdot \\sec(x)}{e^x}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule with product rule for numerator.' },
+            { func: '\\frac{\\arctan(x) \\cdot x}{\\cos(x)}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule with product rule for numerator.' },
+            { func: '\\frac{x^2 \\cdot 3^x}{\\ln(x)}', rules: [['quotient', 'product'], ['product', 'quotient']], explanation: 'Quotient rule with product rule for numerator.' },
+            
+            // Mixed HL combinations
+            { func: '\\arctan(x) + \\sec(2x)', rules: [['none', 'chain'], ['chain', 'none']], explanation: 'Standard derivative for arctan(x), chain rule for sec(2x).' },
+            { func: 'x \\cdot \\cot(x) + 3^x', rules: [['product', 'none'], ['none', 'product']], explanation: 'Product rule for x·cot(x), standard derivative for 3ˣ.' },
+            { func: '\\frac{\\arcsin(x)}{x} + e^{2x}', rules: [['quotient', 'chain'], ['chain', 'quotient']], explanation: 'Quotient rule for arcsin(x)/x, chain rule for e^(2x).' },
+        ];
+
+        // Get questions based on current settings
+        function getLevel1Questions() {
+            if (currentCourse === 'SL') {
+                return level1QuestionsSL;
+            } else {
+                return [...level1QuestionsSL, ...level1QuestionsHL];
+            }
+        }
+
+        function getLevel2Questions() {
+            if (currentCourse === 'SL') {
+                return level2QuestionsSL;
+            } else {
+                return [...level2QuestionsSL, ...level2QuestionsHL];
+            }
+        }
+
+        // Toggle course
+        function toggleCourse() {
+            const toggle = document.getElementById('course-toggle');
+            const slLabel = document.getElementById('sl-label');
+            const hlLabel = document.getElementById('hl-label');
+            const courseBadge = document.getElementById('course-badge');
+            
+            if (toggle.checked) {
+                currentCourse = 'HL';
+                slLabel.classList.add('inactive');
+                hlLabel.classList.remove('inactive');
+                courseBadge.textContent = 'HL';
+                courseBadge.classList.add('hl');
+            } else {
+                currentCourse = 'SL';
+                slLabel.classList.remove('inactive');
+                hlLabel.classList.add('inactive');
+                courseBadge.textContent = 'SL';
+                courseBadge.classList.remove('hl');
+            }
+            
+            // Reset used questions for the new course
+            usedQuestions[currentCourse] = { 1: new Set(), 2: new Set() };
+            
+            // Load new question
+            loadQuestion();
+        }
+
+        // Initialize game
+        function init() {
+            loadQuestion();
+            updateStats();
+        }
+
+        // Set level
+        function setLevel(level) {
+            currentLevel = level;
+            usedQuestions[currentCourse][level] = new Set();
+            
+            // Update button states
+            document.querySelectorAll('.level-btn').forEach((btn, index) => {
+                btn.classList.toggle('active', index + 1 === level);
+            });
+            
+            // Update UI
+            document.getElementById('level-indicator').textContent = `Level ${level}`;
+            
+            if (level === 1) {
+                document.getElementById('instruction').textContent = 'Which differentiation rule should you use?';
+                document.getElementById('selection-display').classList.remove('active');
+            } else {
+                document.getElementById('instruction').textContent = 'Select the TWO rules needed (in order of first use):';
+                document.getElementById('selection-display').classList.add('active');
+            }
+            
+            // Reset selection and load new question
+            clearSelection();
+            loadQuestion();
+        }
+
+        // Load a random question
+        function loadQuestion() {
+            const questions = currentLevel === 1 ? getLevel1Questions() : getLevel2Questions();
+            
+            // Reset if all questions used
+            if (usedQuestions[currentCourse][currentLevel].size >= questions.length) {
+                usedQuestions[currentCourse][currentLevel] = new Set();
+            }
+            
+            // Find unused question
+            let index;
+            do {
+                index = Math.floor(Math.random() * questions.length);
+            } while (usedQuestions[currentCourse][currentLevel].has(index));
+            
+            usedQuestions[currentCourse][currentLevel].add(index);
+            currentQuestion = questions[index];
+            
+            // Render function
+            const display = document.getElementById('function-display');
+            display.innerHTML = '';
+            katex.render(`f(x) = ${currentQuestion.func}`, display, {
+                throwOnError: false,
+                displayMode: true
+            });
+            
+            // Reset UI
+            clearSelection();
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('action-buttons').style.display = 'flex';
+            
+            // Enable buttons
+            document.querySelectorAll('.rule-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('selected');
+            });
+        }
+
+        // Select a rule
+        function selectRule(rule) {
+            if (currentLevel === 1) {
+                // Single selection for Level 1
+                selectedRules = [rule];
+                document.querySelectorAll('.rule-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                event.target.classList.add('selected');
+            } else {
+                // Two selections for Level 2
+                if (selectedRules.length < 2) {
+                    selectedRules.push(rule);
+                    event.target.classList.add('selected');
+                    
+                    // Update display
+                    if (selectedRules.length === 1) {
+                        document.getElementById('first-rule').textContent = ruleNames[rule];
+                        document.getElementById('first-rule').classList.add('filled');
+                    } else {
+                        document.getElementById('second-rule').textContent = ruleNames[rule];
+                        document.getElementById('second-rule').classList.add('filled');
+                    }
+                }
+            }
+        }
+
+        // Clear selection
+        function clearSelection() {
+            selectedRules = [];
+            document.querySelectorAll('.rule-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            document.getElementById('first-rule').textContent = 'Click a rule';
+            document.getElementById('first-rule').classList.remove('filled');
+            document.getElementById('second-rule').textContent = 'Click a rule';
+            document.getElementById('second-rule').classList.remove('filled');
+        }
+
+        // Submit answer
+        function submitAnswer() {
+            const requiredSelections = currentLevel === 1 ? 1 : 2;
+            
+            if (selectedRules.length < requiredSelections) {
+                alert(`Please select ${requiredSelections === 1 ? 'a rule' : 'two rules'} before submitting.`);
+                return;
+            }
+            
+            let isCorrect = false;
+            
+            if (currentLevel === 1) {
+                isCorrect = selectedRules[0] === currentQuestion.rule;
+            } else {
+                // Check if the selected combination matches any valid combination
+                isCorrect = currentQuestion.rules.some(validCombo => 
+                    validCombo[0] === selectedRules[0] && validCombo[1] === selectedRules[1]
+                );
+            }
+            
+            // Update stats
+            stats.questions++;
+            if (isCorrect) {
+                stats.correct++;
+            } else {
+                stats.incorrect++;
+            }
+            updateStats();
+            
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+            
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedbackTitle.textContent = '✓ Correct!';
+                feedbackText.textContent = currentQuestion.explanation;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedbackTitle.textContent = '✗ Not quite right';
+                
+                let correctAnswer;
+                if (currentLevel === 1) {
+                    correctAnswer = ruleNames[currentQuestion.rule];
+                } else {
+                    const firstValid = currentQuestion.rules[0];
+                    correctAnswer = `${ruleNames[firstValid[0]]} → ${ruleNames[firstValid[1]]}`;
+                }
+                feedbackText.textContent = `The answer is: ${correctAnswer}. ${currentQuestion.explanation}`;
+            }
+            
+            // Hide action buttons
+            document.getElementById('action-buttons').style.display = 'none';
+            
+            // Disable rule buttons
+            document.querySelectorAll('.rule-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+
+        // Next question
+        function nextQuestion() {
+            loadQuestion();
+        }
+
+        // Update stats display
+        function updateStats() {
+            document.getElementById('questions').textContent = stats.questions;
+            document.getElementById('correct').textContent = stats.correct;
+            document.getElementById('incorrect').textContent = stats.incorrect;
+            
+            const accuracy = stats.questions > 0 
+                ? Math.round((stats.correct / stats.questions) * 100) 
+                : 0;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            
+            // Update progress bar
+            document.getElementById('progress-fill').style.width = `${accuracy}%`;
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
