@@ -104,6 +104,8 @@ const EQUATIONS = [
     id: "speed",
     topic: "ch1",
     name: "Average Speed",
+    questionText: "What is the formula for average speed?",
+    excludeSymbols: [],
     quantities: ["average speed", "distance", "time"],
     units: [
       { quantity: "average speed", unit: "m/s", unitName: "metres per second" },
@@ -135,6 +137,8 @@ const EQUATIONS = [
     id: "velocity",
     topic: "ch1",
     name: "Average Velocity",
+    questionText: "What is the formula for average velocity?",
+    excludeSymbols: [],
     quantities: ["average velocity", "displacement", "time"],
     units: [
       { quantity: "average velocity", unit: "m/s", unitName: "metres per second" },
@@ -165,6 +169,8 @@ const EQUATIONS = [
     id: "acceleration",
     topic: "ch1",
     name: "Acceleration",
+    questionText: "What is the formula for acceleration?",
+    excludeSymbols: [],
     quantities: ["acceleration", "final velocity", "initial velocity", "time"],
     units: [
       { quantity: "acceleration", unit: "m/s\u00B2", unitName: "metres per second squared" },
@@ -196,6 +202,8 @@ const EQUATIONS = [
     id: "weight",
     topic: "ch1",
     name: "Weight",
+    questionText: "What is the formula for weight?",
+    excludeSymbols: [],
     quantities: ["weight", "mass", "gravitational field strength"],
     units: [
       { quantity: "weight", unit: "N", unitName: "newtons" },
@@ -226,6 +234,8 @@ const EQUATIONS = [
     id: "force",
     topic: "ch1",
     name: "Force (Newton's Second Law)",
+    questionText: "What is the formula for resultant force?",
+    excludeSymbols: ["k", "x", "\u0394p"],
     quantities: ["resultant force", "mass", "acceleration"],
     units: [
       { quantity: "force", unit: "N", unitName: "newtons" },
@@ -257,6 +267,8 @@ const EQUATIONS = [
     id: "density",
     topic: "ch1",
     name: "Density",
+    questionText: "What is the formula for density?",
+    excludeSymbols: [],
     quantities: ["density", "mass", "volume"],
     units: [
       { quantity: "density", unit: "kg/m\u00B3", unitName: "kilograms per cubic metre" },
@@ -287,6 +299,8 @@ const EQUATIONS = [
     id: "hookes_law",
     topic: "ch1",
     name: "Hooke's Law",
+    questionText: "What is the formula for Hooke's Law?",
+    excludeSymbols: ["m", "a", "\u0394p"],
     quantities: ["force", "spring constant", "extension"],
     units: [
       { quantity: "force", unit: "N", unitName: "newtons" },
@@ -317,6 +331,8 @@ const EQUATIONS = [
     id: "pressure",
     topic: "ch1",
     name: "Pressure",
+    questionText: "What is the formula for pressure on a surface?",
+    excludeSymbols: ["\u03C1", "g", "h"],
     quantities: ["pressure", "force", "area"],
     units: [
       { quantity: "pressure", unit: "Pa", unitName: "pascals" },
@@ -347,6 +363,8 @@ const EQUATIONS = [
     id: "fluid_pressure",
     topic: "ch1",
     name: "Fluid Pressure",
+    questionText: "What is the formula for fluid pressure?",
+    excludeSymbols: ["A"],
     quantities: ["fluid pressure", "density", "gravitational field strength", "height"],
     units: [
       { quantity: "fluid pressure", unit: "Pa", unitName: "pascals" },
@@ -374,6 +392,8 @@ const EQUATIONS = [
     id: "work",
     topic: "ch1",
     name: "Work Done",
+    questionText: "What is the formula for work done?",
+    excludeSymbols: ["I", "V", "P"],
     quantities: ["work done", "force", "distance"],
     units: [
       { quantity: "work done", unit: "J", unitName: "joules" },
@@ -404,6 +424,8 @@ const EQUATIONS = [
     id: "power",
     topic: "ch1",
     name: "Power",
+    questionText: "What is the formula that links power and work done?",
+    excludeSymbols: ["I", "V", "R"],
     quantities: ["power", "work done", "time"],
     units: [
       { quantity: "power", unit: "W", unitName: "watts" },
@@ -434,6 +456,8 @@ const EQUATIONS = [
     id: "kinetic_energy",
     topic: "ch1",
     name: "Kinetic Energy",
+    questionText: "What is the formula for kinetic energy?",
+    excludeSymbols: [],
     quantities: ["kinetic energy", "mass", "velocity"],
     units: [
       { quantity: "kinetic energy", unit: "J", unitName: "joules" },
@@ -456,6 +480,8 @@ const EQUATIONS = [
     id: "gpe",
     topic: "ch1",
     name: "Gravitational Potential Energy",
+    questionText: "What is the formula for gravitational potential energy?",
+    excludeSymbols: [],
     quantities: ["gravitational potential energy", "mass", "gravitational field strength", "height"],
     units: [
       { quantity: "gravitational potential energy", unit: "J", unitName: "joules" },
@@ -487,6 +513,8 @@ const EQUATIONS = [
     id: "epe",
     topic: "ch1",
     name: "Elastic Potential Energy",
+    questionText: "What is the formula for elastic potential energy?",
+    excludeSymbols: [],
     quantities: ["elastic potential energy", "spring constant", "extension"],
     units: [
       { quantity: "elastic potential energy", unit: "J", unitName: "joules" },
@@ -508,6 +536,8 @@ const EQUATIONS = [
     id: "efficiency",
     topic: "ch1",
     name: "Efficiency",
+    questionText: "What is the formula for efficiency?",
+    excludeSymbols: [],
     quantities: ["efficiency", "useful power output", "total power input"],
     units: [
       { quantity: "efficiency", unit: "%", unitName: "percentage" },
@@ -528,6 +558,8 @@ const EQUATIONS = [
     id: "moment",
     topic: "ch1",
     name: "Moment",
+    questionText: "What is the formula for a moment?",
+    excludeSymbols: [],
     quantities: ["moment", "force", "perpendicular distance from pivot"],
     units: [
       { quantity: "moment", unit: "Nm", unitName: "newton metres" },
@@ -558,6 +590,8 @@ const EQUATIONS = [
     id: "momentum",
     topic: "ch1",
     name: "Momentum",
+    questionText: "What is the formula for momentum?",
+    excludeSymbols: [],
     quantities: ["momentum", "mass", "velocity"],
     units: [
       { quantity: "momentum", unit: "kg m/s", unitName: "kilogram metres per second" },
@@ -588,6 +622,8 @@ const EQUATIONS = [
     id: "impulse_force",
     topic: "ch1",
     name: "Impulsive Force",
+    questionText: "What is the formula for impulsive force?",
+    excludeSymbols: ["m", "a", "k", "x"],
     quantities: ["force", "change in momentum", "time"],
     units: [
       { quantity: "force", unit: "N", unitName: "newtons" },
@@ -620,6 +656,8 @@ const EQUATIONS = [
     id: "boyles_law",
     topic: "ch2",
     name: "Boyle's Law",
+    questionText: "What is the formula for Boyle's Law?",
+    excludeSymbols: [],
     quantities: ["pressure", "volume"],
     units: [
       { quantity: "pressure", unit: "Pa", unitName: "pascals" },
@@ -640,6 +678,8 @@ const EQUATIONS = [
     id: "thermal_energy",
     topic: "ch2",
     name: "Thermal Energy",
+    questionText: "What is the formula for thermal energy?",
+    excludeSymbols: [],
     quantities: ["thermal energy", "mass", "specific heat capacity", "temperature change"],
     units: [
       { quantity: "thermal energy", unit: "J", unitName: "joules" },
@@ -671,6 +711,8 @@ const EQUATIONS = [
     id: "celsius_kelvin",
     topic: "ch2",
     name: "Celsius to Kelvin",
+    questionText: "What is the formula to convert between Celsius and Kelvin?",
+    excludeSymbols: [],
     quantities: ["Celsius temperature", "Kelvin temperature"],
     units: [
       { quantity: "temperature", unit: "\u00B0C and K", unitName: "degrees Celsius and kelvin", multiSelect: true, correctUnits: ["\u00B0C", "K"] }
@@ -697,6 +739,8 @@ const EQUATIONS = [
     id: "wave_speed",
     topic: "ch3",
     name: "Wave Speed",
+    questionText: "What is the formula for wave speed?",
+    excludeSymbols: ["r", "T", "H\u2080", "d"],
     quantities: ["wave speed", "frequency", "wavelength"],
     units: [
       { quantity: "wave speed", unit: "m/s", unitName: "metres per second" },
@@ -727,6 +771,8 @@ const EQUATIONS = [
     id: "frequency_period",
     topic: "ch3",
     name: "Frequency and Period",
+    questionText: "What is the formula that links frequency and period?",
+    excludeSymbols: [],
     quantities: ["frequency", "period"],
     units: [
       { quantity: "frequency", unit: "Hz", unitName: "hertz" },
@@ -752,6 +798,8 @@ const EQUATIONS = [
     id: "snells_law",
     topic: "ch3",
     name: "Snell's Law (Refractive Index)",
+    questionText: "What is the formula for Snell's Law?",
+    excludeSymbols: ["c", "v"],
     quantities: ["refractive index", "angle of incidence", "angle of refraction"],
     units: [
       { quantity: "refractive index", unit: "no unit", unitName: "no unit (ratio)" }
@@ -771,6 +819,8 @@ const EQUATIONS = [
     id: "refractive_index_speed",
     topic: "ch3",
     name: "Refractive Index (Speed)",
+    questionText: "What is the formula for refractive index using speed of light?",
+    excludeSymbols: ["sin i", "sin r", "sin c"],
     quantities: ["refractive index", "speed of light in vacuum", "speed of light in material"],
     units: [
       { quantity: "refractive index", unit: "no unit", unitName: "no unit (ratio)" },
@@ -795,6 +845,8 @@ const EQUATIONS = [
     id: "critical_angle",
     topic: "ch3",
     name: "Critical Angle",
+    questionText: "What is the formula for the critical angle?",
+    excludeSymbols: ["c", "v", "sin i", "sin r"],
     quantities: ["refractive index", "critical angle"],
     units: [
       { quantity: "refractive index", unit: "no unit", unitName: "no unit (ratio)" }
@@ -816,6 +868,8 @@ const EQUATIONS = [
     id: "current",
     topic: "ch4",
     name: "Current",
+    questionText: "What is the formula for current?",
+    excludeSymbols: ["W", "V"],
     quantities: ["current", "charge", "time"],
     units: [
       { quantity: "current", unit: "A", unitName: "amps" },
@@ -846,6 +900,8 @@ const EQUATIONS = [
     id: "voltage_energy",
     topic: "ch4",
     name: "Voltage (Energy)",
+    questionText: "What is the formula that links voltage and charge?",
+    excludeSymbols: ["I", "R"],
     quantities: ["voltage", "energy transferred", "charge"],
     units: [
       { quantity: "voltage", unit: "V", unitName: "volts" },
@@ -876,6 +932,8 @@ const EQUATIONS = [
     id: "ohms_law",
     topic: "ch4",
     name: "Ohm's Law",
+    questionText: "What is the formula for Ohm's Law?",
+    excludeSymbols: ["W", "Q"],
     quantities: ["voltage", "current", "resistance"],
     units: [
       { quantity: "voltage", unit: "V", unitName: "volts" },
@@ -907,6 +965,8 @@ const EQUATIONS = [
     id: "power_iv",
     topic: "ch4",
     name: "Electrical Power (P = IV)",
+    questionText: "What is the formula that links power and voltage?",
+    excludeSymbols: ["R", "W", "t"],
     quantities: ["power", "current", "voltage"],
     units: [
       { quantity: "electrical power", unit: "W", unitName: "watts" },
@@ -937,6 +997,8 @@ const EQUATIONS = [
     id: "power_i2r",
     topic: "ch4",
     name: "Electrical Power (P = I\u00B2R)",
+    questionText: "What is the formula that links power and resistance?",
+    excludeSymbols: ["V", "W", "t"],
     quantities: ["power", "current", "resistance"],
     units: [
       { quantity: "electrical power", unit: "W", unitName: "watts" },
@@ -958,6 +1020,8 @@ const EQUATIONS = [
     id: "energy_ivt",
     topic: "ch4",
     name: "Energy Transferred (W = IVt)",
+    questionText: "What is the formula for energy transferred using current and voltage?",
+    excludeSymbols: ["P"],
     quantities: ["energy transferred", "current", "voltage", "time"],
     units: [
       { quantity: "energy transferred", unit: "J", unitName: "joules" },
@@ -980,6 +1044,8 @@ const EQUATIONS = [
     id: "energy_pt",
     topic: "ch4",
     name: "Energy Transferred (W = Pt)",
+    questionText: "What is the formula for energy transferred using power?",
+    excludeSymbols: ["I", "V"],
     quantities: ["energy transferred", "power", "time"],
     units: [
       { quantity: "energy transferred", unit: "J", unitName: "joules" },
@@ -1010,6 +1076,8 @@ const EQUATIONS = [
     id: "series_resistance",
     topic: "ch4",
     name: "Resistors in Series",
+    questionText: "What is the formula for resistors in series?",
+    excludeSymbols: ["\u03C1", "l", "A"],
     quantities: ["total resistance", "individual resistances"],
     units: [
       { quantity: "resistance", unit: "\u03A9", unitName: "ohms" }
@@ -1029,6 +1097,8 @@ const EQUATIONS = [
     id: "resistance_resistivity",
     topic: "ch4",
     name: "Resistance (Resistivity)",
+    questionText: "What is the formula for resistance using resistivity?",
+    excludeSymbols: [],
     quantities: ["resistance", "resistivity", "length", "cross-sectional area"],
     units: [
       { quantity: "resistance", unit: "\u03A9", unitName: "ohms" },
@@ -1051,6 +1121,8 @@ const EQUATIONS = [
     id: "transformer_voltage",
     topic: "ch4",
     name: "Transformer (Voltage Ratio)",
+    questionText: "What is the formula for the transformer voltage ratio?",
+    excludeSymbols: [],
     quantities: ["secondary voltage", "primary voltage", "secondary turns", "primary turns"],
     units: [
       { quantity: "voltage", unit: "V", unitName: "volts" }
@@ -1072,6 +1144,8 @@ const EQUATIONS = [
     id: "orbital_speed",
     topic: "ch6",
     name: "Orbital Speed",
+    questionText: "What is the formula for orbital speed?",
+    excludeSymbols: ["f", "\u03BB", "H\u2080", "d"],
     quantities: ["orbital speed", "radius of orbit", "orbital period"],
     units: [
       { quantity: "orbital speed", unit: "m/s", unitName: "metres per second" },
@@ -1098,6 +1172,8 @@ const EQUATIONS = [
     id: "hubble",
     topic: "ch6",
     name: "Hubble's Law",
+    questionText: "What is the formula for Hubble's Law?",
+    excludeSymbols: ["f", "\u03BB", "r", "T"],
     quantities: ["distance", "speed of recession", "Hubble constant"],
     units: [
       { quantity: "distance", unit: "m", unitName: "metres" },

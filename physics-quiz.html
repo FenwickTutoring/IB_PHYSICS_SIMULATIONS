@@ -1065,7 +1065,7 @@
         type: 1,
         equation: eq,
         form: form,
-        text: `What is the formula that links ${eq.quantities.join(', ')}?`,
+        text: eq.questionText || `What is the formula that links ${eq.quantities.join(', ')}?`,
         blanks: blanks,
         options: options
       };
@@ -1155,9 +1155,11 @@
         distractors = WORD_DISTRACTORS.filter(s => !unique.includes(s));
       } else {
         // Use symbol distractors from the global pool
+        const excluded = eq.excludeSymbols || [];
         distractors = ALL_SYMBOLS
           .map(s => s.symbol)
-          .filter(s => !unique.includes(s));
+          .filter(s => !unique.includes(s))
+          .filter(s => !excluded.includes(s));
       }
 
       const shuffled = shuffleArray(distractors).slice(0, numDistractors);
