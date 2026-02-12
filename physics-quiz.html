@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IGCSE Physics Equation Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --burgundy: #5d2137;
+      --terracotta: #ba684e;
+      --cream: #fee9e2;
+      --near-black: #1a1a1a;
+      --white: #ffffff;
+      --correct: #2e7d32;
+      --correct-light: #e8f5e9;
+      --incorrect: #c62828;
+      --incorrect-light: #ffebee;
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--near-black);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== SCREEN MANAGEMENT ===== */
+    .screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+    }
+
+    /* ===== TOPIC SELECTION SCREEN ===== */
+    .topic-screen {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topic-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .topic-header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    .topic-header p {
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    .topic-list {
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    .topic-item {
+      display: flex;
+      align-items: center;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.5rem;
+      background: var(--white);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .topic-item:active {
+      background: var(--cream);
+    }
+
+    .topic-item.all-topics {
+      border: 2px solid var(--burgundy);
+      font-weight: 600;
+    }
+
+    .topic-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--terracotta);
+      border-radius: 6px;
+      margin-right: 0.75rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .topic-checkbox.checked {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+    }
+
+    .topic-checkbox.checked::after {
+      content: '';
+      width: 6px;
+      height: 12px;
+      border: solid var(--white);
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg) translateY(-1px);
+    }
+
+    .topic-label {
+      font-size: 1rem;
+      flex: 1;
+    }
+
+    .question-count {
+      margin-bottom: 2rem;
+    }
+
+    .question-count h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .count-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .count-btn {
+      padding: 0.6rem 1.5rem;
+      border: 2px solid var(--terracotta);
+      border-radius: 10px;
+      background: var(--white);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--near-black);
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .count-btn.selected {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+      color: var(--white);
+    }
+
+    .count-btn:active {
+      transform: scale(0.96);
+    }
+
+    .start-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: 0.02em;
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
+    .start-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* ===== QUIZ SCREEN ===== */
+    .quiz-screen {
+      background: var(--cream);
+    }
+
+    /* Top bar: progress + score */
+    .quiz-top-bar {
+      padding: 1rem 1rem 0.5rem;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--terracotta), var(--burgundy));
+      border-radius: 4px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      white-space: nowrap;
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .score-display {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .streak-display {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--terracotta);
+      transition: opacity 0.3s;
+    }
+
+    .streak-display.hidden {
+      opacity: 0;
+    }
+
+    /* Question area */
+    .question-area {
+      padding: 1rem;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-text {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--near-black);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    /* Word problem card (Type 3) */
+    .word-problem-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--near-black);
+    }
+
+    /* ===== FORMULA DISPLAY ===== */
+    .formula-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-family: 'Times New Roman', 'STIX Two Math', 'Cambria Math', Georgia, serif;
+      font-size: 2rem;
+      font-style: italic;
+      color: var(--near-black);
+      padding: 1.5rem 0.5rem;
+      margin-bottom: 1.5rem;
+      min-height: 100px;
+    }
+
+    .formula-lhs {
+      font-weight: 600;
+    }
+
+    .formula-lhs.word-lhs {
+      font-family: var(--font-body);
+      font-style: normal;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .formula-equals {
+      margin: 0 0.3rem;
+      font-style: normal;
+    }
+
+    .formula-operator {
+      font-style: normal;
+      margin: 0 0.15rem;
+    }
+
+    .formula-constant {
+      font-style: normal;
+    }
+
+    .formula-fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 0.3rem;
+    }
+
+    .formula-numerator,
+    .formula-denominator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.5rem;
+    }
+
+    .formula-frac-line {
+      width: calc(100% + 16px);
+      height: 2px;
+      background: var(--near-black);
+      margin: 2px 0;
+    }
+
+    /* Blank slots */
+    .formula-blank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0.2rem 0.5rem;
+      border: 2.5px dashed var(--terracotta);
+      border-radius: 10px;
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Times New Roman', 'STIX Two Math', 'Cambria Math', Georgia, serif;
+      font-size: 1.8rem;
+      font-style: italic;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .formula-blank.filled {
+      border-style: solid;
+      border-color: var(--burgundy);
+      background: var(--cream);
+      color: var(--burgundy);
+    }
+
+    /* Word-length blanks (for word equations) */
+    .formula-blank.word-blank {
+      font-family: var(--font-body);
+      font-style: normal;
+      font-size: 0.85rem;
+      font-weight: 500;
+      min-width: 80px;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .formula-blank .power {
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      font-size: 0.7em;
+      font-style: normal;
+    }
+
+    /* Feedback states */
+    .formula-blank.correct {
+      border-color: var(--correct);
+      background: var(--correct-light);
+      color: var(--correct);
+    }
+
+    .formula-blank.incorrect {
+      border-color: var(--incorrect);
+      background: var(--incorrect-light);
+      color: var(--incorrect);
+      animation: shake 0.4s ease;
+    }
+
+    /* ===== OPTION BUTTONS ===== */
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      margin-top: auto;
+    }
+
+    .option-btn {
+      min-height: 56px;
+      padding: 0.4rem 0.6rem;
+      border: 2px solid var(--terracotta);
+      border-radius: 12px;
+      background: var(--white);
+      color: var(--near-black);
+      font-family: 'Times New Roman', 'STIX Two Math', 'Cambria Math', Georgia, serif;
+      font-size: 1.3rem;
+      font-style: italic;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s, opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .option-btn:active {
+      transform: scale(0.94);
+      background: var(--cream);
+    }
+
+    .option-btn.used {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Word-based option buttons (for word equations like efficiency) */
+    .option-grid.word-options {
+      grid-template-columns: 1fr;
+    }
+
+    .option-btn.word-btn {
+      font-family: var(--font-body);
+      font-style: normal;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.7rem 1rem;
+      text-align: left;
+      justify-content: flex-start;
+    }
+
+    /* Type 2: unit multiple choice cards */
+    .unit-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+
+    .unit-option {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: var(--white);
+      border: 2px solid transparent;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .unit-option:active {
+      transform: scale(0.98);
+    }
+
+    .unit-option .unit-symbol {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--burgundy);
+      min-width: 60px;
+    }
+
+    .unit-option .unit-name {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .unit-option.selected {
+      border-color: var(--burgundy);
+      background: var(--cream);
+    }
+
+    .unit-option.correct {
+      border-color: var(--correct);
+      background: var(--correct-light);
+    }
+
+    .unit-option.incorrect {
+      border-color: var(--incorrect);
+      background: var(--incorrect-light);
+    }
+
+    /* ===== FEEDBACK OVERLAY ===== */
+    .feedback-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      z-index: 100;
+    }
+
+    .feedback-bar.show {
+      transform: translateY(0);
+    }
+
+    .feedback-bar.correct {
+      background: var(--correct);
+      color: var(--white);
+    }
+
+    .feedback-bar.incorrect {
+      background: var(--incorrect);
+      color: var(--white);
+    }
+
+    .feedback-message {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .feedback-continue {
+      padding: 0.5rem 1.5rem;
+      border: 2px solid var(--white);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .feedback-continue:active {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* ===== RESULTS SCREEN ===== */
+    .results-screen {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .results-card {
+      text-align: center;
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+    }
+
+    .results-title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.5rem;
+    }
+
+    .results-score {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--near-black);
+      margin-bottom: 0.25rem;
+    }
+
+    .results-percentage {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+
+    .results-stars {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      min-height: 3rem;
+    }
+
+    .results-stars .star {
+      display: inline-block;
+      opacity: 0;
+      transform: scale(0) rotate(-20deg);
+      transition: all 0.4s ease;
+    }
+
+    .results-stars .star.earned {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+
+    .results-streak {
+      font-size: 0.95rem;
+      color: var(--terracotta);
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .results-review {
+      text-align: left;
+      margin-bottom: 2rem;
+    }
+
+    .results-review h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.75rem;
+    }
+
+    .review-item {
+      font-size: 0.9rem;
+      padding: 0.4rem 0;
+      color: #555;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .results-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .results-btn {
+      flex: 1;
+      padding: 0.85rem;
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      border: none;
+    }
+
+    .results-btn:active {
+      transform: scale(0.97);
+    }
+
+    .results-btn.primary {
+      background: var(--burgundy);
+      color: var(--white);
+    }
+
+    .results-btn.secondary {
+      background: var(--white);
+      color: var(--burgundy);
+      border: 2px solid var(--burgundy);
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    @keyframes correctPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideOutLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(-30px); }
+    }
+
+    .animate-in {
+      animation: slideInRight 0.3s ease forwards;
+    }
+
+    .animate-out {
+      animation: slideOutLeft 0.25s ease forwards;
+    }
+
+    @keyframes starPop {
+      0% { opacity: 0; transform: scale(0) rotate(-20deg); }
+      70% { transform: scale(1.2) rotate(5deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (min-width: 768px) {
+      .container {
+        padding: 2rem 1.5rem;
+      }
+
+      .topic-header h1 {
+        font-size: 2.2rem;
+      }
+
+      .formula-display {
+        font-size: 2.4rem;
+      }
+
+      .formula-blank {
+        min-width: 56px;
+        min-height: 56px;
+        font-size: 2rem;
+      }
+
+      .option-btn {
+        min-height: 60px;
+        font-size: 1.4rem;
+      }
+
+      .option-btn:hover {
+        background: var(--cream);
+        border-color: var(--burgundy);
+      }
+
+      .unit-option:hover {
+        border-color: var(--terracotta);
+      }
+
+      .topic-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .topic-header h1 {
+        font-size: 2.5rem;
+      }
+
+      .results-card {
+        max-width: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SCREEN 1: TOPIC SELECTION -->
+  <div id="screen-topics" class="screen topic-screen active">
+    <div class="container">
+      <div class="topic-header">
+        <h1>IGCSE Physics<br>Equation Quiz</h1>
+        <p>Memorise your formulas and units</p>
+      </div>
+
+      <div class="topic-list" id="topic-list">
+        <!-- Topic checkboxes inserted by JS -->
+      </div>
+
+      <div class="question-count">
+        <h3>Number of questions</h3>
+        <div class="count-buttons" id="count-buttons">
+          <button class="count-btn selected" data-count="10">10</button>
+          <button class="count-btn" data-count="20">20</button>
+          <button class="count-btn" data-count="0">All</button>
+        </div>
+      </div>
+
+      <button class="start-btn" id="start-btn">Start Quiz</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: QUIZ -->
+  <div id="screen-quiz" class="screen quiz-screen">
+    <div class="quiz-top-bar">
+      <div class="progress-row">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-text" id="progress-text">0 / 10</span>
+      </div>
+      <div class="score-row">
+        <span class="score-display" id="score-display">Score: 0</span>
+        <span class="streak-display hidden" id="streak-display">0</span>
+      </div>
+    </div>
+
+    <div class="question-area" id="question-area">
+      <!-- Question content inserted by JS -->
+    </div>
+
+    <!-- Feedback bar at bottom -->
+    <div class="feedback-bar" id="feedback-bar">
+      <span class="feedback-message" id="feedback-message"></span>
+      <button class="feedback-continue" id="feedback-continue">Continue</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: RESULTS -->
+  <div id="screen-results" class="screen results-screen">
+    <div class="container">
+      <div class="results-card">
+        <h2 class="results-title">Quiz Complete!</h2>
+        <div class="results-score" id="results-score">0 / 10</div>
+        <div class="results-percentage" id="results-percentage">0%</div>
+        <div class="results-stars" id="results-stars"></div>
+        <div class="results-streak" id="results-streak"></div>
+
+        <div class="results-review" id="results-review">
+          <!-- Wrong answers listed here -->
+        </div>
+
+        <div class="results-buttons">
+          <button class="results-btn secondary" id="btn-new-topics">New Topics</button>
+          <button class="results-btn primary" id="btn-try-again">Try Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load equation data from separate file -->
+  <script src="physics-quiz-data.js"></script>
+
+  <script>
+    // ===== QUIZ ENGINE - will be built step by step =====
+
+    // --- STATE ---
+    const state = {
+      selectedTopics: [],
+      totalQuestions: 10,
+      currentIndex: 0,
+      score: 0,
+      streak: 0,
+      bestStreak: 0,
+      questions: [],
+      filledBlanks: [],
+      wrongAnswers: [],
+      currentScreen: 'topics',
+      currentQuestion: null,
+      waitingForContinue: false
+    };
+
+    // --- SCREEN MANAGEMENT ---
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + screenId).classList.add('active');
+      state.currentScreen = screenId;
+    }
+
+    // --- TOPIC SELECTION ---
+    function initTopicSelection() {
+      const list = document.getElementById('topic-list');
+      list.innerHTML = '';
+
+      // "All Topics" item
+      const allItem = createTopicItem('all', 'All Topics', true);
+      allItem.classList.add('all-topics');
+      list.appendChild(allItem);
+
+      // Individual topics
+      TOPICS.forEach(topic => {
+        list.appendChild(createTopicItem(topic.id, topic.label, true));
+      });
+
+      state.selectedTopics = TOPICS.map(t => t.id);
+      updateStartButton();
+    }
+
+    function createTopicItem(id, label, checked) {
+      const item = document.createElement('div');
+      item.className = 'topic-item';
+      item.dataset.topicId = id;
+
+      const checkbox = document.createElement('div');
+      checkbox.className = 'topic-checkbox' + (checked ? ' checked' : '');
+
+      const labelEl = document.createElement('span');
+      labelEl.className = 'topic-label';
+      labelEl.textContent = label;
+
+      item.appendChild(checkbox);
+      item.appendChild(labelEl);
+
+      item.addEventListener('click', () => toggleTopic(id));
+      return item;
+    }
+
+    function toggleTopic(id) {
+      if (id === 'all') {
+        const allCheckbox = document.querySelector('[data-topic-id="all"] .topic-checkbox');
+        const isChecked = allCheckbox.classList.contains('checked');
+
+        document.querySelectorAll('.topic-checkbox').forEach(cb => {
+          if (isChecked) {
+            cb.classList.remove('checked');
+          } else {
+            cb.classList.add('checked');
+          }
+        });
+
+        state.selectedTopics = isChecked ? [] : TOPICS.map(t => t.id);
+      } else {
+        const item = document.querySelector(`[data-topic-id="${id}"] .topic-checkbox`);
+        item.classList.toggle('checked');
+
+        if (item.classList.contains('checked')) {
+          if (!state.selectedTopics.includes(id)) state.selectedTopics.push(id);
+        } else {
+          state.selectedTopics = state.selectedTopics.filter(t => t !== id);
+        }
+
+        // Update "All" checkbox
+        const allCheckbox = document.querySelector('[data-topic-id="all"] .topic-checkbox');
+        if (state.selectedTopics.length === TOPICS.length) {
+          allCheckbox.classList.add('checked');
+        } else {
+          allCheckbox.classList.remove('checked');
+        }
+      }
+
+      updateStartButton();
+    }
+
+    function updateStartButton() {
+      document.getElementById('start-btn').disabled = state.selectedTopics.length === 0;
+    }
+
+    // --- QUESTION COUNT BUTTONS ---
+    document.getElementById('count-buttons').addEventListener('click', (e) => {
+      const btn = e.target.closest('.count-btn');
+      if (!btn) return;
+
+      document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.totalQuestions = parseInt(btn.dataset.count);
+    });
+
+    // --- START QUIZ ---
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+
+    function startQuiz() {
+      if (state.selectedTopics.length === 0) return;
+
+      // Reset state
+      state.currentIndex = 0;
+      state.score = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.wrongAnswers = [];
+      state.filledBlanks = [];
+      state.waitingForContinue = false;
+
+      // Generate questions
+      state.questions = generateQuestions(state.selectedTopics, state.totalQuestions);
+      if (state.questions.length === 0) return;
+
+      // If "All" was selected (count=0), set total to actual count
+      if (state.totalQuestions === 0) {
+        state.totalQuestions = state.questions.length;
+      }
+
+      showScreen('quiz');
+      updateQuizUI();
+      showQuestion();
+    }
+
+    // --- GENERATE QUESTIONS ---
+    function generateQuestions(topics, count) {
+      const pool = EQUATIONS.filter(eq => topics.includes(eq.topic));
+      if (pool.length === 0) return [];
+
+      const questions = [];
+      const targetCount = count === 0 ? pool.length * 2 : count;
+
+      for (let i = 0; i < targetCount; i++) {
+        const eq = pool[Math.floor(Math.random() * pool.length)];
+        const type = pickQuestionType(eq);
+        questions.push(buildQuestion(eq, type));
+      }
+
+      return shuffleArray(questions);
+    }
+
+    function pickQuestionType(eq) {
+      const types = [1, 2];
+      if (eq.wordProblems && eq.wordProblems.length > 0) types.push(3);
+
+      // Weighted: 40% type 1, 30% type 2, 30% type 3 (if available)
+      const r = Math.random();
+      if (eq.wordProblems && eq.wordProblems.length > 0) {
+        if (r < 0.4) return 1;
+        if (r < 0.7) return 2;
+        return 3;
+      } else {
+        return r < 0.55 ? 1 : 2;
+      }
+    }
+
+    // --- BUILD QUESTION ---
+    function buildQuestion(eq, type) {
+      switch (type) {
+        case 1: return buildType1(eq);
+        case 2: return buildType2(eq);
+        case 3: return buildType3(eq);
+      }
+    }
+
+    function buildType1(eq) {
+      const form = eq.forms[0]; // canonical form
+      const blanks = extractBlanks(form.rhs);
+      const options = generateFormulaOptions(blanks, eq);
+
+      return {
+        type: 1,
+        equation: eq,
+        form: form,
+        text: `What is the formula that links ${eq.quantities.join(', ')}?`,
+        blanks: blanks,
+        options: options
+      };
+    }
+
+    function buildType2(eq) {
+      const unitEntry = eq.units[Math.floor(Math.random() * eq.units.length)];
+      const options = generateUnitOptions(unitEntry);
+
+      return {
+        type: 2,
+        equation: eq,
+        text: `What are the units for ${unitEntry.quantity}?`,
+        correctUnit: unitEntry.unit,
+        correctUnitName: unitEntry.unitName,
+        options: options
+      };
+    }
+
+    function buildType3(eq) {
+      const wp = eq.wordProblems[Math.floor(Math.random() * eq.wordProblems.length)];
+      const form = eq.forms[wp.formIndex];
+      const blanks = extractBlanks(form.rhs);
+      const options = generateFormulaOptions(blanks, eq);
+
+      return {
+        type: 3,
+        equation: eq,
+        form: form,
+        text: 'What formula would you use to solve this question?',
+        wordProblem: wp.text,
+        blanks: blanks,
+        options: options
+      };
+    }
+
+    // --- EXTRACT BLANKS from RHS ---
+    function extractBlanks(rhs) {
+      const blanks = [];
+
+      function walk(node) {
+        if (Array.isArray(node)) {
+          node.forEach(walk);
+          return;
+        }
+        if (node.symbol) {
+          blanks.push({ symbol: node.symbol, power: node.power || null });
+        }
+        if (node.parts) node.parts.forEach(walk);
+        if (node.top) walk(node.top);
+        if (node.bottom) walk(node.bottom);
+        if (node.left) walk(node.left);
+        if (node.right) walk(node.right);
+      }
+
+      walk(rhs);
+      return blanks;
+    }
+
+    // --- GENERATE OPTIONS ---
+    // Word-based distractors for equations that use word phrases (e.g. efficiency)
+    const WORD_DISTRACTORS = [
+      "useful power output", "total power input", "total energy input",
+      "useful energy output", "kinetic energy", "gravitational potential energy",
+      "thermal energy", "total power output", "wasted power", "input energy"
+    ];
+
+    function generateFormulaOptions(blanks, eq) {
+      const correctSymbols = blanks.map(b => b.symbol);
+      const unique = [...new Set(correctSymbols)];
+
+      // Detect if this is a word-based equation (symbols are multi-word phrases)
+      const isWordBased = unique.some(s => s.includes(' '));
+
+      // How many total options to show
+      const targetCount = isWordBased ? Math.max(4, unique.length + 2) : Math.max(6, unique.length + 2);
+      const numDistractors = targetCount - unique.length;
+
+      let distractors;
+      if (isWordBased) {
+        // Use word-phrase distractors
+        distractors = WORD_DISTRACTORS.filter(s => !unique.includes(s));
+      } else {
+        // Use symbol distractors from the global pool
+        distractors = ALL_SYMBOLS
+          .map(s => s.symbol)
+          .filter(s => !unique.includes(s));
+      }
+
+      const shuffled = shuffleArray(distractors).slice(0, numDistractors);
+      return shuffleArray([...unique, ...shuffled]);
+    }
+
+    function generateUnitOptions(unitEntry) {
+      const correct = { unit: unitEntry.unit, unitName: unitEntry.unitName, correct: true };
+      const wrong = ALL_UNITS
+        .filter(u => u.unit !== unitEntry.unit)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(u => ({ ...u, correct: false }));
+
+      return shuffleArray([correct, ...wrong]);
+    }
+
+    // --- SHOW QUESTION ---
+    function showQuestion() {
+      if (state.currentIndex >= state.questions.length) {
+        showResults();
+        return;
+      }
+
+      const q = state.questions[state.currentIndex];
+      state.currentQuestion = q;
+      state.filledBlanks = [];
+      state.waitingForContinue = false;
+
+      const area = document.getElementById('question-area');
+      area.innerHTML = '';
+      area.classList.remove('animate-in');
+      void area.offsetWidth; // trigger reflow
+      area.classList.add('animate-in');
+
+      if (q.type === 1 || q.type === 3) {
+        renderFormulaQuestion(q, area);
+      } else {
+        renderUnitQuestion(q, area);
+      }
+
+      updateQuizUI();
+    }
+
+    // --- RENDER FORMULA QUESTION (Type 1 & 3) ---
+    function renderFormulaQuestion(q, area) {
+      // Question text
+      const textEl = document.createElement('div');
+      textEl.className = 'question-text';
+      textEl.textContent = q.text;
+      area.appendChild(textEl);
+
+      // Word problem card (Type 3 only)
+      if (q.type === 3 && q.wordProblem) {
+        const card = document.createElement('div');
+        card.className = 'word-problem-card';
+        card.textContent = q.wordProblem;
+        area.appendChild(card);
+      }
+
+      // Formula display
+      const formulaEl = document.createElement('div');
+      formulaEl.className = 'formula-display';
+      formulaEl.id = 'formula-display';
+      formulaEl.innerHTML = renderFormula(q.form, state.filledBlanks);
+      area.appendChild(formulaEl);
+
+      // Option buttons
+      const grid = document.createElement('div');
+      const isWordBased = q.options.some(s => s.includes(' '));
+      grid.className = 'option-grid' + (isWordBased ? ' word-options' : '');
+      grid.id = 'option-grid';
+
+      q.options.forEach(symbol => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn' + (isWordBased ? ' word-btn' : '');
+        btn.textContent = symbol;
+        btn.addEventListener('click', () => handleFormulaOptionClick(symbol));
+        grid.appendChild(btn);
+      });
+
+      area.appendChild(grid);
+
+      // Click handler for blanks (undo)
+      formulaEl.addEventListener('click', (e) => {
+        const blank = e.target.closest('.formula-blank');
+        if (blank && blank.classList.contains('filled') && !state.waitingForContinue) {
+          const index = parseInt(blank.dataset.index);
+          undoBlank(index);
+        }
+      });
+    }
+
+    // --- RENDER UNIT QUESTION (Type 2) ---
+    function renderUnitQuestion(q, area) {
+      const textEl = document.createElement('div');
+      textEl.className = 'question-text';
+      textEl.textContent = q.text;
+      area.appendChild(textEl);
+
+      const optionsEl = document.createElement('div');
+      optionsEl.className = 'unit-options';
+      optionsEl.id = 'unit-options';
+
+      q.options.forEach((opt, i) => {
+        const card = document.createElement('div');
+        card.className = 'unit-option';
+        card.dataset.index = i;
+
+        const symbolEl = document.createElement('span');
+        symbolEl.className = 'unit-symbol';
+        symbolEl.textContent = opt.unit;
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'unit-name';
+        nameEl.textContent = opt.unitName;
+
+        card.appendChild(symbolEl);
+        card.appendChild(nameEl);
+
+        card.addEventListener('click', () => handleUnitOptionClick(i));
+        optionsEl.appendChild(card);
+      });
+
+      area.appendChild(optionsEl);
+    }
+
+    // --- RENDER FORMULA HTML ---
+    function renderFormula(form, filledBlanks) {
+      let blankIndex = 0;
+      let html = '';
+
+      // LHS
+      const lhsIsWord = form.lhs.symbol.includes(' ') || form.lhs.symbol.length > 3;
+      const lhsClass = lhsIsWord ? 'formula-lhs word-lhs' : 'formula-lhs';
+      html += `<span class="${lhsClass}">${form.lhs.symbol}</span>`;
+      html += `<span class="formula-equals">=</span>`;
+
+      // RHS
+      html += renderRHS(form.rhs);
+
+      return html;
+
+      function renderRHS(node) {
+        if (node.type === 'mul') {
+          return node.parts.map(renderPart).join('');
+        }
+        if (node.type === 'frac') {
+          const top = node.top.map(renderPart).join('');
+          const bottom = node.bottom.map(renderPart).join('');
+          return `<div class="formula-fraction">
+            <div class="formula-numerator">${top}</div>
+            <div class="formula-frac-line"></div>
+            <div class="formula-denominator">${bottom}</div>
+          </div>`;
+        }
+        if (node.type === 'add') {
+          return node.parts.map(renderPart).join('');
+        }
+        // Single part
+        return renderPart(node);
+      }
+
+      function renderPart(part) {
+        if (part.constant) {
+          return `<span class="formula-constant">${part.constant}</span>`;
+        }
+        if (part.op) {
+          return `<span class="formula-operator">${part.op}</span>`;
+        }
+        if (part.symbol) {
+          const idx = blankIndex++;
+          const filled = filledBlanks[idx];
+          const filledClass = filled ? ' filled' : '';
+          const isWord = part.symbol.includes(' ');
+          const wordClass = isWord ? ' word-blank' : '';
+          const content = filled || '';
+          const power = part.power ? `<span class="power">${part.power}</span>` : '';
+          return `<span class="formula-blank${filledClass}${wordClass}" data-index="${idx}">${content}${power}</span>`;
+        }
+        if (part.type) {
+          return renderRHS(part);
+        }
+        return '';
+      }
+    }
+
+    // --- HANDLE FORMULA OPTION CLICK ---
+    function handleFormulaOptionClick(symbol) {
+      if (state.waitingForContinue) return;
+
+      const q = state.currentQuestion;
+      const nextBlankIndex = state.filledBlanks.length;
+
+      if (nextBlankIndex >= q.blanks.length) return;
+
+      state.filledBlanks.push(symbol);
+
+      // Mark button as used
+      const buttons = document.querySelectorAll('#option-grid .option-btn');
+      buttons.forEach(btn => {
+        if (btn.textContent === symbol && !btn.classList.contains('used')) {
+          btn.classList.add('used');
+        }
+      });
+
+      // Re-render formula
+      document.getElementById('formula-display').innerHTML = renderFormula(q.form, state.filledBlanks);
+
+      // Re-attach undo handler
+      document.getElementById('formula-display').addEventListener('click', (e) => {
+        const blank = e.target.closest('.formula-blank');
+        if (blank && blank.classList.contains('filled') && !state.waitingForContinue) {
+          const index = parseInt(blank.dataset.index);
+          undoBlank(index);
+        }
+      });
+
+      // Check if all blanks filled
+      if (state.filledBlanks.length === q.blanks.length) {
+        checkFormulaAnswer();
+      }
+    }
+
+    // --- UNDO BLANK ---
+    function undoBlank(index) {
+      const symbol = state.filledBlanks[index];
+      // Remove this and all subsequent blanks (sequential filling)
+      const removed = state.filledBlanks.splice(index);
+
+      // Un-use the buttons
+      removed.forEach(sym => {
+        const buttons = document.querySelectorAll('#option-grid .option-btn.used');
+        for (const btn of buttons) {
+          if (btn.textContent === sym) {
+            btn.classList.remove('used');
+            break;
+          }
+        }
+      });
+
+      // Re-render
+      const q = state.currentQuestion;
+      document.getElementById('formula-display').innerHTML = renderFormula(q.form, state.filledBlanks);
+
+      // Re-attach undo handler
+      document.getElementById('formula-display').addEventListener('click', (e) => {
+        const blank = e.target.closest('.formula-blank');
+        if (blank && blank.classList.contains('filled') && !state.waitingForContinue) {
+          const idx = parseInt(blank.dataset.index);
+          undoBlank(idx);
+        }
+      });
+    }
+
+    // --- CHECK FORMULA ANSWER ---
+    function checkFormulaAnswer() {
+      const q = state.currentQuestion;
+      const form = q.form;
+
+      // Check if multiplication — if so, order doesn't matter (commutativity)
+      const isCommutative = isRHSCommutative(form.rhs);
+
+      let correct;
+      if (isCommutative) {
+        // Sort both arrays and compare as sets
+        const expected = q.blanks.map(b => b.symbol).slice().sort();
+        const given = state.filledBlanks.slice().sort();
+        correct = expected.length === given.length && expected.every((s, i) => s === given[i]);
+      } else {
+        // Exact positional match required (fractions, subtraction)
+        correct = q.blanks.every((b, i) => state.filledBlanks[i] === b.symbol);
+      }
+
+      if (correct) {
+        markCorrect();
+      } else {
+        markIncorrect();
+      }
+    }
+
+    // Check if the top-level RHS is purely multiplicative (order doesn't matter)
+    function isRHSCommutative(rhs) {
+      if (rhs.type === 'mul') {
+        // Pure multiplication — commutative, UNLESS it contains ops like subtraction
+        return !rhs.parts.some(p => p.op);
+      }
+      if (rhs.type === 'add') {
+        // Addition with explicit operators — order matters (e.g. K - 273 vs 273 - K)
+        return false;
+      }
+      // Fractions, single parts — order matters
+      return false;
+    }
+
+    // --- HANDLE UNIT OPTION CLICK ---
+    function handleUnitOptionClick(index) {
+      if (state.waitingForContinue) return;
+
+      const q = state.currentQuestion;
+      const selected = q.options[index];
+      const cards = document.querySelectorAll('.unit-option');
+
+      // Disable further clicks
+      state.waitingForContinue = true;
+
+      cards[index].classList.add('selected');
+
+      if (selected.correct) {
+        cards[index].classList.add('correct');
+        markCorrect();
+      } else {
+        cards[index].classList.add('incorrect');
+        // Highlight correct one
+        q.options.forEach((opt, i) => {
+          if (opt.correct) cards[i].classList.add('correct');
+        });
+        markIncorrect();
+      }
+    }
+
+    // --- MARK CORRECT / INCORRECT ---
+    function markCorrect() {
+      state.score++;
+      state.streak++;
+      if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+      state.waitingForContinue = true;
+
+      // Highlight blanks green
+      document.querySelectorAll('.formula-blank').forEach(b => b.classList.add('correct'));
+
+      showFeedback(true);
+      updateQuizUI();
+    }
+
+    function markIncorrect() {
+      state.streak = 0;
+      state.waitingForContinue = true;
+
+      // Track wrong answer
+      const q = state.currentQuestion;
+      state.wrongAnswers.push({
+        name: q.equation.name,
+        formula: q.equation.forms[0].display || q.equation.name
+      });
+
+      // Highlight blanks red, then show correct
+      document.querySelectorAll('.formula-blank').forEach(b => b.classList.add('incorrect'));
+
+      // Show correct answer in blanks after a moment
+      if (q.type === 1 || q.type === 3) {
+        setTimeout(() => {
+          state.filledBlanks = q.blanks.map(b => b.symbol);
+          document.getElementById('formula-display').innerHTML = renderFormula(q.form, state.filledBlanks);
+          document.querySelectorAll('.formula-blank').forEach(b => {
+            b.classList.add('correct');
+            b.style.borderStyle = 'solid';
+          });
+        }, 600);
+      }
+
+      showFeedback(false);
+      updateQuizUI();
+    }
+
+    // --- FEEDBACK BAR ---
+    function showFeedback(isCorrect) {
+      const bar = document.getElementById('feedback-bar');
+      const msg = document.getElementById('feedback-message');
+
+      bar.className = 'feedback-bar show ' + (isCorrect ? 'correct' : 'incorrect');
+      msg.textContent = isCorrect ? 'Correct!' : 'Not quite...';
+    }
+
+    function hideFeedback() {
+      document.getElementById('feedback-bar').classList.remove('show');
+    }
+
+    document.getElementById('feedback-continue').addEventListener('click', () => {
+      hideFeedback();
+      state.currentIndex++;
+      showQuestion();
+    });
+
+    // --- UPDATE QUIZ UI ---
+    function updateQuizUI() {
+      const total = state.questions.length;
+      const progress = (state.currentIndex / total) * 100;
+
+      document.getElementById('progress-fill').style.width = progress + '%';
+      document.getElementById('progress-text').textContent = `${state.currentIndex} / ${total}`;
+      document.getElementById('score-display').textContent = `Score: ${state.score}`;
+
+      const streakEl = document.getElementById('streak-display');
+      if (state.streak >= 2) {
+        streakEl.textContent = state.streak + ' \uD83D\uDD25';
+        streakEl.classList.remove('hidden');
+      } else {
+        streakEl.classList.add('hidden');
+      }
+    }
+
+    // --- RESULTS ---
+    function showResults() {
+      showScreen('results');
+
+      const total = state.questions.length;
+      const pct = Math.round((state.score / total) * 100);
+
+      document.getElementById('results-score').textContent = `${state.score} / ${total}`;
+      document.getElementById('results-percentage').textContent = `${pct}%`;
+      document.getElementById('results-streak').textContent =
+        state.bestStreak >= 2 ? `Best streak: ${state.bestStreak} \uD83D\uDD25` : '';
+
+      // Stars
+      let starCount = 0;
+      if (pct >= 90) starCount = 3;
+      else if (pct >= 70) starCount = 2;
+      else if (pct >= 50) starCount = 1;
+
+      const starsEl = document.getElementById('results-stars');
+      starsEl.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.textContent = i < starCount ? '\u2B50' : '\u2606';
+        starsEl.appendChild(star);
+
+        if (i < starCount) {
+          setTimeout(() => {
+            star.classList.add('earned');
+            star.style.animation = `starPop 0.4s ease forwards`;
+          }, 300 + i * 300);
+        } else {
+          star.style.opacity = '0.3';
+          star.style.transform = 'scale(1)';
+          star.classList.add('earned');
+        }
+      }
+
+      // Wrong answers review
+      const reviewEl = document.getElementById('results-review');
+      if (state.wrongAnswers.length > 0) {
+        // Deduplicate
+        const unique = [...new Map(state.wrongAnswers.map(w => [w.name, w])).values()];
+        reviewEl.innerHTML = `<h3>Equations to review:</h3>` +
+          unique.map(w => `<div class="review-item">${w.name}</div>`).join('');
+      } else {
+        reviewEl.innerHTML = '<h3>Perfect score! \uD83C\uDF89</h3>';
+      }
+    }
+
+    // --- RESULTS BUTTONS ---
+    document.getElementById('btn-new-topics').addEventListener('click', () => {
+      showScreen('topics');
+    });
+
+    document.getElementById('btn-try-again').addEventListener('click', () => {
+      startQuiz();
+    });
+
+    // --- UTILITY ---
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // --- INIT ---
+    initTopicSelection();
+  </script>
+</body>
+</html>
