@@ -673,8 +673,7 @@ const EQUATIONS = [
     name: "Celsius to Kelvin",
     quantities: ["Celsius temperature", "Kelvin temperature"],
     units: [
-      { quantity: "temperature in Celsius", unit: "\u00B0C", unitName: "degrees Celsius" },
-      { quantity: "temperature in Kelvin", unit: "K", unitName: "kelvin" }
+      { quantity: "temperature", unit: "\u00B0C and K", unitName: "degrees Celsius and kelvin", multiSelect: true, correctUnits: ["\u00B0C", "K"] }
     ],
     forms: [
       {

@@ -293,7 +293,7 @@
       font-weight: 600;
       color: var(--near-black);
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.75rem;
       line-height: 1.4;
     }
 
@@ -319,9 +319,9 @@
       font-size: 2rem;
       font-style: italic;
       color: var(--near-black);
-      padding: 1.5rem 0.5rem;
-      margin-bottom: 1.5rem;
-      min-height: 100px;
+      padding: 0.75rem 0.5rem;
+      margin-bottom: 0.5rem;
+      min-height: 80px;
     }
 
     .formula-lhs {
@@ -1073,14 +1073,19 @@
 
     function buildType2(eq) {
       const unitEntry = eq.units[Math.floor(Math.random() * eq.units.length)];
+      const isMultiSelect = unitEntry.multiSelect === true;
       const options = generateUnitOptions(unitEntry);
 
       return {
         type: 2,
         equation: eq,
-        text: `What are the units for ${unitEntry.quantity}?`,
+        text: isMultiSelect
+          ? `What are the units for ${unitEntry.quantity}? (select all that apply)`
+          : `What are the units for ${unitEntry.quantity}?`,
         correctUnit: unitEntry.unit,
         correctUnitName: unitEntry.unitName,
+        multiSelect: isMultiSelect,
+        correctUnits: unitEntry.correctUnits || [unitEntry.unit],
         options: options
       };
     }
@@ -1160,6 +1165,21 @@
     }
 
     function generateUnitOptions(unitEntry) {
+      if (unitEntry.multiSelect && unitEntry.correctUnits) {
+        // Multi-select: multiple correct answers
+        const correctOptions = unitEntry.correctUnits.map(u => {
+          const found = ALL_UNITS.find(au => au.unit === u);
+          return { unit: u, unitName: found ? found.unitName : u, correct: true };
+        });
+        const wrongCount = Math.max(2, 5 - correctOptions.length);
+        const wrong = ALL_UNITS
+          .filter(u => !unitEntry.correctUnits.includes(u.unit))
+          .sort(() => Math.random() - 0.5)
+          .slice(0, wrongCount)
+          .map(u => ({ ...u, correct: false }));
+        return shuffleArray([...correctOptions, ...wrong]);
+      }
+
       const correct = { unit: unitEntry.unit, unitName: unitEntry.unitName, correct: true };
       const wrong = ALL_UNITS
         .filter(u => u.unit !== unitEntry.unit)
@@ -1278,6 +1298,17 @@
       });
 
       area.appendChild(optionsEl);
+
+      // Add submit button for multi-select questions
+      if (q.multiSelect) {
+        state.multiSelectPicks = new Set();
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'start-btn';
+        submitBtn.style.marginTop = '0.75rem';
+        submitBtn.textContent = 'Submit';
+        submitBtn.addEventListener('click', handleMultiSelectSubmit);
+        area.appendChild(submitBtn);
+      }
     }
 
     // --- RENDER FORMULA HTML ---
@@ -1310,7 +1341,13 @@
           </div>`;
         }
         if (node.type === 'add') {
-          return node.parts.map(renderPart).join('');
+          // If parts include explicit { op } entries, just render them all sequentially
+          const hasExplicitOps = node.parts.some(p => p.op);
+          if (hasExplicitOps) {
+            return node.parts.map(renderPart).join('');
+          }
+          // Otherwise auto-insert + between parts (e.g. series resistance)
+          return node.parts.map(renderPart).join('<span class="formula-operator">+</span>');
         }
         // Single part
         return renderPart(node);
@@ -1453,12 +1490,25 @@
       if (state.waitingForContinue) return;
 
       const q = state.currentQuestion;
-      const selected = q.options[index];
       const cards = document.querySelectorAll('.unit-option');
 
-      // Disable further clicks
-      state.waitingForContinue = true;
+      if (q.multiSelect) {
+        // Toggle selection
+        cards[index].classList.toggle('selected');
 
+        // Track selected indices
+        if (!state.multiSelectPicks) state.multiSelectPicks = new Set();
+        if (state.multiSelectPicks.has(index)) {
+          state.multiSelectPicks.delete(index);
+        } else {
+          state.multiSelectPicks.add(index);
+        }
+        return; // Wait for submit button
+      }
+
+      // Single select — immediate check
+      const selected = q.options[index];
+      state.waitingForContinue = true;
       cards[index].classList.add('selected');
 
       if (selected.correct) {
@@ -1466,12 +1516,40 @@
         markCorrect();
       } else {
         cards[index].classList.add('incorrect');
-        // Highlight correct one
         q.options.forEach((opt, i) => {
           if (opt.correct) cards[i].classList.add('correct');
         });
         markIncorrect();
       }
+    }
+
+    function handleMultiSelectSubmit() {
+      if (state.waitingForContinue) return;
+      state.waitingForContinue = true;
+
+      const q = state.currentQuestion;
+      const cards = document.querySelectorAll('.unit-option');
+      const picks = state.multiSelectPicks || new Set();
+
+      // Check: did the student pick exactly the correct ones?
+      const pickedUnits = [...picks].map(i => q.options[i].unit).sort();
+      const correctUnits = q.correctUnits.slice().sort();
+      const isCorrect = pickedUnits.length === correctUnits.length &&
+        pickedUnits.every((u, i) => u === correctUnits[i]);
+
+      // Highlight results
+      q.options.forEach((opt, i) => {
+        if (opt.correct) cards[i].classList.add('correct');
+        if (picks.has(i) && !opt.correct) cards[i].classList.add('incorrect');
+      });
+
+      if (isCorrect) {
+        markCorrect();
+      } else {
+        markIncorrect();
+      }
+
+      state.multiSelectPicks = null;
     }
 
     // --- MARK CORRECT / INCORRECT ---
