@@ -792,6 +792,103 @@
         max-width: 500px;
       }
     }
+
+    /* Mobile: compress topic selection & quiz layout */
+    @media (max-width: 600px) {
+      /* Topic selection screen */
+      .topic-header {
+        margin-bottom: 1rem;
+      }
+
+      .topic-header h1 {
+        font-size: 1.4rem;
+      }
+
+      .topic-header p {
+        font-size: 0.85rem;
+      }
+
+      .topic-item {
+        padding: 0.55rem 0.75rem;
+        margin-bottom: 0.3rem;
+        border-radius: 8px;
+      }
+
+      .topic-checkbox {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.5rem;
+      }
+
+      .topic-label {
+        font-size: 0.88rem;
+      }
+
+      .topic-list {
+        margin-bottom: 1rem;
+      }
+
+      .question-count {
+        margin-bottom: 1rem;
+      }
+
+      .question-count h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .count-btn {
+        padding: 0.45rem 1.2rem;
+        font-size: 0.9rem;
+      }
+
+      .start-btn {
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
+
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      /* Quiz screen — close gap between question and answers */
+      .formula-display {
+        min-height: 50px;
+        padding: 0.4rem 0.5rem;
+        margin-bottom: 0.25rem;
+        font-size: 1.7rem;
+      }
+
+      .formula-blank {
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 1.5rem;
+        padding: 0.15rem 0.4rem;
+      }
+
+      .question-text {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .option-grid {
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+      }
+
+      .option-btn {
+        min-height: 48px;
+        font-size: 1.15rem;
+      }
+
+      .quiz-top-bar {
+        padding: 0.75rem 0.75rem 0.25rem;
+      }
+
+      .question-area {
+        padding: 0.75rem;
+      }
+    }
   </style>
 </head>
 <body>
