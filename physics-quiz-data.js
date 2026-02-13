@@ -129,7 +129,9 @@ const EQUATIONS = [
     wordProblems: [
       { text: "A car travels 240 metres in 12 seconds. What is its average speed?", formIndex: 0 },
       { text: "A cyclist travels at 8 m/s for 25 seconds. How far does she travel?", formIndex: 1 },
-      { text: "A runner covers 400 metres at an average speed of 5 m/s. How long does it take?", formIndex: 2 }
+      { text: "A runner covers 400 metres at an average speed of 5 m/s. How long does it take?", formIndex: 2 },
+      { text: "A train covers 1500 m in 60 seconds. What is the average speed of the train?", formIndex: 0 },
+      { text: "A snail moves at 0.01 m/s for 200 seconds. How far does it travel?", formIndex: 1 }
     ]
   },
 
@@ -161,7 +163,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A boat is displaced 60 metres east in 20 seconds. What is its average velocity?", formIndex: 0 },
-      { text: "A drone flies at a velocity of 12 m/s for 15 seconds. What is its displacement?", formIndex: 1 }
+      { text: "A drone flies at a velocity of 12 m/s for 15 seconds. What is its displacement?", formIndex: 1 },
+      { text: "A swimmer is displaced 50 m north in 25 seconds. What is their average velocity?", formIndex: 0 }
     ]
   },
 
@@ -194,7 +197,9 @@ const EQUATIONS = [
     wordProblems: [
       { text: "A car accelerates from 10 m/s to 30 m/s in 5 seconds. What is its acceleration?", formIndex: 0 },
       { text: "A skateboard starts at rest and accelerates at 2 m/s\u00B2 for 6 seconds. What is its final velocity?", formIndex: 1 },
-      { text: "A bike goes from 5 m/s to 20 m/s with an acceleration of 3 m/s\u00B2. How long does this take?", formIndex: 2 }
+      { text: "A bike goes from 5 m/s to 20 m/s with an acceleration of 3 m/s\u00B2. How long does this take?", formIndex: 2 },
+      { text: "A train decelerates from 40 m/s to 10 m/s in 15 seconds. What is its acceleration?", formIndex: 0 },
+      { text: "A sprinter starts from rest and reaches 12 m/s in 3 seconds. What is her acceleration?", formIndex: 0 }
     ]
   },
 
@@ -226,7 +231,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "An astronaut has a mass of 80 kg. On Earth, g = 9.8 N/kg. What is their weight?", formIndex: 0 },
-      { text: "A box weighs 49 N on Earth where g = 9.8 N/kg. What is its mass?", formIndex: 1 }
+      { text: "A box weighs 49 N on Earth where g = 9.8 N/kg. What is its mass?", formIndex: 1 },
+      { text: "A 60 kg student stands on the Moon where g = 1.6 N/kg. What is their weight?", formIndex: 0 }
     ]
   },
 
@@ -259,7 +265,9 @@ const EQUATIONS = [
     wordProblems: [
       { text: "A resultant force acts on a skydiver. His mass is 60 kg and his acceleration is 2 m/s\u00B2. What is the resultant force?", formIndex: 0 },
       { text: "The resultant force on a skydiver is 80 N. His mass is 60 kg. What is his acceleration?", formIndex: 2 },
-      { text: "A resultant force of 500 N causes an acceleration of 10 m/s\u00B2. What is the mass of the object?", formIndex: 1 }
+      { text: "A resultant force of 500 N causes an acceleration of 10 m/s\u00B2. What is the mass of the object?", formIndex: 1 },
+      { text: "A shopping trolley has a mass of 25 kg. A resultant force causes it to accelerate at 0.8 m/s\u00B2. What is the resultant force?", formIndex: 0 },
+      { text: "A rocket of mass 5000 kg has a resultant force of 15000 N acting on it. What is the acceleration?", formIndex: 2 }
     ]
   },
 
@@ -291,7 +299,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A block has a mass of 500 kg and a volume of 0.25 m\u00B3. What is its density?", formIndex: 0 },
-      { text: "A liquid has a density of 1200 kg/m\u00B3 and a volume of 0.5 m\u00B3. What is its mass?", formIndex: 1 }
+      { text: "A liquid has a density of 1200 kg/m\u00B3 and a volume of 0.5 m\u00B3. What is its mass?", formIndex: 1 },
+      { text: "A metal cube has a mass of 270 g and a volume of 100 cm\u00B3. What formula would you use to find its density?", formIndex: 0 },
+      { text: "An object has a density of 8000 kg/m\u00B3 and a mass of 4 kg. What is its volume?", formIndex: 2 }
     ]
   },
 
@@ -323,7 +333,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A spring has a spring constant of 50 N/m and is stretched by 0.3 m. What force is needed?", formIndex: 0 },
-      { text: "A force of 20 N stretches a spring by 0.1 m. What is the spring constant?", formIndex: 1 }
+      { text: "A force of 20 N stretches a spring by 0.1 m. What is the spring constant?", formIndex: 1 },
+      { text: "A spring with a constant of 80 N/m has a force of 24 N applied. What is the extension?", formIndex: 2 }
     ]
   },
 
@@ -355,7 +366,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A force of 200 N acts on an area of 0.5 m\u00B2. What is the pressure?", formIndex: 0 },
-      { text: "A pressure of 1000 Pa acts on an area of 2 m\u00B2. What is the force?", formIndex: 1 }
+      { text: "A pressure of 1000 Pa acts on an area of 2 m\u00B2. What is the force?", formIndex: 1 },
+      { text: "A woman weighing 600 N stands on one foot with an area of 0.01 m\u00B2. What pressure does she exert?", formIndex: 0 },
+      { text: "A hydraulic press applies 50000 Pa of pressure. The piston area is 0.04 m\u00B2. What force is produced?", formIndex: 1 }
     ]
   },
 
@@ -384,7 +397,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A diver is 15 m below the surface of seawater (density 1025 kg/m\u00B3, g = 9.8 N/kg). What is the fluid pressure?", formIndex: 0 },
-      { text: "The fluid pressure at the bottom of a tank is 49000 Pa. The liquid has density 1000 kg/m\u00B3 and g = 9.8 N/kg. What is the depth?", formIndex: 1 }
+      { text: "The fluid pressure at the bottom of a tank is 49000 Pa. The liquid has density 1000 kg/m\u00B3 and g = 9.8 N/kg. What is the depth?", formIndex: 1 },
+      { text: "A submarine is at a depth of 200 m in seawater (density 1025 kg/m\u00B3, g = 9.8 N/kg). What is the fluid pressure at this depth?", formIndex: 0 }
     ]
   },
 
@@ -416,7 +430,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A person pushes a box with a force of 50 N over a distance of 8 m. How much work is done?", formIndex: 0 },
-      { text: "A crane does 10000 J of work lifting a load 5 m. What force did it exert?", formIndex: 1 }
+      { text: "A crane does 10000 J of work lifting a load 5 m. What force did it exert?", formIndex: 1 },
+      { text: "A forklift does 4500 J of work to move a crate. The force applied is 150 N. Over what distance was the crate moved?", formIndex: 2 }
     ]
   },
 
@@ -448,7 +463,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A motor does 6000 J of work in 30 seconds. What is its power?", formIndex: 0 },
-      { text: "A 100 W light bulb is left on for 60 seconds. How much work does it do?", formIndex: 1 }
+      { text: "A 100 W light bulb is left on for 60 seconds. How much work does it do?", formIndex: 1 },
+      { text: "An electric drill does 9000 J of work in 15 seconds. What is the power of the drill?", formIndex: 0 },
+      { text: "A generator has a power output of 2000 W. How long does it take to do 50000 J of work?", formIndex: 2 }
     ]
   },
 
@@ -472,7 +489,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A 2 kg ball moves at 5 m/s. What is its kinetic energy?", formIndex: 0 },
-      { text: "A car of mass 1200 kg is travelling at 20 m/s. What is its kinetic energy?", formIndex: 0 }
+      { text: "A car of mass 1200 kg is travelling at 20 m/s. What is its kinetic energy?", formIndex: 0 },
+      { text: "A cyclist and bike have a combined mass of 90 kg and travel at 8 m/s. What is their kinetic energy?", formIndex: 0 }
     ]
   },
 
@@ -505,7 +523,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A 5 kg rock is lifted to a height of 10 m. g = 9.8 N/kg. What is its gravitational potential energy?", formIndex: 0 },
-      { text: "An object has 490 J of GPE, a mass of 10 kg, and g = 9.8 N/kg. What height is it at?", formIndex: 1 }
+      { text: "An object has 490 J of GPE, a mass of 10 kg, and g = 9.8 N/kg. What height is it at?", formIndex: 1 },
+      { text: "A 70 kg climber is 25 m above the ground. g = 9.8 N/kg. What is their GPE?", formIndex: 0 },
+      { text: "A 2 kg book has 98 J of GPE. g = 9.8 N/kg. What height is the shelf?", formIndex: 1 }
     ]
   },
 
@@ -528,7 +548,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A spring with constant 200 N/m is stretched by 0.1 m. What is the elastic potential energy stored?", formIndex: 0 }
+      { text: "A spring with constant 200 N/m is stretched by 0.1 m. What is the elastic potential energy stored?", formIndex: 0 },
+      { text: "A catapult has a spring constant of 500 N/m and is pulled back by 0.2 m. How much elastic potential energy is stored?", formIndex: 0 }
     ]
   },
 
@@ -550,7 +571,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A motor has a useful power output of 400 W and a total power input of 500 W. What is the efficiency?", formIndex: 0 }
+      { text: "A motor has a useful power output of 400 W and a total power input of 500 W. What is the efficiency?", formIndex: 0 },
+      { text: "A light bulb has a useful power output of 15 W and a total power input of 60 W. What is the efficiency?", formIndex: 0 }
     ]
   },
 
@@ -582,7 +604,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A force of 25 N acts at a perpendicular distance of 0.4 m from a pivot. What is the moment?", formIndex: 0 },
-      { text: "A moment of 60 Nm is produced by a force acting 1.5 m from the pivot. What is the force?", formIndex: 1 }
+      { text: "A moment of 60 Nm is produced by a force acting 1.5 m from the pivot. What is the force?", formIndex: 1 },
+      { text: "A spanner applies a force of 30 N at 0.25 m from the bolt. What is the moment?", formIndex: 0 },
+      { text: "A moment of 12 Nm is needed and the available force is 40 N. How far from the pivot must the force be applied?", formIndex: 2 }
     ]
   },
 
@@ -614,7 +638,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A 1500 kg car moves at 20 m/s. What is its momentum?", formIndex: 0 },
-      { text: "An object has momentum 600 kg m/s and mass 30 kg. What is its velocity?", formIndex: 2 }
+      { text: "An object has momentum 600 kg m/s and mass 30 kg. What is its velocity?", formIndex: 2 },
+      { text: "A football of mass 0.45 kg is kicked at 15 m/s. What is its momentum?", formIndex: 0 },
+      { text: "A lorry has a momentum of 120000 kg m/s and moves at 30 m/s. What is its mass?", formIndex: 1 }
     ]
   },
 
@@ -646,7 +672,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A ball experiences a change in momentum of 6 kg m/s over 0.02 seconds. What is the force?", formIndex: 0 },
-      { text: "A force of 200 N acts on a ball for 0.05 seconds. What is the change in momentum?", formIndex: 1 }
+      { text: "A force of 200 N acts on a ball for 0.05 seconds. What is the change in momentum?", formIndex: 1 },
+      { text: "A tennis racket exerts a force of 500 N on a ball for 0.004 seconds. What is the change in momentum?", formIndex: 1 },
+      { text: "A car crumple zone increases the collision time to 0.5 seconds. The change in momentum is 15000 kg m/s. What is the average force?", formIndex: 0 }
     ]
   },
 
@@ -670,7 +698,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A gas has pressure 100 kPa and volume 2 m\u00B3. It is compressed to 0.5 m\u00B3. What is the new pressure?", formIndex: 0 }
+      { text: "A gas has pressure 100 kPa and volume 2 m\u00B3. It is compressed to 0.5 m\u00B3. What is the new pressure?", formIndex: 0 },
+      { text: "A syringe contains gas at 150 kPa with a volume of 40 cm\u00B3. The plunger is pushed in to 10 cm\u00B3. What is the new pressure?", formIndex: 0 }
     ]
   },
 
@@ -703,7 +732,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "2 kg of water (c = 4200 J/kg\u00B0C) is heated by 10\u00B0C. How much energy is needed?", formIndex: 0 },
-      { text: "50,000 J of energy heats 5 kg of oil (c = 2000 J/kg\u00B0C). What is the temperature change?", formIndex: 2 }
+      { text: "50,000 J of energy heats 5 kg of oil (c = 2000 J/kg\u00B0C). What is the temperature change?", formIndex: 2 },
+      { text: "A 0.5 kg block of aluminium (c = 900 J/kg\u00B0C) is heated by 20\u00B0C. How much energy is needed?", formIndex: 0 },
+      { text: "84000 J of energy is used to heat water (c = 4200 J/kg\u00B0C) by 10\u00B0C. What mass of water was heated?", formIndex: 1 }
     ]
   },
 
@@ -729,7 +760,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "Water boils at 100\u00B0C. What is this in Kelvin?", formIndex: 1 },
-      { text: "A gas is at 300 K. What is this in Celsius?", formIndex: 0 }
+      { text: "A gas is at 300 K. What is this in Celsius?", formIndex: 0 },
+      { text: "Absolute zero is 0 K. What is this in Celsius?", formIndex: 0 },
+      { text: "A liquid nitrogen bath is at \u2212196\u00B0C. What is this in Kelvin?", formIndex: 1 }
     ]
   },
 
@@ -763,7 +796,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A wave has a frequency of 50 Hz and wavelength of 4 m. What is the wave speed?", formIndex: 0 },
-      { text: "A sound wave travels at 340 m/s and has a wavelength of 0.85 m. What is its frequency?", formIndex: 1 }
+      { text: "A sound wave travels at 340 m/s and has a wavelength of 0.85 m. What is its frequency?", formIndex: 1 },
+      { text: "A radio wave has a frequency of 100 MHz and travels at 3 \u00D7 10\u2078 m/s. What is its wavelength?", formIndex: 2 },
+      { text: "Water waves travel at 2 m/s with a wavelength of 0.5 m. What is the frequency?", formIndex: 1 }
     ]
   },
 
@@ -790,7 +825,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A pendulum has a period of 0.5 seconds. What is its frequency?", formIndex: 0 },
-      { text: "A tuning fork vibrates at 256 Hz. What is the period of one vibration?", formIndex: 1 }
+      { text: "A tuning fork vibrates at 256 Hz. What is the period of one vibration?", formIndex: 1 },
+      { text: "A wave machine produces 20 waves per second. What is the period of one wave?", formIndex: 1 }
     ]
   },
 
@@ -811,7 +847,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "Light enters glass at an angle of incidence of 30\u00B0 and refracts at 19\u00B0. What is the refractive index?", formIndex: 0 }
+      { text: "Light enters glass at an angle of incidence of 30\u00B0 and refracts at 19\u00B0. What is the refractive index?", formIndex: 0 },
+      { text: "Light passes from air into water at 45\u00B0 and refracts to 32\u00B0. What formula gives the refractive index?", formIndex: 0 }
     ]
   },
 
@@ -837,7 +874,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "Light travels at 3 \u00D7 10\u2078 m/s in a vacuum and 2 \u00D7 10\u2078 m/s in glass. What is the refractive index of the glass?", formIndex: 0 }
+      { text: "Light travels at 3 \u00D7 10\u2078 m/s in a vacuum and 2 \u00D7 10\u2078 m/s in glass. What is the refractive index of the glass?", formIndex: 0 },
+      { text: "Diamond has a refractive index of 2.42. The speed of light in a vacuum is 3 \u00D7 10\u2078 m/s. What is the speed of light in diamond?", formIndex: 1 }
     ]
   },
 
@@ -858,7 +896,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A material has a critical angle of 42\u00B0. What is its refractive index?", formIndex: 0 }
+      { text: "A material has a critical angle of 42\u00B0. What is its refractive index?", formIndex: 0 },
+      { text: "An optical fibre is made of glass with a critical angle of 41\u00B0. What formula links the critical angle to the refractive index?", formIndex: 0 }
     ]
   },
 
@@ -892,7 +931,9 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A charge of 60 C flows through a wire in 10 seconds. What is the current?", formIndex: 0 },
-      { text: "A current of 3 A flows for 20 seconds. How much charge passes?", formIndex: 1 }
+      { text: "A current of 3 A flows for 20 seconds. How much charge passes?", formIndex: 1 },
+      { text: "A phone charger delivers a current of 2 A. How much charge flows in 1 minute?", formIndex: 1 },
+      { text: "A total charge of 1800 C passes through a circuit with a current of 6 A. How long did this take?", formIndex: 2 }
     ]
   },
 
@@ -924,7 +965,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A battery transfers 12 J of energy for every 4 C of charge. What is the voltage?", formIndex: 0 },
-      { text: "A 9 V battery pushes 5 C of charge. How much energy is transferred?", formIndex: 1 }
+      { text: "A 9 V battery pushes 5 C of charge. How much energy is transferred?", formIndex: 1 },
+      { text: "A power supply transfers 240 J of energy. The voltage is 12 V. How much charge flowed?", formIndex: 2 }
     ]
   },
 
@@ -957,7 +999,9 @@ const EQUATIONS = [
     wordProblems: [
       { text: "A current of 2 A flows through a 10 \u03A9 resistor. What is the voltage across it?", formIndex: 0 },
       { text: "A 12 V supply is connected to a 4 \u03A9 resistor. What current flows?", formIndex: 1 },
-      { text: "A voltage of 6 V drives a current of 0.5 A. What is the resistance?", formIndex: 2 }
+      { text: "A voltage of 6 V drives a current of 0.5 A. What is the resistance?", formIndex: 2 },
+      { text: "An LED has a resistance of 200 \u03A9 and a current of 0.02 A flows through it. What is the voltage across it?", formIndex: 0 },
+      { text: "A 230 V supply is connected to a kettle element with a resistance of 46 \u03A9. What current flows?", formIndex: 1 }
     ]
   },
 
@@ -989,7 +1033,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A lamp draws 3 A from a 12 V supply. What is its power?", formIndex: 0 },
-      { text: "A 60 W appliance is connected to 240 V mains. What current does it draw?", formIndex: 1 }
+      { text: "A 60 W appliance is connected to 240 V mains. What current does it draw?", formIndex: 1 },
+      { text: "A heater draws 10 A from a 230 V supply. What is its power?", formIndex: 0 }
     ]
   },
 
@@ -1012,7 +1057,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A current of 5 A flows through a 4 \u03A9 resistor. What is the power dissipated?", formIndex: 0 }
+      { text: "A current of 5 A flows through a 4 \u03A9 resistor. What is the power dissipated?", formIndex: 0 },
+      { text: "A 3 A current flows through a heating element of resistance 20 \u03A9. What is the power?", formIndex: 0 }
     ]
   },
 
@@ -1036,7 +1082,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A 2 A current flows through a 12 V heater for 300 seconds. How much energy is transferred?", formIndex: 0 }
+      { text: "A 2 A current flows through a 12 V heater for 300 seconds. How much energy is transferred?", formIndex: 0 },
+      { text: "A car headlight draws 5 A from a 12 V battery for 3600 seconds. How much energy is used?", formIndex: 0 }
     ]
   },
 
@@ -1068,7 +1115,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A 500 W microwave runs for 120 seconds. How much energy does it use?", formIndex: 0 },
-      { text: "A device uses 36000 J of energy in 60 seconds. What is its power?", formIndex: 1 }
+      { text: "A device uses 36000 J of energy in 60 seconds. What is its power?", formIndex: 1 },
+      { text: "A 2000 W kettle uses 360000 J of energy. How long was it on for?", formIndex: 2 }
     ]
   },
 
@@ -1089,7 +1137,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "Three resistors of 10 \u03A9, 20 \u03A9 and 30 \u03A9 are connected in series. What is the total resistance?", formIndex: 0 }
+      { text: "Three resistors of 10 \u03A9, 20 \u03A9 and 30 \u03A9 are connected in series. What is the total resistance?", formIndex: 0 },
+      { text: "A circuit has three resistors in series: 100 \u03A9, 220 \u03A9 and 470 \u03A9. What formula gives the total resistance?", formIndex: 0 }
     ]
   },
 
@@ -1113,7 +1162,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A wire has resistivity 1.7 \u00D7 10\u207B\u2078 \u03A9m, length 2 m and cross-sectional area 1 \u00D7 10\u207B\u2076 m\u00B2. What is its resistance?", formIndex: 0 }
+      { text: "A wire has resistivity 1.7 \u00D7 10\u207B\u2078 \u03A9m, length 2 m and cross-sectional area 1 \u00D7 10\u207B\u2076 m\u00B2. What is its resistance?", formIndex: 0 },
+      { text: "A nichrome wire has resistivity 1.1 \u00D7 10\u207B\u2076 \u03A9m, length 0.5 m and cross-sectional area 2 \u00D7 10\u207B\u2077 m\u00B2. What is its resistance?", formIndex: 0 }
     ]
   },
 
@@ -1134,7 +1184,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A transformer has 100 turns on the primary and 500 on the secondary. The input voltage is 12 V. What formula links the voltages and turns?", formIndex: 0 }
+      { text: "A transformer has 100 turns on the primary and 500 on the secondary. The input voltage is 12 V. What formula links the voltages and turns?", formIndex: 0 },
+      { text: "A step-down transformer has 2000 primary turns and 100 secondary turns. The input is 230 V. What formula would you use?", formIndex: 0 }
     ]
   },
 
@@ -1164,7 +1215,8 @@ const EQUATIONS = [
     ],
     wordProblems: [
       { text: "A satellite orbits Earth at a radius of 7000 km with a period of 5400 s. What is its orbital speed?", formIndex: 0 },
-      { text: "A satellite orbits at 7500 m/s at a radius of 6800 km. What is its orbital period?", formIndex: 1 }
+      { text: "A satellite orbits at 7500 m/s at a radius of 6800 km. What is its orbital period?", formIndex: 1 },
+      { text: "The International Space Station orbits at a radius of 6780 km with a period of 5580 s. What is its orbital speed?", formIndex: 0 }
     ]
   },
 
@@ -1191,7 +1243,8 @@ const EQUATIONS = [
       }
     ],
     wordProblems: [
-      { text: "A galaxy is receding at 5 \u00D7 10\u2076 m/s. The Hubble constant is 2.2 \u00D7 10\u207B\u00B9\u2078 s\u207B\u00B9. How far away is it?", formIndex: 1 }
+      { text: "A galaxy is receding at 5 \u00D7 10\u2076 m/s. The Hubble constant is 2.2 \u00D7 10\u207B\u00B9\u2078 s\u207B\u00B9. How far away is it?", formIndex: 1 },
+      { text: "A galaxy is 8 \u00D7 10\u00B2\u00B2 m away. The Hubble constant is 2.2 \u00D7 10\u207B\u00B9\u2078 s\u207B\u00B9. What is its speed of recession?", formIndex: 0 }
     ]
   }
 ];
