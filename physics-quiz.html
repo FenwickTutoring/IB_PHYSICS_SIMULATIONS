@@ -901,6 +901,16 @@
       .question-area {
         flex: 0 1 auto;
       }
+
+      /* Move feedback/continue bar up with content instead of pinned to screen bottom */
+      .feedback-bar {
+        position: relative;
+        transform: translateY(100%);
+      }
+
+      .feedback-bar.show {
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
