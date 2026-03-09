@@ -59,8 +59,39 @@
         button:hover { background-color: #ba684e; }
         button:disabled { background-color: #D4B5AE; cursor: not-allowed; }
 
+        /* ── GO overlay ── */
+        #go-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 100;
+        }
+        #go-overlay.go-animate {
+            display: flex;
+            animation: goBlast 0.9s ease-out forwards;
+        }
+        #go-overlay span {
+            font-size: 18vw;
+            font-weight: 900;
+            color: #5d2137;
+            text-shadow: 0 0 40px rgba(93,33,55,0.4), 4px 4px 0 #ba684e;
+            line-height: 1;
+            letter-spacing: -2px;
+            user-select: none;
+        }
+        @keyframes goBlast {
+            0%   { opacity: 0;   transform: scale(0.3); }
+            30%  { opacity: 1;   transform: scale(1.15); }
+            55%  { opacity: 1;   transform: scale(1); }
+            100% { opacity: 0;   transform: scale(1.4); }
+        }
+
         /* ── Track ── */
         #track-container {
+            position: relative;
             width: 100vw;
             background: #D4B5AE;
             border-top: 3px solid #5d2137;
@@ -326,6 +357,7 @@
     </div>
 
     <div id="track-container">
+        <div id="go-overlay"><span>GO!!!</span></div>
         <div class="finish-line"></div>
         <div class="racer-lane">
             <div id="racer1-icon" class="racer-icon"></div>
@@ -757,12 +789,23 @@
             }
         }
 
+        const goOverlay = document.getElementById('go-overlay');
+        function fireGoOverlay() {
+            goOverlay.classList.remove('go-animate');
+            void goOverlay.offsetWidth; // force reflow so animation restarts
+            goOverlay.classList.add('go-animate');
+            goOverlay.addEventListener('animationend', () => {
+                goOverlay.classList.remove('go-animate');
+            }, { once: true });
+        }
+
         startBtn.addEventListener('click', () => {
             if (raceState === 'IDLE') {
                 resetRace();
                 raceState = 'RACING';
                 startBtn.disabled = true;
                 startTime = 0;
+                fireGoOverlay();
                 animationId = requestAnimationFrame(step);
             }
         });
