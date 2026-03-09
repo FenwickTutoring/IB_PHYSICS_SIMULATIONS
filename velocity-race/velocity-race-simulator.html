@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity Race Simulator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #fee9e2;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        .controls-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(93,33,55,0.12);
+            margin: 20px;
+            width: calc(100% - 40px);
+            max-width: 800px;
+            box-sizing: border-box;
+            border-top: 4px solid #5d2137;
+        }
+        h2 {
+            color: #5d2137;
+            margin-top: 0;
+        }
+        .control-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        select, input[type="number"], button {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #D4B5AE;
+            border-radius: 4px;
+        }
+        select, input[type="number"] {
+            background-color: #fee9e2;
+            color: #1a1a1a;
+        }
+        button {
+            background-color: #5d2137;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: #ba684e; }
+        button:disabled { background-color: #D4B5AE; cursor: not-allowed; }
+
+        /* ── Track ── */
+        #track-container {
+            width: 100vw;
+            background: #D4B5AE;
+            border-top: 3px solid #5d2137;
+            border-bottom: 3px solid #5d2137;
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .finish-line {
+            position: absolute;
+            right: 0; top: 0; bottom: 0;
+            width: 10px;
+            background: repeating-linear-gradient(0deg, #5d2137, #5d2137 15px, #fff 15px, #fff 30px);
+            z-index: 10;
+        }
+        .racer-lane {
+            height: 90px;
+            border-bottom: 2px dashed #ba684e;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .racer-lane:last-child { border-bottom: none; }
+        .racer-icon {
+            font-size: 50px;
+            position: absolute;
+            top: 20px; left: 0;
+            transform: translateX(0);
+            line-height: 1;
+            z-index: 5;
+            filter: drop-shadow(2px 2px 2px rgba(93,33,55,0.25));
+        }
+        .time-label {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            font-weight: bold;
+            color: #5d2137;
+            background: rgba(255,255,255,0.92);
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1px solid #D4B5AE;
+            display: none;
+            z-index: 6;
+            white-space: nowrap;
+        }
+
+        /* ── Track length bar ── */
+        #track-length-bar {
+            width: 100vw;
+            height: 32px;
+            background: #fee9e2;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .arrow-line {
+            position: absolute;
+            left: 14px; right: 14px;
+            height: 2px;
+            background: #5d2137;
+        }
+        .arrow-line::before {
+            content: '';
+            position: absolute;
+            left: -1px; top: -5px;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-right: 8px solid #5d2137;
+        }
+        .arrow-line::after {
+            content: '';
+            position: absolute;
+            right: -1px; top: -5px;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 8px solid #5d2137;
+        }
+        .length-label {
+            background: #fee9e2;
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #5d2137;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Dashboard ── */
+        #dashboard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: calc(100% - 40px);
+            max-width: 800px;
+            margin: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #ffffff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(93,33,55,0.12);
+            box-sizing: border-box;
+            border-top: 4px solid #5d2137;
+        }
+        .winner-banner { color: #295c20; }
+        .time-scale { color: #ba684e; }
+
+        /* ── Worksheet ── */
+        #worksheet {
+            background: #ffffff;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(93,33,55,0.12);
+            margin: 0 20px 30px;
+            width: calc(100% - 40px);
+            max-width: 800px;
+            box-sizing: border-box;
+            border-top: 4px solid #5d2137;
+        }
+        #worksheet h3 {
+            color: #5d2137;
+            margin-top: 0;
+            margin-bottom: 4px;
+        }
+        .formula-hint {
+            color: #ba684e;
+            font-size: 15px;
+            margin-bottom: 16px;
+            margin-top: 0;
+        }
+        .ws-table-wrap { overflow-x: auto; }
+        .ws-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 420px;
+        }
+        .ws-table th {
+            background: #fee9e2;
+            color: #5d2137;
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 13px;
+            border-bottom: 2px solid #D4B5AE;
+            white-space: nowrap;
+        }
+        .ws-table td {
+            padding: 10px;
+            border-bottom: 1px solid #D4B5AE;
+            vertical-align: middle;
+        }
+        .ws-table tr:last-child td { border-bottom: none; }
+        .ws-table .answer-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px 8px;
+            font-size: 14px;
+            background: #fee9e2;
+            border: 1px solid #D4B5AE;
+            border-radius: 4px;
+            color: #1a1a1a;
+            min-width: 100px;
+        }
+        .result-icon {
+            font-size: 22px;
+            text-align: center;
+            min-width: 28px;
+        }
+        .ws-actions {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .ws-feedback {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* ── Units toggle ── */
+        .units-toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .toggle-label {
+            font-size: 14px;
+            color: #1a1a1a;
+            transition: color 0.2s, font-weight 0.2s;
+        }
+        .toggle-label.active {
+            font-weight: bold;
+            color: #5d2137;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+        .toggle-switch input { display: none; }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #D4B5AE;
+            border-radius: 26px;
+            transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 20px; width: 20px;
+            left: 3px; bottom: 3px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle-switch input:checked + .toggle-slider { background-color: #5d2137; }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+    <div class="controls-container">
+        <h2>Velocity Race Simulator</h2>
+        <p style="margin-top:0; color:#ba684e; font-size: 14px;">
+            Maximise your browser window and enter your monitor's physical width for 100% real-world accuracy.
+        </p>
+        <div class="control-row">
+            <label>Racer 1:
+                <select id="racer1-select" style="max-width: 300px;"></select>
+            </label>
+        </div>
+        <div class="control-row">
+            <label>Racer 2:
+                <select id="racer2-select" style="max-width: 300px;"></select>
+            </label>
+        </div>
+        <div class="control-row">
+            <label>Browser/Screen Width:
+                <input type="number" id="screen-width" value="26" step="0.1" style="width: 80px;"> cm
+            </label>
+            <button id="start-btn">Start Race</button>
+            <button id="reset-btn" style="background-color: #8999AB;">Reset</button>
+        </div>
+        <div class="control-row units-toggle-row">
+            <span style="font-weight:bold; color:#5d2137; font-size:14px;">Time units:</span>
+            <span class="toggle-label active" id="lbl-simple">Simple (seconds)</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="units-hard">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label" id="lbl-hard">Hard (mixed units)</span>
+        </div>
+    </div>
+
+    <div id="track-container">
+        <div class="finish-line"></div>
+        <div class="racer-lane">
+            <div id="racer1-icon" class="racer-icon"></div>
+            <div id="time1-label" class="time-label"></div>
+        </div>
+        <div class="racer-lane">
+            <div id="racer2-icon" class="racer-icon"></div>
+            <div id="time2-label" class="time-label"></div>
+        </div>
+    </div>
+
+    <div id="track-length-bar">
+        <div class="arrow-line"></div>
+        <span class="length-label" id="track-length-display">— m</span>
+    </div>
+
+    <div id="dashboard">
+        <div class="time-scale">Time Multiplier: <span id="multiplier-display">1×</span></div>
+        <div class="winner-banner" id="winner-display"></div>
+    </div>
+
+    <div id="worksheet" style="display:none;">
+        <h3>Speed Worksheet</h3>
+        <p class="formula-hint">Use <strong>v = d ÷ t</strong> to calculate each racer's speed in m/s.</p>
+        <div class="ws-table-wrap">
+            <table class="ws-table">
+                <thead>
+                    <tr>
+                        <th>Racer</th>
+                        <th>Your speed (m/s)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="ws-tbody"></tbody>
+            </table>
+        </div>
+        <div class="ws-actions">
+            <button id="check-btn">Check all answers</button>
+            <span class="ws-feedback" id="ws-feedback"></span>
+        </div>
+    </div>
+
+    <script>
+        const velocities = [
+            { name: "Deep sea manganese crust growth", speed: 80e-18, emoji: "🪨" },
+            { name: "Stalagmite growth", speed: 0.3e-12, emoji: "💧" },
+            { name: "Lichen growth", speed: 7e-12, emoji: "🦠" },
+            { name: "Typical motion of continents", speed: 0.3e-9, emoji: "🌍" },
+            { name: "Human childhood growth", speed: 4e-9, emoji: "🧒" },
+            { name: "Tree growth", speed: 30e-9, emoji: "🌳" },
+            { name: "Electron drift in metal wire", speed: 1e-6, emoji: "⚡" },
+            { name: "Sperm motion", speed: 160e-6, emoji: "🧬" },
+            { name: "Speed of light at Sun's centre", speed: 1e-3, emoji: "☀️" },
+            { name: "Ketchup motion", speed: 1e-3, emoji: "🍅" },
+            { name: "Slowest speed of light (in matter)", speed: 0.3, emoji: "🛑" },
+            { name: "Speed of snowflakes", speed: 1.5, emoji: "❄️" },
+            { name: "Signal speed in human nerves", speed: 120, emoji: "🧠" },
+            { name: "Wind speed (Hurricane)", speed: 33, emoji: "🌪️" },
+            { name: "Speed of rain drops", speed: 8, emoji: "🌧️" },
+            { name: "Fastest swimming fish (Sailfish)", speed: 22, emoji: "🐟" },
+            { name: "Speed sailing record (Hydroptere)", speed: 26.4, emoji: "⛵" },
+            { name: "Fastest running animal (Cheetah)", speed: 30, emoji: "🐆" },
+            { name: "Air in throat when sneezing", speed: 42, emoji: "🤧" },
+            { name: "Fastest throw (Cricket ball)", speed: 50, emoji: "🏏" },
+            { name: "Freely falling human", speed: 90, emoji: "🪂" },
+            { name: "Fastest bird (Falco peregrinus)", speed: 60, emoji: "🦅" },
+            { name: "Fastest badminton smash", speed: 70, emoji: "🏸" },
+            { name: "Avg speed of oxygen molecule", speed: 280, emoji: "💨" },
+            { name: "Speed of sound in dry air", speed: 330, emoji: "🔊" },
+            { name: "Speed of the equator", speed: 434, emoji: "🌐" },
+            { name: "Cracking whip's end", speed: 750, emoji: "🤠" },
+            { name: "Speed of a rifle bullet", speed: 1000, emoji: "🔫" },
+            { name: "Crack propagation in breaking silicon", speed: 5000, emoji: "💥" },
+            { name: "Helios II satellite", speed: 70200, emoji: "🛰️" },
+            { name: "Speed of Earth through universe", speed: 370000, emoji: "🌌" },
+            { name: "Lightning tip", speed: 600000, emoji: "🌩️" },
+            { name: "Highest macroscopic speed in galaxy", speed: 97000000, emoji: "🌠" },
+            { name: "Electrons inside colour TV tube", speed: 100000000, emoji: "📺" },
+            { name: "Speed of radio messages in space", speed: 299792458, emoji: "📡" },
+            { name: "African elephant (top speed)", speed: 10.8, emoji: "🐘" },
+            { name: "Usain Bolt (top speed)", speed: 12.4, emoji: "🏃" },
+            { name: "Formula One car (top speed)", speed: 97, emoji: "🏎️" },
+            { name: "Global sea level rise", speed: 1.14e-10, emoji: "🌊" }
+        ];
+
+        // Shuffle into random order
+        for (let i = velocities.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [velocities[i], velocities[j]] = [velocities[j], velocities[i]];
+        }
+
+        // DOM refs
+        const select1 = document.getElementById('racer1-select');
+        const select2 = document.getElementById('racer2-select');
+        const icon1 = document.getElementById('racer1-icon');
+        const icon2 = document.getElementById('racer2-icon');
+        const time1Label = document.getElementById('time1-label');
+        const time2Label = document.getElementById('time2-label');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const screenWidthInput = document.getElementById('screen-width');
+        const trackContainer = document.getElementById('track-container');
+        const multiplierDisplay = document.getElementById('multiplier-display');
+        const winnerDisplay = document.getElementById('winner-display');
+        const trackLengthDisplay = document.getElementById('track-length-display');
+        const worksheet = document.getElementById('worksheet');
+        const wsTbody = document.getElementById('ws-tbody');
+        const checkBtn = document.getElementById('check-btn');
+        const wsFeedback = document.getElementById('ws-feedback');
+
+        // Race state
+        let animationId;
+        let raceState = 'IDLE';
+        let startTime = 0;
+        let pos1 = 0, pos2 = 0;
+        let lastTimestamp = 0;
+        let finished1 = false, finished2 = false;
+        let winnerId = null;
+        let delayStart = 0;
+        let slowMoMultiplier = 1;
+        let raceV1 = null, raceV2 = null;
+        let raceDistance = 0, raceTime1 = 0, raceTime2 = 0;
+
+        // Populate dropdowns
+        velocities.forEach((v, index) => {
+            select1.add(new Option(`${v.emoji} ${v.name}`, index));
+            select2.add(new Option(`${v.emoji} ${v.name}`, index));
+        });
+        const default1 = velocities.findIndex(v => v.name.toLowerCase().includes("ketchup"));
+        const default2 = velocities.findIndex(v => v.name.toLowerCase().includes("snowflakes"));
+        if (default1 !== -1) select1.value = default1;
+        if (default2 !== -1) select2.value = default2;
+
+        function updateIcons() {
+            const v1 = velocities[parseInt(select1.value)];
+            const v2 = velocities[parseInt(select2.value)];
+            if (v1) icon1.innerText = v1.emoji;
+            if (v2) icon2.innerText = v2.emoji;
+        }
+        select1.addEventListener('change', updateIcons);
+        select2.addEventListener('change', updateIcons);
+        updateIcons();
+
+        // ── Track length bar ──
+        function updateTrackLengthBar() {
+            const physicalWidthCm = parseFloat(screenWidthInput.value) || 26;
+            const physicalWidthMeters = physicalWidthCm / 100;
+            const trackPixelWidth = trackContainer.clientWidth;
+            const pixelsPerMeter = trackPixelWidth / physicalWidthMeters;
+            const distanceMeters = (trackPixelWidth - 50) / pixelsPerMeter;
+            trackLengthDisplay.textContent = distanceMeters.toFixed(3) + ' m';
+        }
+        screenWidthInput.addEventListener('input', updateTrackLengthBar);
+        window.addEventListener('resize', updateTrackLengthBar);
+        updateTrackLengthBar();
+
+        // ── Toggle ──
+        const unitsHardToggle = document.getElementById('units-hard');
+        const lblSimple = document.getElementById('lbl-simple');
+        const lblHard = document.getElementById('lbl-hard');
+
+        unitsHardToggle.addEventListener('change', () => {
+            const hard = unitsHardToggle.checked;
+            lblSimple.classList.toggle('active', !hard);
+            lblHard.classList.toggle('active', hard);
+            if (raceTime1 > 0 && time1Label.style.display === 'block') {
+                time1Label.innerHTML = 'Time: ' + formatTimeLane(raceTime1);
+                time2Label.innerHTML = 'Time: ' + formatTimeLane(raceTime2);
+            }
+        });
+
+        // ── Formatting helpers ──
+        // Simple mode: always in seconds, scientific notation for extreme values
+        function formatTimeSimple(s) {
+            const a = Math.abs(s);
+            if (a === 0) return '0 s';
+            if (a >= 0.001 && a < 1e6) {
+                return parseFloat(s.toPrecision(3)) + ' s';
+            }
+            const exp = Math.floor(Math.log10(a));
+            const mantissa = parseFloat((s / Math.pow(10, exp)).toPrecision(3));
+            return `${mantissa} &times; 10<sup>${exp}</sup> s`;
+        }
+
+        // Hard mode: mixed units requiring conversion
+        function formatTimeHard(s) {
+            const a = Math.abs(s);
+            const f = n => parseFloat(n.toPrecision(3));
+            if (a === 0) return '0 s';
+            if (a < 1e-12) return `${f(s * 1e15)} fs`;
+            if (a < 1e-9)  return `${f(s * 1e12)} ps`;
+            if (a < 1e-6)  return `${f(s * 1e9)} ns`;
+            if (a < 1e-3)  return `${f(s * 1e6)} µs`;
+            if (a < 1)     return `${f(s * 1e3)} ms`;
+            if (a < 60)    return `${f(s)} s`;
+            if (a < 3600)  return `${f(s / 60)} min`;
+            if (a < 86400) return `${f(s / 3600)} hr`;
+            if (a < 86400 * 365.25) return `${f(s / 86400)} days`;
+            return `${f(s / (86400 * 365.25))} years`;
+        }
+
+        function formatTimeLane(s) {
+            return unitsHardToggle.checked ? formatTimeHard(s) : formatTimeSimple(s);
+        }
+
+        // ── Answer checking ──
+        // Accept any correctly-rounded value: 1-4 sig figs, or 0-3 decimal places
+        function isAcceptable(studentVal, exact) {
+            if (!isFinite(studentVal) || !isFinite(exact) || exact === 0) return false;
+            const eps = 1e-6;
+            for (let sf = 1; sf <= 4; sf++) {
+                const rounded = parseFloat(exact.toPrecision(sf));
+                if (Math.abs(studentVal - rounded) <= Math.abs(rounded) * eps + 1e-300) return true;
+            }
+            for (let dp = 0; dp <= 3; dp++) {
+                const factor = Math.pow(10, dp);
+                const rounded = Math.round(exact * factor) / factor;
+                if (Math.abs(studentVal - rounded) <= (Math.abs(rounded) + 1e-300) * eps + 1e-300) return true;
+            }
+            return false;
+        }
+
+        // ── Worksheet ──
+        function showWorksheet(v1, v2) {
+            const rows = [
+                { racer: `${v1.emoji} ${v1.name}`, speed: v1.speed, id: 'ws-input-1' },
+                { racer: `${v2.emoji} ${v2.name}`, speed: v2.speed, id: 'ws-input-2' },
+            ];
+            wsTbody.innerHTML = rows.map(r => `
+                <tr>
+                    <td>${r.racer}</td>
+                    <td><input type="text" class="answer-input" id="${r.id}" placeholder="e.g. 12.4" autocomplete="off"></td>
+                    <td class="result-icon" id="${r.id}-result"></td>
+                </tr>
+            `).join('');
+            wsFeedback.textContent = '';
+            wsFeedback.style.color = '';
+            worksheet.style.display = 'block';
+            worksheet.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        checkBtn.addEventListener('click', () => {
+            if (!raceV1 || !raceV2) return;
+            const checks = [
+                { inputId: 'ws-input-1', speed: raceV1.speed },
+                { inputId: 'ws-input-2', speed: raceV2.speed },
+            ];
+            let allCorrect = true;
+            let anyAnswered = false;
+            checks.forEach(({ inputId, speed }) => {
+                const inputEl = document.getElementById(inputId);
+                const resultEl = document.getElementById(inputId + '-result');
+                if (!inputEl || !resultEl) return;
+                if (!inputEl.value.trim()) { resultEl.textContent = ''; allCorrect = false; return; }
+                anyAnswered = true;
+                const val = parseFloat(inputEl.value);
+                if (isAcceptable(val, speed)) {
+                    resultEl.textContent = '✓';
+                    resultEl.style.color = '#295c20';
+                } else {
+                    resultEl.textContent = '✗';
+                    resultEl.style.color = '#5d2137';
+                    allCorrect = false;
+                }
+            });
+            if (anyAnswered && allCorrect) {
+                wsFeedback.textContent = 'Excellent! Both answers are correct!';
+                wsFeedback.style.color = '#295c20';
+            } else if (anyAnswered) {
+                wsFeedback.textContent = 'Keep trying — check your calculation.';
+                wsFeedback.style.color = '#ba684e';
+            }
+        });
+
+        // ── Race control ──
+        function resetRace() {
+            cancelAnimationFrame(animationId);
+            raceState = 'IDLE';
+            pos1 = 0; pos2 = 0;
+            finished1 = false; finished2 = false;
+            winnerId = null;
+            raceV1 = null; raceV2 = null;
+            raceDistance = 0; raceTime1 = 0; raceTime2 = 0;
+            icon1.style.transform = 'translateX(0px)';
+            icon2.style.transform = 'translateX(0px)';
+            time1Label.style.display = 'none';
+            time2Label.style.display = 'none';
+            multiplierDisplay.innerText = '1×';
+            multiplierDisplay.style.color = '';
+            multiplierDisplay.style.fontSize = '18px';
+            winnerDisplay.innerText = '';
+            startBtn.disabled = false;
+            startBtn.innerText = 'Start Race';
+            worksheet.style.display = 'none';
+            wsTbody.innerHTML = '';
+            wsFeedback.textContent = '';
+        }
+
+        function formatMultiplier(num) {
+            if (num >= 1e6 || num < 0.001) {
+                return `10^${Math.round(Math.log10(num))}×`;
+            }
+            return num.toLocaleString() + '×';
+        }
+
+        function step(timestamp) {
+            if (!startTime) {
+                startTime = timestamp;
+                lastTimestamp = timestamp;
+            }
+            const dtReal = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+
+            const physicalWidthCm = parseFloat(screenWidthInput.value) || 26;
+            const physicalWidthMeters = physicalWidthCm / 100;
+            const trackPixelWidth = trackContainer.clientWidth;
+            const pixelsPerMeter = trackPixelWidth / physicalWidthMeters;
+            const finishLineX = trackPixelWidth - 50;
+
+            const v1 = velocities[parseInt(select1.value)];
+            const v2 = velocities[parseInt(select2.value)];
+            const speed1 = v1 ? v1.speed : 0;
+            const speed2 = v2 ? v2.speed : 0;
+
+            if (raceState === 'RACING') {
+                const elapsedReal = (timestamp - startTime) / 1000;
+                let stages = 0;
+                let timeMultiplier = 1;
+                if (elapsedReal > 4) {
+                    stages = Math.floor((elapsedReal - 4) / 2) + 1;
+                    timeMultiplier = Math.pow(10, stages);
+                }
+                multiplierDisplay.innerText = formatMultiplier(timeMultiplier);
+                multiplierDisplay.style.fontSize = `${18 + stages * 6}px`;
+
+                const dtSimulated = dtReal * timeMultiplier;
+                if (!finished1) pos1 += speed1 * dtSimulated * pixelsPerMeter;
+                if (!finished2) pos2 += speed2 * dtSimulated * pixelsPerMeter;
+                if (pos1 >= finishLineX) { pos1 = finishLineX; finished1 = true; }
+                if (pos2 >= finishLineX) { pos2 = finishLineX; finished2 = true; }
+                icon1.style.transform = `translateX(${Math.min(pos1, finishLineX)}px)`;
+                icon2.style.transform = `translateX(${Math.min(pos2, finishLineX)}px)`;
+
+                if (winnerId === null && (finished1 || finished2)) {
+                    if (finished1 && finished2) {
+                        if (speed1 > speed2) winnerId = 1;
+                        else if (speed2 > speed1) winnerId = 2;
+                        else winnerId = 0;
+                    } else if (finished1) { winnerId = 1; }
+                    else { winnerId = 2; }
+
+                    let winText = winnerId === 1 ? `Winner: ${v1.name}!` :
+                                  winnerId === 2 ? `Winner: ${v2.name}!` : "It's a Tie!";
+                    winnerDisplay.innerText = winText;
+                }
+
+                if (finished1 && finished2) {
+                    // Compute and show exact times (distance ÷ speed)
+                    const distMeters = finishLineX / pixelsPerMeter;
+                    const t1 = distMeters / speed1;
+                    const t2 = distMeters / speed2;
+                    raceV1 = v1; raceV2 = v2;
+                    raceDistance = distMeters; raceTime1 = t1; raceTime2 = t2;
+
+                    time1Label.innerHTML = 'Time: ' + formatTimeLane(t1);
+                    time1Label.style.display = 'block';
+                    time2Label.innerHTML = 'Time: ' + formatTimeLane(t2);
+                    time2Label.style.display = 'block';
+
+                    const winnerSpeed = winnerId === 1 ? speed1 : (winnerId === 2 ? speed2 : Math.max(speed1, speed2));
+                    const timeToCrossAt1x = finishLineX / (winnerSpeed * pixelsPerMeter);
+                    if (timeToCrossAt1x < 0.05) {
+                        raceState = 'REPLAY_DELAY';
+                        delayStart = timestamp;
+                        winnerDisplay.innerText += ' (Slow-Mo Replay in 4s...)';
+                    } else {
+                        raceState = 'IDLE';
+                        startBtn.disabled = false;
+                        startBtn.innerText = 'Race Again';
+                        showWorksheet(v1, v2);
+                    }
+                }
+
+            } else if (raceState === 'REPLAY_DELAY') {
+                if (timestamp - delayStart >= 4000) {
+                    raceState = 'REPLAYING';
+                    pos1 = 0; pos2 = 0;
+                    finished1 = false; finished2 = false;
+                    const winnerSpeed = winnerId === 1 ? speed1 : (winnerId === 2 ? speed2 : Math.max(speed1, speed2));
+                    const timeToCrossAt1x = finishLineX / (winnerSpeed * pixelsPerMeter);
+                    const exactMultiplier = timeToCrossAt1x / 5;
+                    const mag = Math.round(Math.log10(exactMultiplier));
+                    slowMoMultiplier = Math.pow(10, mag);
+                    multiplierDisplay.innerText = `SLOW MO: 10^${mag}×`;
+                    multiplierDisplay.style.color = '#D4A835';
+                    let winText = winnerId === 1 ? `Winner: ${v1.name}!` :
+                                  winnerId === 2 ? `Winner: ${v2.name}!` : "It's a Tie!";
+                    winnerDisplay.innerText = winText + ' [REPLAYING]';
+                }
+
+            } else if (raceState === 'REPLAYING') {
+                const dtSimulated = dtReal * slowMoMultiplier;
+                if (!finished1) pos1 += speed1 * dtSimulated * pixelsPerMeter;
+                if (!finished2) pos2 += speed2 * dtSimulated * pixelsPerMeter;
+                if (pos1 >= finishLineX) { pos1 = finishLineX; finished1 = true; }
+                if (pos2 >= finishLineX) { pos2 = finishLineX; finished2 = true; }
+                icon1.style.transform = `translateX(${Math.min(pos1, finishLineX)}px)`;
+                icon2.style.transform = `translateX(${Math.min(pos2, finishLineX)}px)`;
+
+                let replayOver = false;
+                if (winnerId === 1 && finished1) replayOver = true;
+                else if (winnerId === 2 && finished2) replayOver = true;
+                else if (winnerId === 0 && (finished1 || finished2)) replayOver = true;
+
+                if (replayOver) {
+                    raceState = 'IDLE';
+                    startBtn.disabled = false;
+                    startBtn.innerText = 'Race Again';
+                    multiplierDisplay.style.color = '';
+                    let winText = winnerId === 1 ? `Winner: ${v1.name}!` :
+                                  winnerId === 2 ? `Winner: ${v2.name}!` : "It's a Tie!";
+                    winnerDisplay.innerText = winText + ' (Replay Finished)';
+                    showWorksheet(raceV1, raceV2);
+                }
+            }
+
+            if (raceState !== 'IDLE') {
+                animationId = requestAnimationFrame(step);
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (raceState === 'IDLE') {
+                resetRace();
+                raceState = 'RACING';
+                startBtn.disabled = true;
+                startTime = 0;
+                animationId = requestAnimationFrame(step);
+            }
+        });
+        resetBtn.addEventListener('click', resetRace);
+    </script>
+</body>
+</html>
