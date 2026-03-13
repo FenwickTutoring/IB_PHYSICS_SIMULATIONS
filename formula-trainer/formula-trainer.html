@@ -73,9 +73,9 @@
 
     .setup-container {
       width: 100%;
-      max-width: 640px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 2rem 1.5rem;
+      padding: 2rem 3rem;
     }
 
     .setup-header {
@@ -121,7 +121,18 @@
       font-weight: 600;
       color: var(--burgundy);
       margin-bottom: 0.75rem;
-      margin-top: 1.5rem;
+      margin-top: 0;
+    }
+
+    /* Settings row: 3-column layout for Course Level, Difficulty, Questions */
+    .settings-row {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .settings-group {
+      flex: 1;
     }
 
     /* Toggle group (SL/HL, Level 1/2) */
@@ -157,8 +168,11 @@
       background: var(--cream);
     }
 
-    /* Topic list */
+    /* Topic list - 3 column grid */
     .topic-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
       margin-bottom: 1.5rem;
     }
 
@@ -166,7 +180,6 @@
       display: flex;
       align-items: center;
       padding: 0.75rem 1rem;
-      margin-bottom: 0.5rem;
       background: var(--white);
       border-radius: 12px;
       cursor: pointer;
@@ -180,6 +193,7 @@
     }
 
     .topic-item.all-topics {
+      grid-column: 1 / -1;
       border: 2px solid var(--burgundy);
       font-weight: 600;
     }
@@ -1080,26 +1094,30 @@
         <p>Learn to use your formula booklet like a pro</p>
       </div>
 
-      <!-- Level Selection: SL / HL -->
-      <div class="setup-section-title">Course Level</div>
-      <div class="toggle-group" id="level-toggle">
-        <button class="toggle-btn selected" data-value="SL">Standard Level</button>
-        <button class="toggle-btn" data-value="HL">Higher Level</button>
-      </div>
-
-      <!-- Difficulty: Level 1 / Level 2 -->
-      <div class="setup-section-title">Difficulty</div>
-      <div class="toggle-group" id="difficulty-toggle">
-        <button class="toggle-btn selected" data-value="1">Level 1 — Single Formula</button>
-        <button class="toggle-btn" data-value="2">Level 2 — Multi Formula</button>
-      </div>
-
-      <!-- Number of Questions -->
-      <div class="setup-section-title">Number of Questions</div>
-      <div class="toggle-group" id="count-toggle">
-        <button class="toggle-btn selected" data-value="10">10</button>
-        <button class="toggle-btn" data-value="20">20</button>
-        <button class="toggle-btn" data-value="all">All</button>
+      <!-- Settings row: Course Level, Difficulty, Number of Questions -->
+      <div class="settings-row">
+        <div class="settings-group">
+          <div class="setup-section-title">Course Level</div>
+          <div class="toggle-group" id="level-toggle">
+            <button class="toggle-btn selected" data-value="SL">Standard Level</button>
+            <button class="toggle-btn" data-value="HL">Higher Level</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="setup-section-title">Difficulty</div>
+          <div class="toggle-group" id="difficulty-toggle">
+            <button class="toggle-btn selected" data-value="1">Level 1 — Single Formula</button>
+            <button class="toggle-btn" data-value="2">Level 2 — Multi Formula</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="setup-section-title">Number of Questions</div>
+          <div class="toggle-group" id="count-toggle">
+            <button class="toggle-btn selected" data-value="10">10</button>
+            <button class="toggle-btn" data-value="20">20</button>
+            <button class="toggle-btn" data-value="all">All</button>
+          </div>
+        </div>
       </div>
 
       <!-- Topics -->
