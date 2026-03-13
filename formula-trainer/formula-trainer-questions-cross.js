@@ -1002,7 +1002,7 @@ const QUESTIONS_CROSS = [
 
   {
     id: "DE_L2_01",
-    text: "Two {{protons}} are separated by a distance equal to the {{nuclear radius}} of a {{carbon-12}} nucleus. Estimate the {{electrostatic force}} between them. (Use \\(R_0 = 1.2 \\times 10^{-15}\\) m.)",
+    text: "Two {{protons}} are separated by a distance equal to the {{nuclear radius}} of a {{carbon-12}} nucleus. Estimate the {{electrostatic force}} between them. ",
     topic: "D",
     subtopic: "D2",
     level: 2,
