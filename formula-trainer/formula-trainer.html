@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB Physics Formula Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- MathJax for formula rendering -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      startup: { typeset: false }
+    };
+  </script>
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --burgundy: #5d2137;
+      --terracotta: #ba684e;
+      --cream: #fee9e2;
+      --near-black: #1a1a1a;
+      --white: #ffffff;
+      --correct: #2e7d32;
+      --correct-light: #e8f5e9;
+      --incorrect: #c62828;
+      --incorrect-light: #ffebee;
+      --hint-bg: #fff8e1;
+      --hint-border: #f9a825;
+      --sidebar-bg: #faf5f3;
+      --tab-active: var(--burgundy);
+      --tab-inactive: #d4a9a0;
+      --selected-formula: #e8d5f5;
+      --selected-border: #7b1fa2;
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--near-black);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== SCREEN MANAGEMENT ===== */
+    .screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== SETUP SCREEN ===== */
+    .setup-screen {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .setup-container {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .setup-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .setup-header h1 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    .setup-header p {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      letter-spacing: 0.07em;
+      background: linear-gradient(90deg, #4a4a4a 0%, #ba684e 40%, #c8927a 55%, #4a4a4a 100%);
+      background-size: 250% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: taglineShimmer 1.8s ease-out 0.3s 1 both, taglinePulse 4s ease-in-out 2.5s infinite;
+    }
+
+    @keyframes taglineShimmer {
+      from { background-position: 200% center; }
+      to   { background-position: 0% center; }
+    }
+
+    @keyframes taglinePulse {
+      0%, 100% { background-position: 0% center; }
+      50%      { background-position: 100% center; }
+    }
+
+    /* Section headings */
+    .setup-section-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Toggle group (SL/HL, Level 1/2) */
+    .toggle-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--terracotta);
+      border-radius: 12px;
+      background: var(--white);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--near-black);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .toggle-btn.selected {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+      color: var(--white);
+    }
+
+    .toggle-btn:hover:not(.selected) {
+      border-color: var(--burgundy);
+      background: var(--cream);
+    }
+
+    /* Topic list */
+    .topic-list {
+      margin-bottom: 1.5rem;
+    }
+
+    .topic-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background: var(--white);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      user-select: none;
+    }
+
+    .topic-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .topic-item.all-topics {
+      border: 2px solid var(--burgundy);
+      font-weight: 600;
+    }
+
+    .topic-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--terracotta);
+      border-radius: 6px;
+      margin-right: 0.75rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .topic-checkbox.checked {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+    }
+
+    .topic-checkbox.checked::after {
+      content: '';
+      width: 6px;
+      height: 12px;
+      border: solid var(--white);
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg) translateY(-1px);
+    }
+
+    .topic-label {
+      font-size: 0.95rem;
+      flex: 1;
+    }
+
+    /* Start button */
+    .start-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.02em;
+      margin-top: 1.5rem;
+    }
+
+    .start-btn:hover {
+      background: #4a1a2c;
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
+    .start-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* ===== QUIZ SCREEN ===== */
+    .quiz-screen {
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top bar */
+    .quiz-top-bar {
+      padding: 0.75rem 1.5rem;
+      background: var(--white);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .progress-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .progress-bar {
+      flex: 1;
+      max-width: 300px;
+      height: 8px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--terracotta), var(--burgundy));
+      border-radius: 4px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      white-space: nowrap;
+    }
+
+    .score-display {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      white-space: nowrap;
+    }
+
+    .back-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--terracotta);
+      border-radius: 8px;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: var(--terracotta);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .back-btn:hover {
+      background: var(--cream);
+    }
+
+    /* Main quiz area: split layout */
+    .quiz-main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* LEFT: Question area */
+    .question-panel {
+      flex: 1;
+      padding: 2.5rem 2rem 2rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-number {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--terracotta);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .question-text {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--near-black);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Tooltip spans in question text */
+    .tooltip-word {
+      border-bottom: 2px dotted var(--terracotta);
+      cursor: help;
+      position: relative;
+      transition: color 0.15s;
+    }
+
+    .tooltip-word:hover {
+      color: var(--burgundy);
+    }
+
+    .tooltip-popup {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--near-black);
+      color: var(--white);
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 400;
+      line-height: 1.4;
+      white-space: normal;
+      width: max-content;
+      max-width: 280px;
+      z-index: 50;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .tooltip-popup::after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-bottom-color: var(--near-black);
+    }
+
+    .tooltip-word:hover .tooltip-popup {
+      display: block;
+    }
+
+    /* Knowns/Unknowns panel */
+    .knowns-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--terracotta);
+      border-radius: 10px;
+      background: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--near-black);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 1rem;
+    }
+
+    .knowns-btn:hover {
+      border-color: var(--burgundy);
+      background: var(--cream);
+    }
+
+    .knowns-btn .icon {
+      font-size: 1.1rem;
+    }
+
+    .knowns-panel {
+      display: none;
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .knowns-panel.visible {
+      display: block;
+    }
+
+    .knowns-panel h4 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.4rem;
+    }
+
+    .knowns-list {
+      list-style: none;
+      margin-bottom: 0.75rem;
+    }
+
+    .knowns-list li {
+      font-size: 0.9rem;
+      padding: 0.25rem 0;
+      color: #444;
+    }
+
+    .knowns-list .symbol {
+      font-weight: 600;
+      font-style: italic;
+      color: var(--burgundy);
+    }
+
+    /* Hint area */
+    .hint-area {
+      margin-top: auto;
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--hint-bg);
+      border-left: 4px solid var(--hint-border);
+      border-radius: 0 10px 10px 0;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      color: #5d4037;
+      line-height: 1.5;
+    }
+
+    .hint-box.visible {
+      display: block;
+    }
+
+    /* Submit and action buttons */
+    .action-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .submit-btn {
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 12px;
+      background: var(--burgundy);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .submit-btn:hover {
+      background: #4a1a2c;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.97);
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .hint-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid var(--hint-border);
+      border-radius: 12px;
+      background: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #5d4037;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .hint-btn:hover {
+      background: var(--hint-bg);
+    }
+
+    /* Feedback overlay on question panel */
+    .feedback-banner {
+      display: none;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .feedback-banner.visible {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .feedback-banner.correct {
+      background: var(--correct-light);
+      color: var(--correct);
+      border: 2px solid var(--correct);
+    }
+
+    .feedback-banner.incorrect {
+      background: var(--incorrect-light);
+      color: var(--incorrect);
+      border: 2px solid var(--incorrect);
+    }
+
+    .feedback-text {
+      flex: 1;
+    }
+
+    .feedback-explanation {
+      font-weight: 400;
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+      line-height: 1.4;
+    }
+
+    .correct-path {
+      background: #fff3e0;
+      border: 1px solid #ff9800;
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.6rem;
+      color: #333;
+    }
+
+    .correct-path strong {
+      color: #e65100;
+      font-size: 0.9rem;
+    }
+
+    .correct-path ul {
+      margin: 0.3rem 0 0 1.2rem;
+      padding: 0;
+    }
+
+    .correct-path li {
+      font-size: 0.85rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .continue-btn {
+      padding: 0.5rem 1.5rem;
+      border: 2px solid currentColor;
+      border-radius: 10px;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-left: 1rem;
+    }
+
+    .continue-btn:hover {
+      opacity: 0.8;
+    }
+
+    /* ===== RIGHT: Formula Booklet Sidebar ===== */
+    .formula-sidebar {
+      width: 380px;
+      background: var(--sidebar-bg);
+      border-left: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 0.75rem 1rem;
+      background: var(--burgundy);
+      color: var(--white);
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* Tabs */
+    .sidebar-tabs {
+      display: flex;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      background: var(--white);
+    }
+
+    .sidebar-tab {
+      flex: 1;
+      padding: 0.6rem 0.5rem;
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--tab-inactive);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .sidebar-tab:hover {
+      color: var(--burgundy);
+    }
+
+    .sidebar-tab.active {
+      color: var(--burgundy);
+      border-bottom-color: var(--burgundy);
+    }
+
+    /* Sidebar formula list */
+    .sidebar-formulas {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+    }
+
+    .formula-subtopic-header {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      padding: 0.5rem 0.25rem 0.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .formula-subtopic-header:first-child {
+      margin-top: 0;
+    }
+
+    .formula-level-tag {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .formula-level-tag.sl {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .formula-level-tag.hl {
+      background: #fce4ec;
+      color: #c62828;
+    }
+
+    .formula-card {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 0.75rem;
+      margin: 0.3rem 0;
+      background: var(--white);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .formula-card:hover {
+      border-color: var(--terracotta);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .formula-card.selected {
+      border-color: var(--selected-border);
+      background: var(--selected-formula);
+      box-shadow: 0 2px 8px rgba(123, 31, 162, 0.15);
+    }
+
+    .formula-card.correct-answer {
+      border-color: var(--correct);
+      background: var(--correct-light);
+    }
+
+    .formula-card.wrong-answer {
+      border-color: var(--incorrect);
+      background: var(--incorrect-light);
+    }
+
+    .formula-card .formula-math {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .formula-card .formula-desc {
+      font-size: 0.72rem;
+      color: #888;
+      margin-left: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .formula-card .select-indicator {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #ccc;
+      border-radius: 50%;
+      margin-right: 0.6rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .formula-card.selected .select-indicator {
+      border-color: var(--selected-border);
+      background: var(--selected-border);
+    }
+
+    .formula-card.selected .select-indicator::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: solid var(--white);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg) translateY(-1px);
+    }
+
+    /* Selected formulas summary */
+    .selected-summary {
+      padding: 0.6rem 1rem;
+      background: var(--white);
+      border-top: 1px solid rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+
+    .selected-summary-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+
+    .selected-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      min-height: 1.5rem;
+    }
+
+    .selected-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      background: var(--selected-formula);
+      border: 1px solid var(--selected-border);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--selected-border);
+      font-weight: 500;
+    }
+
+    .selected-tag .remove-tag {
+      cursor: pointer;
+      font-weight: 700;
+      margin-left: 0.2rem;
+    }
+
+    .no-selection-text {
+      font-size: 0.8rem;
+      color: #aaa;
+      font-style: italic;
+    }
+
+    /* ===== RESULTS SCREEN ===== */
+    .results-screen {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .results-card {
+      text-align: center;
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 520px;
+      margin: 2rem;
+    }
+
+    .results-title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.5rem;
+    }
+
+    .results-score {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--near-black);
+      margin-bottom: 0.25rem;
+    }
+
+    .results-percentage {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+
+    .results-stars {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      min-height: 3rem;
+    }
+
+    .results-stars .star {
+      display: inline-block;
+      opacity: 0;
+      transform: scale(0) rotate(-20deg);
+      transition: all 0.4s ease;
+    }
+
+    .results-stars .star.earned {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+
+    .results-review {
+      text-align: left;
+      margin-bottom: 2rem;
+    }
+
+    .results-review h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.75rem;
+    }
+
+    .review-item {
+      font-size: 0.9rem;
+      padding: 0.5rem 0;
+      color: #555;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .review-item .review-question {
+      font-weight: 500;
+      color: var(--near-black);
+    }
+
+    .review-item .review-correct {
+      font-size: 0.82rem;
+      color: var(--correct);
+      margin-top: 0.15rem;
+    }
+
+    .results-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .results-btn {
+      flex: 1;
+      padding: 0.85rem;
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s;
+      border: none;
+    }
+
+    .results-btn:active {
+      transform: scale(0.97);
+    }
+
+    .results-btn.primary {
+      background: var(--burgundy);
+      color: var(--white);
+    }
+
+    .results-btn.secondary {
+      background: var(--white);
+      color: var(--burgundy);
+      border: 2px solid var(--burgundy);
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes starPop {
+      0% { opacity: 0; transform: scale(0) rotate(-20deg); }
+      70% { transform: scale(1.2) rotate(5deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    /* ===== INSTRUCTION SCREEN ===== */
+    .instruction-screen {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .instruction-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 560px;
+      margin: 2rem;
+    }
+
+    .instruction-card h2 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .instruction-steps {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .instruction-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #444;
+    }
+
+    .instruction-steps .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--burgundy);
+      color: var(--white);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .instruction-tips {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .instruction-tips h4 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.4rem;
+    }
+
+    .instruction-tips p {
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 0.3rem;
+    }
+
+    .instruction-go-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+
+    .instruction-go-btn:hover {
+      background: #4a1a2c;
+    }
+
+    .instruction-go-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== SCREEN 1: SETUP ===== -->
+  <div id="screen-setup" class="screen setup-screen active">
+    <div class="setup-container">
+      <div class="setup-header">
+        <h1>IB Physics<br>Formula Trainer</h1>
+        <p>Learn to use your formula booklet like a pro</p>
+      </div>
+
+      <!-- Level Selection: SL / HL -->
+      <div class="setup-section-title">Course Level</div>
+      <div class="toggle-group" id="level-toggle">
+        <button class="toggle-btn selected" data-value="SL">Standard Level</button>
+        <button class="toggle-btn" data-value="HL">Higher Level</button>
+      </div>
+
+      <!-- Difficulty: Level 1 / Level 2 -->
+      <div class="setup-section-title">Difficulty</div>
+      <div class="toggle-group" id="difficulty-toggle">
+        <button class="toggle-btn selected" data-value="1">Level 1 — Single Formula</button>
+        <button class="toggle-btn" data-value="2">Level 2 — Multi Formula</button>
+      </div>
+
+      <!-- Number of Questions -->
+      <div class="setup-section-title">Number of Questions</div>
+      <div class="toggle-group" id="count-toggle">
+        <button class="toggle-btn selected" data-value="10">10</button>
+        <button class="toggle-btn" data-value="20">20</button>
+        <button class="toggle-btn" data-value="all">All</button>
+      </div>
+
+      <!-- Topics -->
+      <div class="setup-section-title">Topics</div>
+      <div class="topic-list" id="topic-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <button class="start-btn" id="start-btn">Start Training</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 1B: INSTRUCTIONS ===== -->
+  <div id="screen-instructions" class="screen instruction-screen">
+    <div class="instruction-card">
+      <h2>How It Works</h2>
+      <ol class="instruction-steps">
+        <li>
+          <span class="step-num">1</span>
+          <span>Read the exam-style question carefully.</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Browse the <strong>Formula Booklet</strong> on the right to find the equation(s) you need to solve it.</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Also select any <strong>constants</strong> you would need (like <em>g</em>) from the Constants tab.</span>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <span>Click on formulas and constants to select them, then hit <strong>Submit Answer</strong>.</span>
+        </li>
+      </ol>
+      <div class="instruction-tips">
+        <h4>Need help?</h4>
+        <p><strong>Hover</strong> over dotted words in the question for helpful tips.</p>
+        <p>Click <strong>Show Knowns &amp; Unknowns</strong> to see the variables.</p>
+        <p>Click <strong>Hint</strong> for progressive clues.</p>
+      </div>
+      <button class="instruction-go-btn" id="instruction-go-btn">Let's Go!</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 2: QUIZ ===== -->
+  <div id="screen-quiz" class="screen quiz-screen">
+    <!-- Top bar -->
+    <div class="quiz-top-bar">
+      <button class="back-btn" id="back-btn">Back</button>
+      <div class="progress-section">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-text" id="progress-text">0 / 10</span>
+      </div>
+      <span class="score-display" id="score-display">Score: 0</span>
+    </div>
+
+    <!-- Main split layout -->
+    <div class="quiz-main">
+      <!-- Left: Question panel -->
+      <div class="question-panel" id="question-panel">
+        <div class="question-number" id="question-number">Question 1</div>
+        <div class="question-text" id="question-text"></div>
+
+        <button class="knowns-btn" id="knowns-btn">
+          <span class="icon">&#x1f50d;</span> Show Knowns &amp; Unknowns
+        </button>
+
+        <div class="knowns-panel" id="knowns-panel">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="hint-area" id="hint-area">
+          <!-- Hints appear here -->
+        </div>
+
+        <div class="action-row" id="action-row">
+          <button class="submit-btn" id="submit-btn" disabled>Submit Answer</button>
+          <button class="hint-btn" id="hint-btn">Hint</button>
+        </div>
+
+        <div class="feedback-banner" id="feedback-banner">
+          <div class="feedback-text">
+            <div id="feedback-message"></div>
+            <div class="feedback-explanation" id="feedback-explanation"></div>
+          </div>
+          <button class="continue-btn" id="continue-btn">Continue</button>
+        </div>
+      </div>
+
+      <!-- Right: Formula booklet sidebar -->
+      <div class="formula-sidebar" id="formula-sidebar">
+        <div class="sidebar-header">Formula Booklet</div>
+        <div class="sidebar-tabs" id="sidebar-tabs">
+          <!-- Tabs populated by JS -->
+        </div>
+        <div class="sidebar-formulas" id="sidebar-formulas">
+          <!-- Formula cards populated by JS -->
+        </div>
+        <div class="selected-summary" id="selected-summary">
+          <div class="selected-summary-title">Your Selection</div>
+          <div class="selected-tags" id="selected-tags">
+            <span class="no-selection-text">Click formulas above to select them</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 3: RESULTS ===== -->
+  <div id="screen-results" class="screen results-screen">
+    <div class="results-card">
+      <h2 class="results-title">Round Complete!</h2>
+      <div class="results-score" id="results-score">0 / 10</div>
+      <div class="results-percentage" id="results-percentage">0%</div>
+      <div class="results-stars" id="results-stars"></div>
+
+      <div class="results-review" id="results-review">
+        <!-- Review items -->
+      </div>
+
+      <div class="results-buttons">
+        <button class="results-btn secondary" id="btn-new-setup">New Setup</button>
+        <button class="results-btn primary" id="btn-next-round">Next Round</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load data files -->
+  <script src="formula-trainer-booklet.js"></script>
+  <script src="formula-trainer-questions-a.js"></script>
+  <script src="formula-trainer-questions-b.js"></script>
+  <script src="formula-trainer-questions-c.js"></script>
+  <script src="formula-trainer-questions-d.js"></script>
+  <script src="formula-trainer-questions-e.js"></script>
+  <script src="formula-trainer-questions-cross.js"></script>
+  <script src="formula-trainer-questions-index.js"></script>
+
+  <script>
+    // ===== APP STATE =====
+    const state = {
+      courseLevel: 'SL',       // SL or HL
+      difficulty: 1,           // 1 or 2
+      questionCount: 10,       // 10, 20, or 'all'
+      selectedTopics: [],      // ['A', 'B', 'C', 'D', 'E']
+      questions: [],           // current round of 10 questions
+      currentIndex: 0,
+      score: 0,
+      selectedFormulas: [],    // formula IDs selected by student
+      hintIndex: 0,            // how many hints shown for current question
+      showingKnowns: false,
+      answered: false,         // has current question been answered
+      roundResults: [],        // { question, correct, selectedIds, correctIds }
+      currentScreen: 'setup'
+    };
+
+    // ===== SCREEN MANAGEMENT =====
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + id).classList.add('active');
+      state.currentScreen = id;
+    }
+
+    // ===== SETUP SCREEN =====
+    function initSetup() {
+      // Toggle groups
+      setupToggle('level-toggle', val => { state.courseLevel = val; });
+      setupToggle('difficulty-toggle', val => { state.difficulty = parseInt(val); });
+      setupToggle('count-toggle', val => { state.questionCount = val === 'all' ? 'all' : parseInt(val); });
+
+      // Topic list
+      const topicList = document.getElementById('topic-list');
+      topicList.innerHTML = '';
+
+      // All Topics item
+      const allItem = createTopicItem('all', 'All Topics', true);
+      allItem.classList.add('all-topics');
+      topicList.appendChild(allItem);
+
+      // Individual sections from booklet
+      FORMULA_BOOKLET.sections.forEach(section => {
+        topicList.appendChild(createTopicItem(section.id, section.title, true));
+      });
+
+      state.selectedTopics = FORMULA_BOOKLET.sections.map(s => s.id);
+      updateStartButton();
+    }
+
+    function setupToggle(groupId, onChange) {
+      const group = document.getElementById(groupId);
+      group.addEventListener('click', (e) => {
+        const btn = e.target.closest('.toggle-btn');
+        if (!btn) return;
+        group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        onChange(btn.dataset.value);
+      });
+    }
+
+    function createTopicItem(id, label, checked) {
+      const item = document.createElement('div');
+      item.className = 'topic-item';
+      item.dataset.topicId = id;
+
+      const checkbox = document.createElement('div');
+      checkbox.className = 'topic-checkbox' + (checked ? ' checked' : '');
+
+      const labelEl = document.createElement('span');
+      labelEl.className = 'topic-label';
+      labelEl.textContent = label;
+
+      item.appendChild(checkbox);
+      item.appendChild(labelEl);
+      item.addEventListener('click', () => toggleTopic(id));
+      return item;
+    }
+
+    function toggleTopic(id) {
+      if (id === 'all') {
+        const allCb = document.querySelector('[data-topic-id="all"] .topic-checkbox');
+        const isChecked = allCb.classList.contains('checked');
+        document.querySelectorAll('.topic-checkbox').forEach(cb => {
+          isChecked ? cb.classList.remove('checked') : cb.classList.add('checked');
+        });
+        state.selectedTopics = isChecked ? [] : FORMULA_BOOKLET.sections.map(s => s.id);
+      } else {
+        const cb = document.querySelector(`[data-topic-id="${id}"] .topic-checkbox`);
+        cb.classList.toggle('checked');
+        if (cb.classList.contains('checked')) {
+          if (!state.selectedTopics.includes(id)) state.selectedTopics.push(id);
+        } else {
+          state.selectedTopics = state.selectedTopics.filter(t => t !== id);
+        }
+        // Update All checkbox
+        const allCb = document.querySelector('[data-topic-id="all"] .topic-checkbox');
+        if (state.selectedTopics.length === FORMULA_BOOKLET.sections.length) {
+          allCb.classList.add('checked');
+        } else {
+          allCb.classList.remove('checked');
+        }
+      }
+      updateStartButton();
+    }
+
+    function updateStartButton() {
+      document.getElementById('start-btn').disabled = state.selectedTopics.length === 0;
+    }
+
+    // ===== START QUIZ =====
+    document.getElementById('start-btn').addEventListener('click', showInstructions);
+
+    function showInstructions() {
+      if (state.selectedTopics.length === 0) return;
+      showScreen('instructions');
+    }
+
+    document.getElementById('instruction-go-btn').addEventListener('click', startQuiz);
+
+    function startQuiz() {
+      if (state.selectedTopics.length === 0) return;
+
+      // Reset state
+      state.currentIndex = 0;
+      state.score = 0;
+      state.roundResults = [];
+
+      // Filter questions by topic, level, and difficulty
+      const pool = QUESTION_BANK.filter(q => {
+        const topicMatch = state.selectedTopics.includes(q.topic);
+        const levelMatch = state.courseLevel === 'HL' || q.slhl === 'SL';
+        const diffMatch = q.level === state.difficulty;
+        return topicMatch && levelMatch && diffMatch;
+      });
+
+      if (pool.length === 0) {
+        alert('No questions available for this combination. Try different settings.');
+        return;
+      }
+
+      // Shuffle and pick questions
+      const shuffled = shuffleArray(pool);
+      state.questions = state.questionCount === 'all' ? shuffled : shuffled.slice(0, state.questionCount);
+
+      // Init sidebar
+      initSidebar();
+
+      showScreen('quiz');
+      showQuestion();
+    }
+
+    // ===== SIDEBAR: Formula Booklet =====
+    function initSidebar() {
+      const tabsEl = document.getElementById('sidebar-tabs');
+      tabsEl.innerHTML = '';
+
+      // Show ALL sections so students can access cross-topic formulas
+      const sections = FORMULA_BOOKLET.sections;
+
+      // Default to the question's topic tab if available, otherwise first section
+      const currentQ = state.questions[state.currentIndex];
+      const defaultSection = currentQ ? currentQ.topic : (sections.length > 0 ? sections[0].id : null);
+
+      sections.forEach((section) => {
+        const tab = document.createElement('button');
+        tab.className = 'sidebar-tab' + (section.id === defaultSection ? ' active' : '');
+        tab.textContent = section.id;
+        tab.dataset.sectionId = section.id;
+        tab.addEventListener('click', () => {
+          tabsEl.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          renderSidebarSection(section.id);
+        });
+        tabsEl.appendChild(tab);
+      });
+
+      // Constants tab (always shown)
+      const constTab = document.createElement('button');
+      constTab.className = 'sidebar-tab';
+      constTab.textContent = 'Const';
+      constTab.dataset.sectionId = 'CONSTANTS';
+      constTab.addEventListener('click', () => {
+        tabsEl.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+        constTab.classList.add('active');
+        renderConstantsTab();
+      });
+      tabsEl.appendChild(constTab);
+
+      // Show the default section (question's topic, or first available)
+      if (defaultSection) {
+        renderSidebarSection(defaultSection);
+      } else if (sections.length > 0) {
+        renderSidebarSection(sections[0].id);
+      }
+    }
+
+    function renderSidebarSection(sectionId) {
+      const section = FORMULA_BOOKLET.sections.find(s => s.id === sectionId);
+      if (!section) return;
+
+      const container = document.getElementById('sidebar-formulas');
+      container.innerHTML = '';
+
+      section.subtopics.forEach(subtopic => {
+        // Filter by course level
+        if (state.courseLevel === 'SL' && subtopic.level === 'HL') return;
+
+        const header = document.createElement('div');
+        header.className = 'formula-subtopic-header';
+        header.innerHTML = subtopic.title;
+
+        const levelTag = document.createElement('span');
+        levelTag.className = 'formula-level-tag ' + subtopic.level.toLowerCase();
+        levelTag.textContent = subtopic.level;
+        header.appendChild(levelTag);
+        container.appendChild(header);
+
+        subtopic.formulas.forEach(formula => {
+          container.appendChild(createFormulaCard(formula));
+        });
+      });
+
+      // Render MathJax
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise([container]);
+      }
+    }
+
+    function renderConstantsTab() {
+      const container = document.getElementById('sidebar-formulas');
+      container.innerHTML = '';
+
+      const header = document.createElement('div');
+      header.className = 'formula-subtopic-header';
+      header.textContent = 'Fundamental Constants';
+      container.appendChild(header);
+
+      FORMULA_BOOKLET.constants.forEach(constant => {
+        container.appendChild(createFormulaCard(constant));
+      });
+
+      // Render MathJax
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise([container]);
+      }
+    }
+
+    function createFormulaCard(formula) {
+      const card = document.createElement('div');
+      card.className = 'formula-card';
+      card.dataset.formulaId = formula.id;
+
+      if (state.selectedFormulas.includes(formula.id)) {
+        card.classList.add('selected');
+      }
+
+      const indicator = document.createElement('div');
+      indicator.className = 'select-indicator';
+
+      const mathEl = document.createElement('div');
+      mathEl.className = 'formula-math';
+      mathEl.innerHTML = '\\(' + formula.display + '\\)';
+
+      const desc = document.createElement('div');
+      desc.className = 'formula-desc';
+      desc.textContent = formula.description;
+
+      card.appendChild(indicator);
+      card.appendChild(mathEl);
+      card.appendChild(desc);
+
+      card.addEventListener('click', () => {
+        if (state.answered) return;
+        toggleFormulaSelection(formula.id);
+      });
+
+      return card;
+    }
+
+    function toggleFormulaSelection(formulaId) {
+      const idx = state.selectedFormulas.indexOf(formulaId);
+      if (idx >= 0) {
+        state.selectedFormulas.splice(idx, 1);
+      } else {
+        state.selectedFormulas.push(formulaId);
+      }
+
+      // Update card styling
+      document.querySelectorAll('.formula-card').forEach(card => {
+        if (card.dataset.formulaId === formulaId) {
+          card.classList.toggle('selected');
+        }
+      });
+
+      updateSelectedSummary();
+      updateSubmitButton();
+    }
+
+    function updateSelectedSummary() {
+      const tagsEl = document.getElementById('selected-tags');
+      tagsEl.innerHTML = '';
+
+      if (state.selectedFormulas.length === 0) {
+        tagsEl.innerHTML = '<span class="no-selection-text">Click formulas above to select them</span>';
+        return;
+      }
+
+      state.selectedFormulas.forEach(id => {
+        const formula = findFormulaById(id);
+        if (!formula) return;
+
+        const tag = document.createElement('span');
+        tag.className = 'selected-tag';
+        tag.innerHTML = formula.description;
+
+        const remove = document.createElement('span');
+        remove.className = 'remove-tag';
+        remove.textContent = '\u00d7';
+        remove.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFormulaSelection(id);
+        });
+
+        tag.appendChild(remove);
+        tagsEl.appendChild(tag);
+      });
+    }
+
+    function findFormulaById(id) {
+      // Search formulas in sections
+      for (const section of FORMULA_BOOKLET.sections) {
+        for (const subtopic of section.subtopics) {
+          for (const formula of subtopic.formulas) {
+            if (formula.id === id) return formula;
+          }
+        }
+      }
+      // Search constants
+      if (FORMULA_BOOKLET.constants) {
+        for (const constant of FORMULA_BOOKLET.constants) {
+          if (constant.id === id) return constant;
+        }
+      }
+      return null;
+    }
+
+    function updateSubmitButton() {
+      document.getElementById('submit-btn').disabled = state.selectedFormulas.length === 0;
+    }
+
+    // ===== SHOW QUESTION =====
+    function showQuestion() {
+      if (state.currentIndex >= state.questions.length) {
+        showResults();
+        return;
+      }
+
+      const q = state.questions[state.currentIndex];
+      state.selectedFormulas = [];
+      state.hintIndex = 0;
+      state.showingKnowns = false;
+      state.answered = false;
+
+      // Update top bar
+      updateProgress();
+
+      // Question number
+      document.getElementById('question-number').textContent = 'Question ' + (state.currentIndex + 1);
+
+      // Render question text with tooltips
+      document.getElementById('question-text').innerHTML = renderQuestionText(q);
+
+      // Reset knowns panel
+      document.getElementById('knowns-panel').classList.remove('visible');
+      document.getElementById('knowns-btn').querySelector('.icon').textContent = '\uD83D\uDD0D';
+      renderKnownsPanel(q);
+
+      // Reset hints
+      document.getElementById('hint-area').innerHTML = '';
+
+      // Reset action row
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('hint-btn').style.display = '';
+      document.getElementById('action-row').style.display = '';
+
+      // Reset feedback
+      const fb = document.getElementById('feedback-banner');
+      fb.classList.remove('visible', 'correct', 'incorrect');
+
+      // Reset sidebar selections
+      updateSelectedSummary();
+
+      // Re-render active sidebar tab to clear selection styling
+      const activeTab = document.querySelector('.sidebar-tab.active');
+      if (activeTab) {
+        if (activeTab.dataset.sectionId === 'CONSTANTS') {
+          renderConstantsTab();
+        } else {
+          renderSidebarSection(activeTab.dataset.sectionId);
+        }
+      }
+
+      // Animate in
+      const panel = document.getElementById('question-panel');
+      panel.classList.remove('animate-in');
+      void panel.offsetWidth;
+      panel.classList.add('animate-in');
+    }
+
+    function renderQuestionText(q) {
+      let text = q.text;
+
+      // Replace {{phrase}} with tooltip spans
+      q.tooltips.forEach(tt => {
+        const pattern = '{{' + tt.phrase + '}}';
+        const replacement = `<span class="tooltip-word">${tt.phrase}<span class="tooltip-popup">${tt.tip}</span></span>`;
+        text = text.replace(pattern, replacement);
+      });
+
+      return text;
+    }
+
+    function renderKnownsPanel(q) {
+      const panel = document.getElementById('knowns-panel');
+      let html = '<h4>Knowns</h4><ul class="knowns-list">';
+
+      q.knowns.forEach(k => {
+        html += `<li><span class="symbol">${k.symbol}</span> = ${k.value} ${k.unit} <span style="color:#888">(${k.description})</span></li>`;
+      });
+
+      html += '</ul><h4>Unknowns</h4><ul class="knowns-list">';
+
+      q.unknowns.forEach(u => {
+        html += `<li><span class="symbol">${u.symbol}</span> = ? <span style="color:#888">(${u.description})</span></li>`;
+      });
+
+      html += '</ul>';
+      panel.innerHTML = html;
+    }
+
+    // ===== KNOWNS BUTTON =====
+    document.getElementById('knowns-btn').addEventListener('click', () => {
+      const panel = document.getElementById('knowns-panel');
+      state.showingKnowns = !state.showingKnowns;
+      panel.classList.toggle('visible', state.showingKnowns);
+    });
+
+    // ===== HINT BUTTON =====
+    document.getElementById('hint-btn').addEventListener('click', () => {
+      const q = state.questions[state.currentIndex];
+      if (state.hintIndex >= q.hints.length) return;
+
+      const hintArea = document.getElementById('hint-area');
+      const hintBox = document.createElement('div');
+      hintBox.className = 'hint-box visible';
+      hintBox.textContent = q.hints[state.hintIndex];
+      hintArea.appendChild(hintBox);
+
+      state.hintIndex++;
+
+      if (state.hintIndex >= q.hints.length) {
+        document.getElementById('hint-btn').style.display = 'none';
+      }
+    });
+
+    // ===== VALIDATION ENGINE (Spec Sections 3-12) =====
+
+    // Section 3: Symbol Normalisation
+    function normalizeSymbol(sym) {
+      let result = sym
+        // Unicode Greek letters → text equivalents
+        .replace(/Δ/g, 'Delta')
+        .replace(/λ/g, 'lambda')
+        .replace(/ω/g, 'omega')
+        .replace(/θ/g, 'theta')
+        .replace(/μ/g, 'mu')
+        .replace(/ρ/g, 'rho')
+        .replace(/σ/g, 'sigma')
+        .replace(/ε/g, 'varepsilon')
+        .replace(/η/g, 'eta')
+        .replace(/τ/g, 'tau')
+        .replace(/Φ/g, 'Phi')
+        .replace(/π/g, 'pi')
+        // Unicode subscript digits → _digit
+        .replace(/₀/g, '_0')
+        .replace(/₁/g, '_1')
+        .replace(/₂/g, '_2')
+        .replace(/₃/g, '_3')
+        .replace(/₄/g, '_4')
+        .replace(/₅/g, '_5')
+        .replace(/₆/g, '_6')
+        .replace(/₇/g, '_7')
+        .replace(/₈/g, '_8')
+        .replace(/₉/g, '_9')
+        // Unicode subscript letters → _letter
+        .replace(/ₑ/g, '_e')
+        .replace(/ₚ/g, '_p')
+        .replace(/ₙ/g, '_n')
+        // Ensure underscore after Delta when followed by a letter (DeltaU → Delta_U)
+        .replace(/Delta([A-Za-z])/g, 'Delta_$1')
+        // LaTeX backslashes
+        .replace(/\\/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/[{}()]/g, '')
+        .replace(/^delta_/i, 'Delta_')
+        .trim();
+
+      // Split common physics compound symbols (Ek→E_k, Fg→F_g, mp→m_p, etc.)
+      // Only applies to short symbols without existing underscores
+      if (!result.includes('_')) {
+        result = result
+          .replace(/^(E)(k|p|H)$/, '$1_$2')
+          .replace(/^(F)(g|e|b|d|f|H|N)$/, '$1_$2')
+          .replace(/^(m)(e|p|n)$/, '$1_$2');
+      }
+
+      return result;
+    }
+
+    // Section 3b: Normalize a target symbol (handles ratios like "Fe/Fg")
+    function normalizeTarget(sym) {
+      if (sym.includes('/')) {
+        return sym.split('/').map(p => normalizeSymbol(p.trim())).join('/');
+      }
+      return normalizeSymbol(sym);
+    }
+
+    // Section 3c: Extract the base physics symbol by stripping subscript context
+    function getBaseSymbol(sym) {
+      // Numeric subscripts are always safe: q_1 → q, T_2 → T
+      let base = sym.replace(/_\d+$/, '');
+      if (base !== sym && base.length > 0) return base;
+
+      // Context labels (multi-char suffixes): T_Moon → T, g_Earth → g, r_min → r
+      base = sym.replace(/_(Moon|Earth|min|max|net|total|initial|final|ext|int|avg|rms)$/i, '');
+      if (base !== sym && base.length > 0) return base;
+
+      // Mass subscripts: m_e → m, m_p → m, m_n → m
+      if (/^m_(e|p|n)$/.test(sym)) return 'm';
+
+      // Force subscripts: F_g → F, F_e → F, F_b → F, etc.
+      if (/^F_(g|e|b|d|f|H|N|s)$/.test(sym)) return 'F';
+
+      return sym; // no base found
+    }
+
+    // Section 3d: Check if a symbol is known (directly or via base symbol)
+    function isSymbolKnown(sym, known) {
+      if (known.has(sym)) return true;
+      const base = getBaseSymbol(sym);
+      return base !== sym && known.has(base);
+    }
+
+    // Section 4: Extract formula symbols from variables object
+    function extractFormulaSymbols(formula) {
+      if (!formula.variables) return [];
+      return Object.keys(formula.variables).map(normalizeSymbol);
+    }
+
+    // Section 5: Build formula index lookup table
+    function buildFormulaIndex(booklet) {
+      const index = {};
+      for (const section of booklet.sections) {
+        for (const topic of section.subtopics) {
+          for (const formula of topic.formulas) {
+            index[formula.id] = {
+              ...formula,
+              symbols: extractFormulaSymbols(formula)
+            };
+          }
+        }
+      }
+      return index;
+    }
+
+    // Section 6: Constant handling
+    const CONSTANT_MAP = {
+      CONST_g: ['g'],
+      CONST_G: ['G'],
+      CONST_NA: ['N_A'],
+      CONST_R: ['R'],
+      CONST_kB: ['k_B'],
+      CONST_sigma: ['sigma'],
+      CONST_k: ['k'],
+      CONST_eps0: ['varepsilon_0'],
+      CONST_mu0: ['mu_0'],
+      CONST_c: ['c'],
+      CONST_h: ['h'],
+      CONST_e: ['e'],
+      CONST_me: ['m_e'],
+      CONST_mp: ['m_p'],
+      CONST_mn: ['m_n'],
+      CONST_u: ['u'],
+      CONST_S: ['S'],
+      CONST_R0: ['R_0']
+    };
+
+    // Section 7: Equivalence rules
+    // These link symbols that are interchangeable in IB Physics contexts
+    const EQUIVALENCE_RULES = [
+      ['J', 'Delta_p'],           // impulse = change in momentum
+      ['t', 'Delta_t'],           // kinematics "t" is always a time interval
+      ['p', 'Delta_p'],           // momentum / change in momentum (from rest)
+      ['s', 'x', 'Delta_x'],     // displacement / position / change in position
+      ['h', 'y', 'Delta_h', 'Delta_y'], // height variants
+      ['r', 'Delta_r'],           // radius / change in radius
+      ['v', 'v_orbital', 'v_esc', 'v_escape'], // speed / orbital / escape velocity
+      ['L', 'Delta_L'],           // angular momentum / change in angular momentum
+      ['U', 'Delta_U'],             // internal energy / change in internal energy
+      ['T', 'Delta_T'],             // temperature / change in temperature
+      ['W', 'Delta_W', 'E_k', 'Delta_E_k', 'E_p', 'Delta_E_p'], // work-energy / conservation
+      ['Q', 'Delta_Q'],             // heat / heat transferred
+      ['S', 'Delta_S'],             // entropy / change in entropy
+      ['q', 'e'],                   // charge ↔ elementary charge
+      ['V', 'Delta_V', 'Delta_V_e'], // potential difference variants
+      ['a', 'g'],                   // acceleration ↔ gravitational field strength
+    ];
+
+    // Section 9 & 10: Derived relationships from multi-equals formulas
+    // These are additional symbol rules the solver can use
+    const DERIVED_FORMULAS = [
+      // Circular motion: a = v²/r = ω²r = 4π²r/T²
+      { id: 'DERIVED_circ_1', symbols: ['a', 'v', 'r'] },
+      { id: 'DERIVED_circ_2', symbols: ['a', 'omega', 'r'] },
+      { id: 'DERIVED_circ_3', symbols: ['a', 'r', 'T'] },
+      // Circular speed: v = 2πr/T = ωr
+      { id: 'DERIVED_circv_1', symbols: ['v', 'r', 'T'] },
+      { id: 'DERIVED_circv_2', symbols: ['v', 'omega', 'r'] },
+      // Kinetic energy: Ek = ½mv² = p²/2m
+      { id: 'DERIVED_Ek_1', symbols: ['E_k', 'm', 'v'] },
+      { id: 'DERIVED_Ek_2', symbols: ['E_k', 'p', 'm'] },
+      // Wave equation: v = fλ = λ/T
+      { id: 'DERIVED_wave_1', symbols: ['v', 'f', 'lambda'] },
+      { id: 'DERIVED_wave_2', symbols: ['v', 'lambda', 'T'] },
+      // Power: P = Fv = ΔW/Δt
+      { id: 'DERIVED_power_1', symbols: ['P', 'F', 'v'] },
+      { id: 'DERIVED_power_2', symbols: ['P', 'Delta_W', 'Delta_t'] },
+      // Electrical power: P = IV = I²R = V²/R
+      { id: 'DERIVED_elec_1', symbols: ['P', 'I', 'V'] },
+      { id: 'DERIVED_elec_2', symbols: ['P', 'I', 'R'] },
+      { id: 'DERIVED_elec_3', symbols: ['P', 'V', 'R'] },
+      // Newton's second law: F = ma = Δp/Δt
+      { id: 'DERIVED_N2_1', symbols: ['F', 'm', 'a'] },
+      { id: 'DERIVED_N2_2', symbols: ['F', 'Delta_p', 'Delta_t'] },
+      // Ideal gas law: PV = nRT = NkBT
+      { id: 'DERIVED_gas_1', symbols: ['P', 'V', 'n', 'R', 'T'] },
+      { id: 'DERIVED_gas_2', symbols: ['P', 'V', 'N', 'k_B', 'T'] },
+      // Internal energy of ideal gas: U = (3/2)nRT = (3/2)NkBT
+      { id: 'DERIVED_U_1', symbols: ['U', 'n', 'R', 'T'] },
+      { id: 'DERIVED_U_2', symbols: ['U', 'N', 'k_B', 'T'] },
+      // Gravitational field strength: g = F/m = GM/r²
+      { id: 'DERIVED_grav_1', symbols: ['g', 'F', 'm'] },
+      { id: 'DERIVED_grav_2', symbols: ['g', 'G', 'M', 'r'] },
+      // Snell's law: n1/n2 = sinθ2/sinθ1 = v2/v1
+      { id: 'DERIVED_snell_1', symbols: ['n_1', 'n_2', 'theta_1', 'theta_2'] },
+      { id: 'DERIVED_snell_2', symbols: ['n_1', 'n_2', 'v_1', 'v_2'] },
+      { id: 'DERIVED_snell_3', symbols: ['theta_1', 'theta_2', 'v_1', 'v_2'] },
+      // Doppler effect (light): Δf/f = Δλ/λ ≈ v/c
+      { id: 'DERIVED_doppler_1', symbols: ['Delta_f', 'f', 'v', 'c'] },
+      { id: 'DERIVED_doppler_2', symbols: ['Delta_lambda', 'lambda', 'v', 'c'] },
+      { id: 'DERIVED_doppler_3', symbols: ['Delta_f', 'f', 'Delta_lambda', 'lambda'] }
+    ];
+
+    // Build the formula index at startup
+    const FORMULA_INDEX = buildFormulaIndex(FORMULA_BOOKLET);
+
+    // Section 8: Multi-step solver algorithm
+    function solveWithFormulas(selectedFormulaIds, knownSymbols, targetSymbols) {
+      const known = new Set(knownSymbols.map(normalizeSymbol));
+      const targets = new Set(targetSymbols.map(normalizeTarget));
+      const derivedSteps = [];
+
+      console.group('%c[SOLVER] Validation Engine Trace', 'color: #2196F3; font-weight: bold');
+      console.log('%cSelected formulas:', 'color: #666', selectedFormulaIds);
+      console.log('%cRaw knowns:', 'color: #666', knownSymbols);
+      console.log('%cNormalized knowns:', 'color: #666', [...known]);
+      console.log('%cTargets:', 'color: #666', [...targets]);
+
+      // Step 0: Expand base symbols from knowns
+      // If m_e is known, add m (a mass value is available)
+      // If g_Moon is known, add g (a gravitational field strength is available)
+      for (const sym of [...known]) {
+        const base = getBaseSymbol(sym);
+        if (base !== sym) {
+          known.add(base);
+          console.log(`%c[Step 0] Base expansion: ${sym} → also know ${base}`, 'color: #9C27B0');
+        }
+      }
+
+      // Step 1: Add variables supplied by selected constants
+      for (const id of selectedFormulaIds) {
+        if (CONSTANT_MAP[id]) {
+          for (const sym of CONSTANT_MAP[id]) {
+            known.add(sym);
+            console.log(`%c[Step 1] Constant ${id} provides: ${sym}`, 'color: #4CAF50');
+            // Also add base symbols from constants
+            const base = getBaseSymbol(sym);
+            if (base !== sym) {
+              known.add(base);
+              console.log(`%c[Step 1] Constant base expansion: ${sym} → ${base}`, 'color: #9C27B0');
+            }
+          }
+        }
+      }
+
+      // Collect symbol rules from selected formulas
+      const selectedRules = [];
+      for (const id of selectedFormulaIds) {
+        if (FORMULA_INDEX[id]) {
+          selectedRules.push(FORMULA_INDEX[id]);
+          console.log(`%c[Step 2] Formula ${id} has symbols: [${FORMULA_INDEX[id].symbols.join(', ')}]`, 'color: #FF9800');
+        }
+      }
+
+      // Also include derived formulas that overlap with selected formulas
+      // A derived formula is available if a selected booklet formula covers the same relationship
+      const selectedBookletIds = new Set(selectedFormulaIds.filter(id => !id.startsWith('CONST_')));
+      for (const derived of DERIVED_FORMULAS) {
+        // Check if any selected booklet formula shares at least 2 symbols with this derived rule
+        for (const rule of selectedRules) {
+          const overlap = derived.symbols.filter(s => rule.symbols.includes(s));
+          if (overlap.length >= 2) {
+            selectedRules.push(derived);
+            console.log(`%c[Step 2] Derived ${derived.id} activated [${derived.symbols.join(', ')}] (overlap with ${rule.id}: ${overlap.join(', ')})`, 'color: #FF9800; font-style: italic');
+            break;
+          }
+        }
+      }
+
+      console.log(`%c[Step 2] Total rules available: ${selectedRules.length}`, 'color: #666');
+      console.log('%cKnown before solving:', 'color: #666', [...known]);
+
+      // Step 3: Iterate until no change
+      let changed = true;
+      let iterations = 0;
+      const maxIterations = 50; // safety limit
+
+      while (changed && iterations < maxIterations) {
+        changed = false;
+        iterations++;
+        console.group(`%c[Step 3] Iteration ${iterations}`, 'color: #2196F3');
+
+        // Step 3a: Apply equivalence rules
+        for (const equiv of EQUIVALENCE_RULES) {
+          const hasAny = equiv.some(sym => known.has(sym));
+          if (hasAny) {
+            for (const sym of equiv) {
+              if (!known.has(sym)) {
+                known.add(sym);
+                derivedSteps.push({ symbol: sym, via: 'equivalence', rule: equiv });
+                changed = true;
+                console.log(`%c[3a] Equivalence: know ${equiv.find(s => known.has(s))} → also know ${sym}`, 'color: #4CAF50');
+              }
+            }
+          }
+        }
+
+        // Step 3b: For each selected formula, if exactly one variable is unknown, derive it
+        // Uses isSymbolKnown to also match via base symbols (m_1 matched by knowing m)
+        for (const rule of selectedRules) {
+          const unknownSymbols = rule.symbols.filter(s => !isSymbolKnown(s, known));
+          if (unknownSymbols.length === 0) {
+            // All known, skip silently
+          } else if (unknownSymbols.length === 1) {
+            const derived = unknownSymbols[0];
+            known.add(derived);
+            // Also add the base symbol of whatever we derived
+            const base = getBaseSymbol(derived);
+            if (base !== derived) known.add(base);
+            derivedSteps.push({ symbol: derived, via: rule.id, symbols: rule.symbols });
+            changed = true;
+            console.log(`%c[3b] DERIVED: ${derived} from ${rule.id} [${rule.symbols.join(', ')}]`, 'color: #4CAF50; font-weight: bold');
+          } else {
+            console.log(`%c[3b] Can't use ${rule.id} [${rule.symbols.join(', ')}] — ${unknownSymbols.length} unknowns: [${unknownSymbols.join(', ')}]`, 'color: #F44336');
+          }
+        }
+
+        console.groupEnd();
+      }
+
+      if (iterations === 0 || !changed) {
+        console.log(`%c[Step 3] Solver stopped after ${iterations} iteration(s)`, 'color: #666');
+      }
+
+      // Step 4: Handle ratio targets (e.g. "F_e/F_g", "T_Moon/T_Earth")
+      for (const t of [...targets]) {
+        if (t.includes('/')) {
+          const parts = t.split('/');
+          const allPartsKnown = parts.every(p => isSymbolKnown(p, known));
+          if (allPartsKnown) {
+            known.add(t);
+            console.log(`%c[Step 4] Ratio target ${t} — all parts known`, 'color: #4CAF50');
+          } else {
+            console.log(`%c[Step 4] Ratio target ${t} — missing parts`, 'color: #F44336');
+          }
+        }
+      }
+
+      // Step 5: Check if all targets are known (using base symbol matching)
+      const missingTargets = [...targets].filter(t => !isSymbolKnown(t, known));
+      const isValid = missingTargets.length === 0;
+
+      console.log('%cFinal known symbols:', 'color: #666', [...known].sort());
+      if (isValid) {
+        console.log('%c[RESULT] ✓ VALID — all targets can be solved', 'color: #4CAF50; font-weight: bold; font-size: 14px');
+      } else {
+        console.log(`%c[RESULT] ✗ INVALID — missing targets: [${missingTargets.join(', ')}]`, 'color: #F44336; font-weight: bold; font-size: 14px');
+      }
+      console.log('%cDerived steps:', 'color: #666', derivedSteps);
+      console.groupEnd();
+
+      // Section 11: Validation output
+      return {
+        isValid,
+        knownSymbols: [...known],
+        missingTargets,
+        derivedSteps
+      };
+    }
+
+    // ===== SUBMIT ANSWER =====
+    document.getElementById('submit-btn').addEventListener('click', submitAnswer);
+
+    function submitAnswer() {
+      if (state.answered) return;
+      if (state.selectedFormulas.length === 0) return;
+
+      state.answered = true;
+      const q = state.questions[state.currentIndex];
+
+      // Extract known symbols from question data
+      const knownSymbols = q.knowns.map(k => k.symbol);
+
+      // Extract target unknown symbols
+      const targetSymbols = q.unknowns.map(u => u.symbol);
+
+      // Run the validation engine
+      const result = solveWithFormulas(state.selectedFormulas, knownSymbols, targetSymbols);
+
+      // Also check against acceptedSolutions as a fallback
+      const selectedSet = new Set(state.selectedFormulas);
+      let exactMatch = false;
+      if (q.acceptedSolutions) {
+        for (const solution of q.acceptedSolutions) {
+          const solutionSet = new Set(solution);
+          if (solutionSet.size === selectedSet.size &&
+              [...solutionSet].every(id => selectedSet.has(id))) {
+            exactMatch = true;
+            break;
+          }
+        }
+      }
+
+      // Accept if EITHER the solver validates OR it's an exact match
+      const isCorrect = result.isValid || exactMatch;
+
+      // Primary solution for display purposes (first accepted solution)
+      const primarySolution = q.acceptedSolutions ? q.acceptedSolutions[0] : [];
+
+      if (isCorrect) {
+        state.score++;
+      }
+
+      // Record result
+      state.roundResults.push({
+        question: q,
+        correct: isCorrect,
+        selectedIds: [...state.selectedFormulas],
+        correctIds: primarySolution,
+        solverResult: result
+      });
+
+      // Correct via solver but not the expected solution = alternative valid path
+      const isAlternative = isCorrect && !exactMatch;
+
+      // Show feedback
+      showFeedback(isCorrect, isAlternative, q);
+
+      // Highlight correct/wrong formulas in sidebar
+      highlightAnswers(primarySolution);
+
+      // Update progress
+      updateProgress();
+    }
+
+    // Look up a formula or constant's LaTeX display string by ID
+    function getFormulaDisplay(id) {
+      if (FORMULA_INDEX[id]) {
+        return FORMULA_INDEX[id].display || id;
+      }
+      const constant = FORMULA_BOOKLET.constants.find(c => c.id === id);
+      if (constant) {
+        return constant.display || id;
+      }
+      return id;
+    }
+
+    function showFeedback(isCorrect, isAlternative, q) {
+      const banner = document.getElementById('feedback-banner');
+      const msg = document.getElementById('feedback-message');
+      const expl = document.getElementById('feedback-explanation');
+
+      banner.classList.add('visible', isCorrect ? 'correct' : 'incorrect');
+      banner.classList.remove(isCorrect ? 'incorrect' : 'correct');
+
+      if (isAlternative) {
+        msg.textContent = "Correct! You've found a valid solution which is different to the way I solved it.";
+      } else {
+        msg.textContent = isCorrect ? 'Correct!' : 'Not quite...';
+      }
+
+      // Build feedback content
+      let feedbackHTML = '';
+
+      // Build the reference solution block (used for both wrong answers and alternative solutions)
+      function buildReferenceSolution(label) {
+        if (!q.acceptedSolutions || !q.acceptedSolutions[0]) return '';
+        const solution = q.acceptedSolutions[0];
+        const requiredConsts = q.requiredConstants || [];
+        const allIds = [...new Set([...solution, ...requiredConsts])];
+        let html = `<div class="correct-path"><strong>${label}</strong><ul>`;
+        for (const id of allIds) {
+          const latex = getFormulaDisplay(id);
+          html += `<li>\\(${latex}\\)</li>`;
+        }
+        html += '</ul></div>';
+        return html;
+      }
+
+      if (!isCorrect) {
+        feedbackHTML += buildReferenceSolution('A correct answer uses:');
+      } else if (isAlternative) {
+        feedbackHTML += buildReferenceSolution('Here is the way I solved it:');
+      }
+
+      // Add explanation
+      feedbackHTML += q.explanation;
+
+      expl.innerHTML = feedbackHTML;
+
+      // Render MathJax in the explanation
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise([expl]);
+      }
+
+      // Hide submit/hint buttons
+      document.getElementById('action-row').style.display = 'none';
+    }
+
+    function highlightAnswers(correctIds) {
+      document.querySelectorAll('.formula-card').forEach(card => {
+        const id = card.dataset.formulaId;
+        if (correctIds.includes(id)) {
+          card.classList.add('correct-answer');
+        } else if (state.selectedFormulas.includes(id)) {
+          card.classList.add('wrong-answer');
+        }
+      });
+    }
+
+    // ===== CONTINUE =====
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      state.currentIndex++;
+      showQuestion();
+    });
+
+    // ===== BACK BUTTON =====
+    document.getElementById('back-btn').addEventListener('click', () => {
+      showScreen('setup');
+    });
+
+    // ===== PROGRESS =====
+    function updateProgress() {
+      const total = state.questions.length;
+      const progress = (state.currentIndex / total) * 100;
+      document.getElementById('progress-fill').style.width = progress + '%';
+      document.getElementById('progress-text').textContent = `${state.currentIndex} / ${total}`;
+      document.getElementById('score-display').textContent = `Score: ${state.score}`;
+    }
+
+    // ===== RESULTS =====
+    function showResults() {
+      showScreen('results');
+
+      const total = state.questions.length;
+      const pct = Math.round((state.score / total) * 100);
+
+      document.getElementById('results-score').textContent = `${state.score} / ${total}`;
+      document.getElementById('results-percentage').textContent = `${pct}%`;
+
+      // Stars
+      let starCount = 0;
+      if (pct >= 90) starCount = 3;
+      else if (pct >= 70) starCount = 2;
+      else if (pct >= 50) starCount = 1;
+
+      const starsEl = document.getElementById('results-stars');
+      starsEl.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.textContent = i < starCount ? '\u2B50' : '\u2606';
+        starsEl.appendChild(star);
+
+        if (i < starCount) {
+          setTimeout(() => {
+            star.classList.add('earned');
+            star.style.animation = 'starPop 0.4s ease forwards';
+          }, 300 + i * 300);
+        } else {
+          star.style.opacity = '0.3';
+          star.style.transform = 'scale(1)';
+          star.classList.add('earned');
+        }
+      }
+
+      // Review wrong answers
+      const reviewEl = document.getElementById('results-review');
+      const wrongOnes = state.roundResults.filter(r => !r.correct);
+
+      if (wrongOnes.length > 0) {
+        let html = '<h3>Questions to review:</h3>';
+        wrongOnes.forEach(r => {
+          const correctNames = r.correctIds.map(id => {
+            const f = findFormulaById(id);
+            return f ? f.description : id;
+          }).join(', ');
+
+          // Strip tooltip markup for clean display
+          const cleanText = r.question.text.replace(/\{\{/g, '').replace(/\}\}/g, '');
+          const shortText = cleanText.length > 80 ? cleanText.substring(0, 80) + '...' : cleanText;
+
+          html += `<div class="review-item">
+            <div class="review-question">${shortText}</div>
+            <div class="review-correct">Needed: ${correctNames}</div>
+          </div>`;
+        });
+        reviewEl.innerHTML = html;
+      } else {
+        reviewEl.innerHTML = '<h3>Perfect score!</h3>';
+      }
+    }
+
+    // ===== RESULTS BUTTONS =====
+    document.getElementById('btn-new-setup').addEventListener('click', () => {
+      showScreen('setup');
+    });
+
+    document.getElementById('btn-next-round').addEventListener('click', () => {
+      startQuiz();
+    });
+
+    // ===== UTILITY =====
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // ===== INIT =====
+    initSetup();
+  </script>
+</body>
+</html>
