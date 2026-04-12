@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electromagnetic Induction Simulation</title>
+  <style>
+    :root {
+      --wine: #5d2137;
+      --wine-light: #7a3550;
+      --terracotta: #ba684e;
+      --blush: #fee9e2;
+      --near-black: #1a1a1a;
+      --white: #ffffff;
+      --dusty-blue: #8999ab;
+      --sage-green: #a2b082;
+      --golden-amber: #d4a835;
+      --dusty-rose: #d4b5ae;
+      --forest-green: #2d6a4f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--blush);
+      color: var(--near-black);
+      overflow-x: hidden;
+    }
+
+    #app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: var(--wine);
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--terracotta);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    /* Tab Bar */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--dusty-rose);
+      padding: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      color: var(--wine);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: rgba(93, 33, 55, 0.1);
+    }
+
+    .tab-btn.active {
+      background: var(--wine);
+      color: var(--white);
+    }
+
+    /* Main layout */
+    .sim-container {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      cursor: default;
+    }
+
+    /* Controls panel */
+    .controls {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 20px;
+    }
+
+    .controls h3 {
+      color: var(--wine);
+      font-size: 1rem;
+      margin-bottom: 12px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 4px;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--wine);
+    }
+
+    .control-value {
+      font-size: 0.78rem;
+      color: var(--terracotta);
+      text-align: right;
+    }
+
+    .instruction {
+      background: var(--blush);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--near-black);
+      margin-bottom: 16px;
+      border-left: 3px solid var(--terracotta);
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      border: 2px solid var(--wine);
+      background: transparent;
+      color: var(--wine);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+
+    .btn:hover {
+      background: var(--wine);
+      color: var(--white);
+    }
+
+    .btn-primary {
+      background: var(--wine);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--wine-light);
+    }
+
+    /* Info panel */
+    .info-panel {
+      margin-top: 12px;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .law-display {
+      font-size: 1.3rem;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: var(--wine);
+      white-space: nowrap;
+    }
+
+    .law-display .symbol {
+      font-style: italic;
+    }
+
+    .info-text {
+      font-size: 0.85rem;
+      color: var(--near-black);
+      line-height: 1.5;
+    }
+
+    .flux-readout {
+      font-size: 0.85rem;
+      color: var(--terracotta);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sim-container {
+        flex-direction: column;
+      }
+      .controls {
+        width: 100%;
+      }
+      .info-panel {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <h1>Electromagnetic Induction</h1>
+    <p class="subtitle">Faraday's Law — See how changing magnetic fields induce voltage</p>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-mode="moving">Moving Magnet</button>
+      <button class="tab-btn" data-mode="spinning">Spinning Magnet</button>
+      <button class="tab-btn" data-mode="transformer">Transformer</button>
+    </div>
+
+    <div class="sim-container">
+      <div class="canvas-wrap">
+        <canvas id="sim"></canvas>
+      </div>
+      <div class="controls" id="controls">
+        <!-- Populated by JS per mode -->
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="law-display">
+        <span class="symbol">EMF</span> = &minus;d<span class="symbol">&Phi;</span>/d<span class="symbol">t</span>
+      </div>
+      <div>
+        <div class="info-text" id="info-text">Drag the magnet towards and away from the coil. The faster you move it, the greater the induced voltage.</div>
+        <div class="flux-readout" id="flux-readout">Flux through coil: 0.00 Wb</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+// ELECTROMAGNETIC INDUCTION SIMULATION
+// ============================================================
+
+const canvas = document.getElementById('sim');
+const ctx = canvas.getContext('2d');
+
+const COLORS = {
+  wine: '#5d2137',
+  terracotta: '#ba684e',
+  blush: '#fee9e2',
+  nearBlack: '#1a1a1a',
+  white: '#ffffff',
+  dustyBlue: '#8999ab',
+  sageGreen: '#a2b082',
+  goldenAmber: '#d4a835',
+  dustyRose: '#d4b5ae',
+  forestGreen: '#2d6a4f',
+  magnetN: '#c0392b',
+  magnetS: '#2980b9',
+  coilCopper: '#b87333',
+};
+
+// --- Canvas sizing ---
+const ASPECT = 16 / 9;
+let W, H, DPR;
+
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  const w = wrap.clientWidth;
+  const h = Math.round(w / ASPECT);
+  DPR = window.devicePixelRatio || 1;
+  canvas.width = w * DPR;
+  canvas.height = h * DPR;
+  canvas.style.height = h + 'px';
+  W = canvas.width;
+  H = canvas.height;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function lW() { return W / DPR; }
+function lH() { return H / DPR; }
+
+// ============================================================
+// STATE
+// ============================================================
+let currentMode = 'moving';
+let lastTimestamp = 0;
+let frameCount = 0; // skip first few frames for EMF calculation
+
+const MAGNET_W = 130; // Made slightly wider to perfectly cover the field line gaps
+const MAGNET_H = 46;  // Made slightly taller to match
+
+// Solenoid dimensions
+const SOL_TURNS = 7;
+const SOL_LENGTH_FRAC = 0.13; // fraction of canvas width
+const SOL_RADIUS_FRAC = 0.14; // fraction of canvas height
+
+const moving = {
+  magnetX: 0, magnetY: 0, prevMagnetX: 0, dragging: false,
+  coilX: 0, coilY: 0,
+  flux: 0, prevFlux: 0, emf: 0, emfSmooth: 0, needleAngle: Math.PI / 2,
+};
+
+const spinning = {
+  angle: 0, angularVelocity: 3, running: true,
+  coilX: 0, coilY: 0, magnetCenterX: 0, magnetCenterY: 0,
+  flux: 0, prevFlux: 0, emf: 0, emfSmooth: 0, needleAngle: Math.PI / 2,
+};
+
+const transformer = {
+  frequency: 0.2, amplitude: 1.0, time: 0, running: true,
+  primaryX: 0, secondaryX: 0, coilY: 0, currentI: 0,
+  flux: 0, prevFlux: 0, emf: 0, emfSmooth: 0, needleAngle: Math.PI / 2,
+};
+
+// ============================================================
+// CONTROLS
+// ============================================================
+const controlsEl = document.getElementById('controls');
+const infoTextEl = document.getElementById('info-text');
+const fluxReadoutEl = document.getElementById('flux-readout');
+
+function buildControls() {
+  switch (currentMode) {
+    case 'moving':
+      controlsEl.innerHTML = `
+        <h3>Moving Magnet</h3>
+        <div class="instruction">Drag the magnet left and right past the coil. Move it fast for a large voltage, slow for a small voltage. Stop moving to see zero voltage.</div>
+        <button class="btn" id="btn-reset">Reset Position</button>
+      `;
+      document.getElementById('btn-reset').onclick = () => {
+        moving.magnetX = lW() * 0.18;
+        moving.magnetY = lH() * 0.50;
+        moving.prevMagnetX = moving.magnetX;
+        moving.emfSmooth = 0;
+        const d = moving.magnetX - moving.coilX;
+        const R = lH() * SOL_RADIUS_FRAC;
+        moving.flux = 10 * R * R / Math.pow(d * d + R * R, 1.5);
+        moving.prevFlux = moving.flux;
+      };
+      infoTextEl.textContent = 'Drag the magnet towards and away from the coil. The faster you move it, the greater the induced voltage.';
+      break;
+    case 'spinning':
+      controlsEl.innerHTML = `
+        <h3>Spinning Magnet</h3>
+        <div class="instruction">The magnet spins near the coil. Adjust the rotation speed to see how it affects the induced voltage.</div>
+        <div class="control-group">
+          <label>Rotation Speed</label>
+          <input type="range" id="spin-speed" min="0" max="10" step="0.5" value="${spinning.angularVelocity}">
+          <div class="control-value" id="spin-speed-val">${spinning.angularVelocity.toFixed(1)} rad/s</div>
+        </div>
+        <button class="btn btn-primary" id="btn-startstop">${spinning.running ? 'Pause' : 'Start'}</button>
+        <button class="btn" id="btn-reset">Reset</button>
+      `;
+      document.getElementById('spin-speed').oninput = (e) => {
+        spinning.angularVelocity = parseFloat(e.target.value);
+        document.getElementById('spin-speed-val').textContent = spinning.angularVelocity.toFixed(1) + ' rad/s';
+      };
+      document.getElementById('btn-startstop').onclick = () => {
+        spinning.running = !spinning.running;
+        document.getElementById('btn-startstop').textContent = spinning.running ? 'Pause' : 'Start';
+      };
+      document.getElementById('btn-reset').onclick = () => {
+        spinning.angle = 0;
+        spinning.emfSmooth = 0;
+        spinning.flux = 0;
+        spinning.prevFlux = 0;
+      };
+      infoTextEl.textContent = 'The spinning magnet continuously changes the magnetic field through the coil, inducing an alternating voltage.';
+      break;
+    case 'transformer':
+      controlsEl.innerHTML = `
+        <h3>Transformer</h3>
+        <div class="instruction">AC current in the primary coil creates a changing magnetic field that induces voltage in the secondary coil.</div>
+        <div class="control-group">
+          <label>AC Frequency</label>
+          <input type="range" id="tf-freq" min="0.05" max="1" step="0.05" value="${transformer.frequency}">
+          <div class="control-value" id="tf-freq-val">${transformer.frequency.toFixed(1)} Hz</div>
+        </div>
+        <div class="control-group">
+          <label>AC Amplitude</label>
+          <input type="range" id="tf-amp" min="0" max="1" step="0.05" value="${transformer.amplitude}">
+          <div class="control-value" id="tf-amp-val">${(transformer.amplitude * 100).toFixed(0)}%</div>
+        </div>
+        <button class="btn btn-primary" id="btn-startstop">${transformer.running ? 'Pause' : 'Start'}</button>
+        <button class="btn" id="btn-reset">Reset</button>
+      `;
+      document.getElementById('tf-freq').oninput = (e) => {
+        transformer.frequency = parseFloat(e.target.value);
+        document.getElementById('tf-freq-val').textContent = transformer.frequency.toFixed(1) + ' Hz';
+      };
+      document.getElementById('tf-amp').oninput = (e) => {
+        transformer.amplitude = parseFloat(e.target.value);
+        document.getElementById('tf-amp-val').textContent = (transformer.amplitude * 100).toFixed(0) + '%';
+      };
+      document.getElementById('btn-startstop').onclick = () => {
+        transformer.running = !transformer.running;
+        document.getElementById('btn-startstop').textContent = transformer.running ? 'Pause' : 'Start';
+      };
+      document.getElementById('btn-reset').onclick = () => {
+        transformer.time = 0;
+        transformer.emfSmooth = 0;
+      };
+      infoTextEl.textContent = 'The alternating current in the primary coil creates a changing magnetic field. This changing field passes through the secondary coil and induces a voltage.';
+      break;
+  }
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    frameCount = 0;
+    initMode();
+    buildControls();
+  });
+});
+
+function initMode() {
+  const w = lW(), h = lH();
+  switch (currentMode) {
+    case 'moving': {
+      moving.coilX = w * 0.56;
+      moving.coilY = h * 0.50;
+      moving.magnetX = w * 0.18;
+      moving.magnetY = h * 0.50;
+      moving.prevMagnetX = moving.magnetX;
+      moving.emfSmooth = 0;
+      moving.needleAngle = Math.PI / 2;
+      // Initialize flux at current position so no initial spike
+      const d = moving.magnetX - moving.coilX;
+      const R = h * SOL_RADIUS_FRAC;
+      moving.flux = 10 * R * R / Math.pow(d * d + R * R, 1.5);
+      moving.prevFlux = moving.flux;
+      break;
+    }
+    case 'spinning':
+      spinning.magnetCenterX = w * 0.28;
+      spinning.magnetCenterY = h * 0.50;
+      spinning.coilX = w * 0.56; 
+      spinning.coilY = h * 0.50;
+      spinning.angle = 0;
+      spinning.emfSmooth = 0;
+      spinning.needleAngle = Math.PI / 2;
+      spinning.flux = 8.0 * Math.sin(spinning.angle); 
+      spinning.prevFlux = spinning.flux;
+      break;
+    case 'transformer':
+      // Primary on the left, Secondary on the right
+      transformer.primaryX = w * 0.28;
+      transformer.secondaryX = w * 0.56;
+      transformer.coilY = h * 0.50;
+      transformer.time = 0;
+      transformer.emfSmooth = 0;
+      transformer.needleAngle = Math.PI / 2;
+      transformer.flux = 0;
+      transformer.prevFlux = 0;
+      break;
+  }
+}
+
+// ============================================================
+// DRAWING HELPER FUNCTIONS
+// ============================================================
+
+function drawBarMagnet(cx, cy, angle, length, height) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  const hw = length / 2;
+  const hh = height / 2;
+
+  ctx.fillStyle = COLORS.magnetS;
+  ctx.beginPath();
+  ctx.roundRect(-hw, -hh, hw, height, [6, 0, 0, 6]);
+  ctx.fill();
+
+  ctx.fillStyle = COLORS.magnetN;
+  ctx.beginPath();
+  ctx.roundRect(0, -hh, hw, height, [0, 6, 6, 0]);
+  ctx.fill();
+
+  ctx.fillStyle = COLORS.white;
+  ctx.font = 'bold 14px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('S', -hw / 2, 0);
+  ctx.fillText('N', hw / 2, 0);
+
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(-hw, -hh, length, height, 6);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawSolenoidBack(cx, cy, length, radius, numTurns) {
+  const spacing = length / numTurns;
+  const rx = spacing * 0.55; 
+
+  ctx.strokeStyle = 'rgba(184, 115, 51, 0.3)';
+  ctx.lineWidth = 2.5;
+
+  for (let i = 0; i < numTurns; i++) {
+    const x = cx - length / 2 + (i + 0.5) * spacing;
+    ctx.beginPath();
+    ctx.ellipse(x, cy, rx, radius, 0, Math.PI, 2 * Math.PI);
+    ctx.stroke();
+  }
+}
+
+function drawSolenoidFront(cx, cy, length, radius, numTurns, label) {
+  const spacing = length / numTurns;
+  const rx = spacing * 0.55;
+
+  ctx.strokeStyle = COLORS.coilCopper;
+  ctx.lineWidth = 3.5;
+
+  for (let i = 0; i < numTurns; i++) {
+    const x = cx - length / 2 + (i + 0.5) * spacing;
+    ctx.beginPath();
+    ctx.ellipse(x, cy, rx, radius, 0, 0, Math.PI);
+    ctx.stroke();
+  }
+
+  const leftEndX = cx - length / 2;
+  const rightEndX = cx + length / 2;
+  const leadY = cy + radius + 22;
+  ctx.strokeStyle = COLORS.coilCopper;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(leftEndX, cy + radius);
+  ctx.lineTo(leftEndX - 8, leadY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(rightEndX, cy + radius);
+  ctx.lineTo(rightEndX + 8, leadY);
+  ctx.stroke();
+  
+  ctx.fillStyle = COLORS.coilCopper;
+  ctx.beginPath();
+  ctx.arc(leftEndX - 8, leadY, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(rightEndX + 8, leadY, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (label) {
+    ctx.fillStyle = COLORS.nearBlack;
+    ctx.font = '600 12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(label, cx, cy + radius + 30);
+  }
+}
+
+function drawRotatedCoilBack(cx, cy, solLen, solR) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(Math.PI / 2);
+  ctx.translate(-cx, -cy);
+  drawSolenoidBack(cx, cy, solLen, solR, SOL_TURNS);
+  ctx.restore();
+}
+
+function drawRotatedCoilFront(cx, cy, solLen, solR, label) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(Math.PI / 2);
+  ctx.translate(-cx, -cy);
+  drawSolenoidFront(cx, cy, solLen, solR, SOL_TURNS, null);
+  ctx.restore();
+  if (label) {
+    ctx.fillStyle = COLORS.nearBlack;
+    ctx.font = '600 12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(label, cx, cy + solLen / 2 + 12);
+  }
+}
+
+// ============================================================
+// MAGNETIC FIELD LINES — Dipole streamline tracing
+// ============================================================
+
+function traceLocalStreamline(seedX, seedY, strength, maxSteps, stepSize, reverse) {
+  const pts = [{ x: seedX, y: seedY }];
+  let x = seedX, y = seedY;
+  const sign = reverse ? -1 : 1;
+  
+  for (let i = 0; i < maxSteps; i++) {
+    const r2 = x * x + y * y;
+    if (r2 < 400) break; // avoid center singularity
+    const r = Math.sqrt(r2);
+    const r3 = r2 * r;
+    const r5 = r2 * r3;
+
+    // Local magnetic field equation (dipole at 0,0 pointing +x)
+    const bx = strength * (3 * x * x / r5 - 1 / r3);
+    const by = strength * (3 * y * x / r5);
+    
+    const mag = Math.sqrt(bx * bx + by * by);
+    if (mag < 1e-8) break;
+
+    x += sign * (bx / mag) * stepSize;
+    y += sign * (by / mag) * stepSize;
+
+    if (x * x + y * y > 4000000) break; // Goes way off screen
+    if (i > 8 && (x * x + y * y) < 500) break;
+
+    pts.push({ x, y });
+  }
+  return pts;
+}
+
+// Check if a point is at the edges of the coil (where wire turns are)
+// edgeAxis: 'x' for horizontal coils, 'y' for rotated/vertical coils
+function isAtCoilEdge(midx, midy, cb) {
+  const inBounds = midx > cb.left && midx < cb.right && midy > cb.top && midy < cb.bottom;
+  if (!inBounds) return false;
+  if (cb.edgeAxis === 'y') {
+    const edgeW = (cb.bottom - cb.top) * 0.22;
+    return (midy < cb.top + edgeW) || (midy > cb.bottom - edgeW);
+  } else {
+    const edgeW = (cb.right - cb.left) * 0.22;
+    return (midx < cb.left + edgeW) || (midx > cb.right - edgeW);
+  }
+}
+
+// Draw a field line with golden highlighting at coil edges
+function drawStreamline(pts, cb) {
+  if (pts.length < 3) return;
+
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p = pts[i], q = pts[i + 1];
+    const midx = (p.x + q.x) / 2;
+    const midy = (p.y + q.y) / 2;
+    const inside = isAtCoilEdge(midx, midy, cb);
+
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(q.x, q.y);
+
+    if (inside) {
+      ctx.strokeStyle = 'rgba(212, 168, 53, 0.30)';
+      ctx.lineWidth = 7;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(q.x, q.y);
+      ctx.strokeStyle = COLORS.goldenAmber;
+      ctx.lineWidth = 2.5;
+    } else {
+      ctx.strokeStyle = 'rgba(137, 153, 171, 0.50)';
+      ctx.lineWidth = 1.6;
+    }
+    ctx.stroke();
+  }
+
+  // Arrowheads along the line
+  let accLen = 0;
+  let nextArrow = 45;
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i].x - pts[i - 1].x;
+    const dy = pts[i].y - pts[i - 1].y;
+    accLen += Math.sqrt(dx * dx + dy * dy);
+    if (accLen >= nextArrow) {
+      const angle = Math.atan2(dy, dx);
+      const midx = (pts[i].x + pts[i - 1].x) / 2;
+      const midy = (pts[i].y + pts[i - 1].y) / 2;
+      const inside = isAtCoilEdge(midx, midy, cb);
+      ctx.save();
+      ctx.translate(pts[i].x, pts[i].y);
+      ctx.rotate(angle);
+      ctx.fillStyle = inside ? COLORS.goldenAmber : 'rgba(137, 153, 171, 0.65)';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-8, -3.5);
+      ctx.lineTo(-8, 3.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      nextArrow = accLen + 60;
+    }
+  }
+}
+
+// Generate field lines for a dipole
+function drawDipoleFieldLines(dipX, dipY, mx, my, cb, fieldStrength, intensity) {
+  const strength = fieldStrength || 50000;
+  const frac = (intensity !== undefined) ? Math.max(0, Math.min(1, intensity)) : 1.0;
+
+  // Use a fixed poleOffset for the physics so scaling the magnet graphic doesn't change the lines.
+  // This is the "cheat" that ensures the bigger magnet naturally overlaps and hides the seed points.
+  const poleOffset = 44; 
+  const seedDist = Math.max(21, poleOffset * 0.32);
+
+  // Rotation math for bringing local points back to world space
+  const angle = Math.atan2(my, mx);
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+
+  const toWorld = (pts) => pts.map(p => ({
+    x: dipX + p.x * cosA - p.y * sinA,
+    y: dipY + p.x * sinA + p.y * cosA
+  }));
+
+  const nTotal = 11;
+  for (let i = 0; i < nTotal; i++) {
+    const angleFrac = (i / (nTotal - 1)) - 0.5; // -0.5 to 0.5
+    const seedAngle = angleFrac * Math.PI * 1.3; 
+    const threshold = Math.abs(angleFrac) * 2; 
+    const lineAlpha = Math.max(0, Math.min(1, (frac - threshold * 0.8) / 0.2));
+    if (lineAlpha <= 0) continue;
+
+    // Seed coordinates calculated using the fixed physics offsets
+    const seedX = poleOffset + Math.cos(seedAngle) * seedDist;
+    const seedY = Math.sin(seedAngle) * seedDist;
+
+    ctx.globalAlpha = lineAlpha;
+    const localPts = traceLocalStreamline(seedX, seedY, strength, 1000, 3.5, false);
+    drawStreamline(toWorld(localPts), cb);
+    ctx.globalAlpha = 1;
+  }
+
+  // Three extra lines entering the South Pole (center + two angled)
+  const sAngles = [0, 0.35, -0.35]; // horizontal, slightly above, slightly below
+  for (let j = 0; j < sAngles.length; j++) {
+    if (frac > 0.1) {
+      ctx.globalAlpha = Math.max(0, Math.min(1, (frac - 0.1) / 0.2));
+      const seedX_S = -poleOffset - Math.cos(sAngles[j]) * seedDist;
+      const seedY_S = -Math.sin(sAngles[j]) * seedDist;
+      const localPts_S = traceLocalStreamline(seedX_S, seedY_S, strength, 1000, 3.5, true);
+      localPts_S.reverse(); // visual arrows point N->S (inwards to S)
+      drawStreamline(toWorld(localPts_S), cb);
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+
+// ============================================================
+// VOLTMETER
+// ============================================================
+
+function drawVoltmeter(cx, cy, radius, emf, prevNeedleAngle, scaleMaxOverride) {
+  const scaleMax = scaleMaxOverride || 10;
+
+  ctx.fillStyle = COLORS.white;
+  ctx.strokeStyle = COLORS.nearBlack;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, Math.PI, 0);
+  ctx.lineTo(cx + radius, cy + 10);
+  ctx.lineTo(cx - radius, cy + 10);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  const numTicks = 21;
+  for (let i = 0; i < numTicks; i++) {
+    const val = -scaleMax + i * (2 * scaleMax / (numTicks - 1));
+    const frac = i / (numTicks - 1); 
+    const a = Math.PI * (1 - frac); 
+    const isMajor = (i % 5 === 0);
+    const inner = radius * 0.72;
+    const outer = isMajor ? radius * 0.88 : radius * 0.82;
+
+    ctx.strokeStyle = COLORS.nearBlack;
+    ctx.lineWidth = isMajor ? 1.5 : 0.8;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * inner, cy - Math.sin(a) * inner);
+    ctx.lineTo(cx + Math.cos(a) * outer, cy - Math.sin(a) * outer);
+    ctx.stroke();
+
+    if (isMajor) {
+      ctx.fillStyle = COLORS.nearBlack;
+      ctx.font = `600 ${Math.max(8, radius * 0.18)}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const lr = radius * 0.56;
+      ctx.fillText(val.toFixed(0), cx + Math.cos(a) * lr, cy - Math.sin(a) * lr);
+    }
+  }
+
+  ctx.fillStyle = COLORS.wine;
+  ctx.font = `bold ${Math.max(10, radius * 0.24)}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('V', cx, cy - radius * 0.3);
+
+  const clamped = Math.max(-scaleMax, Math.min(scaleMax, emf));
+  const targetAngle = Math.PI / 2 - (clamped / scaleMax) * (Math.PI / 2);
+  const smoothed = prevNeedleAngle + (targetAngle - prevNeedleAngle) * 0.12;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(Math.PI / 2 - smoothed);
+  ctx.strokeStyle = COLORS.magnetN;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, 6);
+  ctx.lineTo(0, -(radius * 0.78));
+  ctx.stroke();
+  ctx.fillStyle = COLORS.nearBlack;
+  ctx.beginPath();
+  ctx.arc(0, 0, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  const sign = emf >= 0 ? '+' : '';
+  ctx.fillStyle = COLORS.nearBlack;
+  ctx.font = `600 ${Math.max(10, radius * 0.22)}px Inter, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(`EMF: ${sign}${emf.toFixed(1)} V`, cx, cy + 24);
+
+  return smoothed;
+}
+
+// ============================================================
+// MODE 1: MOVING MAGNET
+// ============================================================
+
+function calcMovingFlux() {
+  const d = moving.magnetX - moving.coilX;
+  const R = lH() * SOL_RADIUS_FRAC;
+  return 10 * R * R / Math.pow(d * d + R * R, 1.5);
+}
+
+function updateMoving(dt) {
+  if (dt <= 0 || dt > 0.1) dt = 0.016;
+
+  moving.prevFlux = moving.flux;
+  moving.flux = calcMovingFlux();
+
+  if (frameCount < 3) {
+    moving.prevFlux = moving.flux;
+    moving.emf = 0;
+    moving.emfSmooth = 0;
+  } else {
+    const rawEMF = -(moving.flux - moving.prevFlux) / dt;
+    moving.emf = rawEMF * 2.5;
+    moving.emf = Math.max(-12, Math.min(12, moving.emf));
+    moving.emfSmooth += (moving.emf - moving.emfSmooth) * 0.3;
+  }
+
+  if (!moving.dragging) {
+    moving.emfSmooth *= 0.90;
+    if (Math.abs(moving.emfSmooth) < 0.05) moving.emfSmooth = 0;
+  }
+
+  moving.prevMagnetX = moving.magnetX;
+}
+
+function renderMoving() {
+  const w = lW(), h = lH();
+  const solLen = w * SOL_LENGTH_FRAC;
+  const solR = h * SOL_RADIUS_FRAC;
+  const cb = {
+    left: moving.coilX - solLen / 2,
+    right: moving.coilX + solLen / 2,
+    top: moving.coilY - solR * 0.85,
+    bottom: moving.coilY + solR * 0.85,
+    edgeAxis: 'x',
+  };
+
+  drawSolenoidBack(moving.coilX, moving.coilY, solLen, solR, SOL_TURNS);
+  const mx = 1, my = 0; 
+  drawDipoleFieldLines(moving.magnetX, moving.magnetY, mx, my, cb);
+  drawSolenoidFront(moving.coilX, moving.coilY, solLen, solR, SOL_TURNS, 'Coil');
+  drawBarMagnet(moving.magnetX, moving.magnetY, 0, MAGNET_W, MAGNET_H);
+
+  if (!moving.dragging && Math.abs(moving.magnetX - lW() * 0.18) < 5) {
+    ctx.fillStyle = 'rgba(93, 33, 55, 0.5)';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('← drag →', moving.magnetX, moving.magnetY + MAGNET_H / 2 + 18);
+  }
+
+  const vmR = Math.min(w * 0.09, 60);
+  const vmX = w * 0.86;
+  const vmY = h * 0.20;
+  moving.needleAngle = drawVoltmeter(vmX, vmY, vmR, moving.emfSmooth, moving.needleAngle, 2);
+
+  fluxReadoutEl.textContent = `Flux through coil: ${moving.flux.toFixed(1)} (arbitrary units)`;
+}
+
+// ============================================================
+// MODE 2: SPINNING MAGNET
+// ============================================================
+
+function updateSpinning(dt) {
+  if (dt <= 0 || dt > 0.1) dt = 0.016;
+  if (!spinning.running) dt = 0;
+
+  spinning.angle += spinning.angularVelocity * dt;
+  spinning.prevFlux = spinning.flux;
+  
+  // Coil is vertical now, so flux connects heavily when magnet points vertically (sin)
+  spinning.flux = 8.0 * Math.sin(spinning.angle);
+
+  if (frameCount < 3) {
+    spinning.prevFlux = spinning.flux;
+    spinning.emf = 0;
+    spinning.emfSmooth = 0;
+  } else if (dt > 0) {
+    const rawEMF = -(spinning.flux - spinning.prevFlux) / dt;
+    spinning.emf = rawEMF * 0.35;
+    spinning.emf = Math.max(-12, Math.min(12, spinning.emf));
+  } else {
+    spinning.emf = 0;
+  }
+  spinning.emfSmooth += (spinning.emf - spinning.emfSmooth) * 0.2;
+}
+
+function renderSpinning() {
+  const w = lW(), h = lH();
+  const solLen = w * SOL_LENGTH_FRAC;
+  const solR = h * SOL_RADIUS_FRAC;
+  
+  // Coil is drawn rotated 90 deg, so horizontal highlight bounds rely on solR width instead of solLen
+  const cb = {
+    left: spinning.coilX - solR * 0.85,
+    right: spinning.coilX + solR * 0.85,
+    top: spinning.coilY - solLen / 2,
+    bottom: spinning.coilY + solLen / 2,
+    edgeAxis: 'y',
+  };
+
+  drawRotatedCoilBack(spinning.coilX, spinning.coilY, solLen, solR);
+
+  const mx = Math.cos(spinning.angle);
+  const my = Math.sin(spinning.angle);
+  drawDipoleFieldLines(spinning.magnetCenterX, spinning.magnetCenterY, mx, my, cb);
+
+  drawRotatedCoilFront(spinning.coilX, spinning.coilY, solLen, solR, 'Coil');
+  drawBarMagnet(spinning.magnetCenterX, spinning.magnetCenterY, spinning.angle, MAGNET_W, MAGNET_H);
+
+  ctx.strokeStyle = 'rgba(137, 153, 171, 0.4)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.arc(spinning.magnetCenterX, spinning.magnetCenterY, MAGNET_W * 0.5, 0, Math.PI * 1.6);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  const arcEnd = Math.PI * 1.6;
+  const arrowX = spinning.magnetCenterX + Math.cos(arcEnd) * MAGNET_W * 0.5;
+  const arrowY = spinning.magnetCenterY + Math.sin(arcEnd) * MAGNET_W * 0.5;
+  ctx.save();
+  ctx.translate(arrowX, arrowY);
+  ctx.rotate(arcEnd + Math.PI / 2);
+  ctx.fillStyle = 'rgba(137, 153, 171, 0.6)';
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(-6, -3);
+  ctx.lineTo(-6, 3);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  const vmR = Math.min(w * 0.09, 60);
+  const vmX = w * 0.86;
+  const vmY = h * 0.20;
+  spinning.needleAngle = drawVoltmeter(vmX, vmY, vmR, spinning.emfSmooth, spinning.needleAngle);
+
+  fluxReadoutEl.textContent = `Flux through coil: ${spinning.flux.toFixed(2)} (arbitrary units)`;
+}
+
+// ============================================================
+// MODE 3: TRANSFORMER
+// ============================================================
+
+function updateTransformer(dt) {
+  if (dt <= 0 || dt > 0.1) dt = 0.016;
+  if (!transformer.running) dt = 0;
+
+  transformer.time += dt;
+  const omega = 2 * Math.PI * transformer.frequency;
+  transformer.currentI = transformer.amplitude * Math.sin(omega * transformer.time);
+
+  transformer.prevFlux = transformer.flux;
+  transformer.flux = 4.0 * transformer.currentI;
+
+  if (frameCount < 3) {
+    transformer.prevFlux = transformer.flux;
+    transformer.emf = 0;
+    transformer.emfSmooth = 0;
+  } else if (dt > 0) {
+    const rawEMF = -(transformer.flux - transformer.prevFlux) / dt;
+    transformer.emf = rawEMF * 0.22;
+    transformer.emf = Math.max(-12, Math.min(12, transformer.emf));
+  } else {
+    transformer.emf = 0;
+  }
+  transformer.emfSmooth += (transformer.emf - transformer.emfSmooth) * 0.2;
+}
+
+function drawTransformerFieldLines(pX, sX, cY, solLen, solR, currentMag, currentDir, sCb) {
+  if (currentMag < 0.005) return;
+
+  const maxLines = 14;
+  const effMag = Math.max(currentMag, 0.02);
+  const scale = 1 / effMag;
+
+  const rightEnd = pX + solLen / 2;
+  const leftEnd = pX - solLen / 2;
+
+  for (const side of ['top', 'bottom']) {
+    const sign = side === 'top' ? -1 : 1;
+
+    for (let i = 0; i < maxLines; i++) {
+      const h = Math.pow(i + 1, 1.1) * (18 * scale);
+      const spread = Math.pow(i + 1, 1.4) * (35 * scale);
+
+      const canvasH = lH();
+      const distanceFade = Math.max(0, 1 - (h / (canvasH * 2.0)));
+      if (distanceFade <= 0.01) continue;
+      
+      const alphaMod = 0.85;
+      const normalizedIndex = i / (maxLines - 1);
+      const yOffset = solR * (0.9 - Math.pow(normalizedIndex, 0.6) * 0.85);
+
+      let p0, p1, p2, p3;
+      if (currentDir >= 0) {
+        p0 = { x: rightEnd, y: cY + sign * yOffset };
+        p3 = { x: leftEnd,  y: cY + sign * yOffset };
+      } else {
+        p0 = { x: leftEnd,  y: cY + sign * yOffset };
+        p3 = { x: rightEnd, y: cY + sign * yOffset };
+      }
+      p1 = { x: p0.x + (currentDir >= 0 ? spread : -spread), y: p0.y + sign * h };
+      p2 = { x: p3.x - (currentDir >= 0 ? spread : -spread), y: p3.y + sign * h };
+
+      const lineW = (1.8 / Math.pow(i + 1, 0.3)) * Math.min(1, currentMag * 1.5);
+
+      const segCount = 40;
+      for (let s = 0; s < segCount; s++) {
+        const t1 = s / segCount;
+        const t2 = (s + 1) / segCount;
+        const u1 = 1 - t1, u2 = 1 - t2;
+        const bx1 = u1*u1*u1*p0.x + 3*u1*u1*t1*p1.x + 3*u1*t1*t1*p2.x + t1*t1*t1*p3.x;
+        const by1 = u1*u1*u1*p0.y + 3*u1*u1*t1*p1.y + 3*u1*t1*t1*p2.y + t1*t1*t1*p3.y;
+        const bx2 = u2*u2*u2*p0.x + 3*u2*u2*t2*p1.x + 3*u2*t2*t2*p2.x + t2*t2*t2*p3.x;
+        const by2 = u2*u2*u2*p0.y + 3*u2*u2*t2*p1.y + 3*u2*t2*t2*p2.y + t2*t2*t2*p3.y;
+
+        const midx = (bx1 + bx2) / 2;
+        const midy = (by1 + by2) / 2;
+        const inside = isAtCoilEdge(midx, midy, sCb);
+
+        if (inside) {
+          ctx.beginPath();
+          ctx.moveTo(bx1, by1);
+          ctx.lineTo(bx2, by2);
+          ctx.strokeStyle = `rgba(212, 168, 53, ${alphaMod * 0.25})`;
+          ctx.lineWidth = 6;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(bx1, by1);
+          ctx.lineTo(bx2, by2);
+          ctx.strokeStyle = `rgba(212, 168, 53, ${alphaMod * 0.85})`;
+          ctx.lineWidth = lineW;
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(bx1, by1);
+          ctx.lineTo(bx2, by2);
+          ctx.strokeStyle = `rgba(137, 153, 171, ${alphaMod * 0.5})`;
+          ctx.lineWidth = lineW;
+          ctx.stroke();
+        }
+      }
+
+      const at = 0.5, au = 1 - at;
+      const ax = au*au*au*p0.x + 3*au*au*at*p1.x + 3*au*at*at*p2.x + at*at*at*p3.x;
+      const ay = au*au*au*p0.y + 3*au*au*at*p1.y + 3*au*at*at*p2.y + at*at*at*p3.y;
+      const tx = 3*au*au*(p1.x-p0.x) + 6*au*at*(p2.x-p1.x) + 3*at*at*(p3.x-p2.x);
+      const ty = 3*au*au*(p1.y-p0.y) + 6*au*at*(p2.y-p1.y) + 3*at*at*(p3.y-p2.y);
+      const angle = Math.atan2(ty, tx);
+
+      const amid = isAtCoilEdge(ax, ay, sCb);
+      ctx.save();
+      ctx.translate(ax, ay);
+      ctx.rotate(angle);
+      ctx.fillStyle = amid ? `rgba(212, 168, 53, ${alphaMod * 0.85})` : `rgba(137, 153, 171, ${alphaMod * 0.65})`;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-7, -3);
+      ctx.lineTo(-7, 3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const centerExt = lW() * 0.7 * currentMag;
+  const centerLeft = pX - centerExt;
+  const centerRight = pX + centerExt;
+  const segC = 50;
+  for (let s = 0; s < segC; s++) {
+    const f1 = s / segC;
+    const f2 = (s + 1) / segC;
+    const x1 = centerLeft + f1 * (centerRight - centerLeft);
+    const x2 = centerLeft + f2 * (centerRight - centerLeft);
+    const inside = isAtCoilEdge(x1, cY, sCb);
+
+    if (inside) {
+      ctx.beginPath();
+      ctx.moveTo(x1, cY);
+      ctx.lineTo(x2, cY);
+      ctx.strokeStyle = 'rgba(212, 168, 53, 0.3)';
+      ctx.lineWidth = 6;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x1, cY);
+      ctx.lineTo(x2, cY);
+      ctx.strokeStyle = 'rgba(212, 168, 53, 0.85)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(x1, cY);
+      ctx.lineTo(x2, cY);
+      ctx.strokeStyle = 'rgba(137, 153, 171, 0.7)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+}
+
+function renderTransformer() {
+  const w = lW(), h = lH();
+  const solLen = w * SOL_LENGTH_FRAC;
+  const solR = h * SOL_RADIUS_FRAC;
+
+  const currentVal = transformer.currentI;
+  const intensity = Math.abs(currentVal);  
+  const dir = currentVal >= 0 ? 1 : -1;
+
+  // Primary on the left, Secondary on the right
+  const pX = w * 0.28; // Left
+  const sX = w * 0.56; // Right
+  const cY = h * 0.50;
+
+  const sCb = {
+    left: sX - solR * 0.85,
+    right: sX + solR * 0.85,
+    top: cY - solLen / 2,
+    bottom: cY + solLen / 2,
+  };
+
+  drawRotatedCoilBack(pX, cY, solLen, solR);
+  drawRotatedCoilBack(sX, cY, solLen, solR);
+
+  const fieldCenterX = (pX + sX) / 2;
+  ctx.save();
+  ctx.translate(fieldCenterX, cY);
+  ctx.rotate(Math.PI / 2);
+  ctx.translate(-fieldCenterX, -cY);
+  
+  const rPX = fieldCenterX;
+  const rPY = cY - (pX - fieldCenterX);
+  const rSX = fieldCenterX;
+  const rSY = cY - (sX - fieldCenterX); 
+
+  const rsCb = {
+    left: rSX - solLen / 2,
+    right: rSX + solLen / 2,
+    top: rSY - solR * 0.85,
+    bottom: rSY + solR * 0.85,
+    edgeAxis: 'x',
+  };
+  drawTransformerFieldLines(rPX, rSX, rPY, solLen, solR, intensity, dir, rsCb);
+  ctx.restore();
+
+  drawRotatedCoilFront(pX, cY, solLen, solR, 'Primary Coil');
+  drawRotatedCoilFront(sX, cY, solLen, solR, 'Secondary Coil');
+
+  ctx.fillStyle = COLORS.terracotta;
+  ctx.font = '600 13px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('AC ~', pX, cY - solLen / 2 - 14);
+
+  const waveY = cY + solLen / 2 + 40;
+  ctx.strokeStyle = COLORS.terracotta;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let x = -25; x <= 25; x++) {
+    const px = pX + x;
+    const py = waveY + Math.sin(x * 0.25 + transformer.time * 2 * Math.PI * transformer.frequency) * 7;
+    if (x === -25) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  ctx.fillStyle = COLORS.nearBlack;
+  ctx.font = '11px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`I = ${transformer.currentI.toFixed(2)} A`, pX, waveY + 20);
+
+  const vmR = Math.min(w * 0.09, 60);
+  const vmX = w * 0.86;
+  const vmY = h * 0.20;
+  transformer.needleAngle = drawVoltmeter(vmX, vmY, vmR, transformer.emfSmooth, transformer.needleAngle, 5);
+
+  fluxReadoutEl.textContent = `Flux through secondary: ${transformer.flux.toFixed(2)} (arbitrary units)`;
+}
+
+// ============================================================
+// MOUSE / TOUCH INTERACTION (Mode 1)
+// ============================================================
+
+function getCanvasPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
+function isOnMagnet(px, py) {
+  const hw = MAGNET_W / 2 + 10;
+  const hh = MAGNET_H / 2 + 10;
+  return px > moving.magnetX - hw && px < moving.magnetX + hw &&
+         py > moving.magnetY - hh && py < moving.magnetY + hh;
+}
+
+let dragOffsetX = 0;
+
+function onPointerDown(e) {
+  if (currentMode !== 'moving') return;
+  e.preventDefault();
+  const pos = getCanvasPos(e);
+  if (isOnMagnet(pos.x, pos.y)) {
+    moving.dragging = true;
+    dragOffsetX = moving.magnetX - pos.x;
+    canvas.style.cursor = 'grabbing';
+  }
+}
+
+function onPointerMove(e) {
+  if (currentMode !== 'moving') return;
+  const pos = getCanvasPos(e);
+  if (moving.dragging) {
+    e.preventDefault();
+    moving.magnetX = pos.x + dragOffsetX;
+    moving.magnetX = Math.max(MAGNET_W / 2, Math.min(lW() - MAGNET_W / 2, moving.magnetX));
+  } else {
+    canvas.style.cursor = isOnMagnet(pos.x, pos.y) ? 'grab' : 'default';
+  }
+}
+
+function onPointerUp() {
+  if (moving.dragging) {
+    moving.dragging = false;
+    canvas.style.cursor = 'default';
+  }
+}
+
+canvas.addEventListener('mousedown', onPointerDown);
+canvas.addEventListener('mousemove', onPointerMove);
+canvas.addEventListener('mouseup', onPointerUp);
+canvas.addEventListener('mouseleave', onPointerUp);
+canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+canvas.addEventListener('touchmove', onPointerMove, { passive: false });
+canvas.addEventListener('touchend', onPointerUp);
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+
+function update(dt) {
+  switch (currentMode) {
+    case 'moving': updateMoving(dt); break;
+    case 'spinning': updateSpinning(dt); break;
+    case 'transformer': updateTransformer(dt); break;
+  }
+}
+
+function render() {
+  ctx.clearRect(0, 0, lW(), lH());
+  ctx.fillStyle = '#fefcfa';
+  ctx.fillRect(0, 0, lW(), lH());
+
+  switch (currentMode) {
+    case 'moving': renderMoving(); break;
+    case 'spinning': renderSpinning(); break;
+    case 'transformer': renderTransformer(); break;
+  }
+}
+
+function gameLoop(timestamp) {
+  const dt = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
+  lastTimestamp = timestamp;
+  frameCount++;
+  update(dt);
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+initMode();
+buildControls();
+requestAnimationFrame((ts) => {
+  lastTimestamp = ts;
+  gameLoop(ts);
+});
+
+</script>
+</body>
+</html>
